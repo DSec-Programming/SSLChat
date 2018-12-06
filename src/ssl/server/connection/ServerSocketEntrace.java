@@ -6,6 +6,26 @@ import java.net.Socket;
 
 import ssl.server.model.ServerDataModel;
 
+/**
+ * Spezifikation
+ * 
+ * ServerSocketEntrace ist ein EIGENER THREAD ### SINNVOLL?
+ * --> vielleicht auch lieber als PassiveKlasse und dann in den ThreadPool
+ * 
+ * Die Klasse öffnet ein ServerSocket auf der Maschine.
+ * 
+ * Der ServerSocket akzeptiert neue Clients und speichert
+ * deren Socket in der PASSIVEN Klasse SingleClientConnection
+ * 
+ * Das SingleClientConnection Object wird im Model gespeichert.
+ * 
+ * !!! DER CONTROLLER verwaltet den ThreadPOOL, welcher
+ * REQUESTS, REPLEYS & BROADCASTS an die SingleClientConnections
+ * verteilt/annimmt !!!
+ * 
+ * 
+ */
+
 public class ServerSocketEntrace extends Thread
 {
 	private ServerSocket serverSocket;
@@ -35,7 +55,6 @@ public class ServerSocketEntrace extends Thread
 				System.out.println("(SERVERSOCKET)>>> NEW CLIENT : " + socketForClient.getRemoteSocketAddress());
 				SingleClientConnection connection = new SingleClientConnection(socketForClient, this.model);
 				this.model.addSingleClientConnection(connection);
-				System.out.println("(SERVERSOCKET)>>> waiting for clients");
 
 			} catch (Exception e)
 			{

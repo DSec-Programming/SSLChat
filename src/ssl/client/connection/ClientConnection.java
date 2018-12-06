@@ -8,6 +8,22 @@ import java.net.Socket;
 import ssl.client.model.ClientDataModel;
 import ssl.streamedObjects.UpdateFromServer;
 
+/**
+ * Spezifikation
+ * 
+ * Die Klasse ClientConnection ist eine PASSIVE Klasse
+ * --> Sie wird von verschiedenen Runnables als GEMEINSAMES Object benutzt
+ * -->synchronisieren!
+ * 
+ * Ein TreadPool steutert den Zugriff auf die Daten
+ * 
+ * RUNNABLES:
+ * - Runnable-SendObject
+ * - Runnable-ReceiveSerferBroadcasts
+ * 
+ * 
+ */
+
 public class ClientConnection
 {
 	private Socket socket;
@@ -18,6 +34,14 @@ public class ClientConnection
 
 	public static final String USER_UPDATE = "userupdate";
 	public static final String CHAT_UPDATE = "chatupdate";
+
+	/**
+	 * Der Kontruckter wird ...
+	 * 
+	 * UMBAUEN !! vielleicht Model nachträglich setzen als im Konstuktor
+	 * mitzugeeeben
+	 * 
+	 */
 
 	public ClientConnection(String host, int port, String username, ClientDataModel model) throws IOException
 	{
@@ -30,11 +54,25 @@ public class ClientConnection
 		this.send(username);
 	}
 
+	/**
+	 * schreibt ein Object auf den Stream
+	 * und sendet in entgültig (spüht den Stream durch)
+	 * ! Das übergebene Object muss das INTERFACE Serilizable implementieren !
+	 */
 	public void send(Object o) throws IOException
 	{
 		this.toServer.writeObject(o);
 		this.toServer.flush();
 	}
+
+	/**
+	 * schaut nach ob etwas auf dem Stream liegt
+	 * falls ja -> return sofort
+	 * Ansonsten ließt die Methode EIN Object vom Stream
+	 * durch instanceof kann entschieden werden wie es
+	 * Gecastet werden muss.
+	 * Empfohlene Verbesserung: Benutzung INTERPRETER TODO
+	 */
 
 	public synchronized void waitReceiveAndUpdateModel()
 			throws IOException, ClassNotFoundException, InterruptedException
@@ -45,9 +83,9 @@ public class ClientConnection
 		}
 		Object data = this.fromServer.readObject();
 
-		// update model TODO
 		// geht noch schöner und Dynamischer
-		// hier jetzt er statisch ...
+		// hier jetzt ehr statisch ...
+
 		if (data instanceof UpdateFromServer)
 		{
 			UpdateFromServer update = (UpdateFromServer) data;
@@ -68,6 +106,9 @@ public class ClientConnection
 		}
 	}
 
+	/*
+	 * schließt den Socket
+	 */
 	public synchronized void close() throws IOException
 	{
 		this.socket.close();

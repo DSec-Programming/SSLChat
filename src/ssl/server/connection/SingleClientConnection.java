@@ -10,6 +10,15 @@ import ssl.server.model.ServerDataModel;
 import ssl.streamedObjects.MessageFromClient;
 import ssl.streamedObjects.UpdateFromServer;
 
+/**
+ * Spezifikation
+ * 
+ * Die Klasse SingleClientConnection ist eine PASSIVE Klasse
+ * 
+ * .....
+ *
+ */
+
 public class SingleClientConnection
 {
 	private Socket socket;
