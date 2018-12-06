@@ -1,4 +1,4 @@
-package ssl.server.jobs;
+package ssl.server.connection;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -6,20 +6,20 @@ import java.net.Socket;
 
 import ssl.server.model.ServerDataModel;
 
-public class ServerConnection extends Thread
+public class ServerSocketEntrace extends Thread
 {
 	private ServerSocket serverSocket;
 	private ServerDataModel model;
-	
-	public ServerConnection(int port,ServerDataModel model) throws IOException
+
+	public ServerSocketEntrace(int port, ServerDataModel model) throws IOException
 	{
-	    setDaemon(true);
+		setDaemon(true);
 		System.out.println("=============== SSLServer v01 ===============");
 		System.out.println("open ServerSocket...");
 		this.serverSocket = new ServerSocket(port);
 		this.model = model;
 	}
-	
+
 	@Override
 	public void run()
 	{
@@ -33,8 +33,8 @@ public class ServerConnection extends Thread
 			{
 				Socket socketForClient = serverSocket.accept();
 				System.out.println("(SERVERSOCKET)>>> NEW CLIENT : " + socketForClient.getRemoteSocketAddress());
-				ClientServeThread cst = new ClientServeThread(socketForClient, this.model);
-				cst.start();
+				SingleClientConnection connection = new SingleClientConnection(socketForClient, this.model);
+				this.model.addSingleClientConnection(connection);
 				System.out.println("(SERVERSOCKET)>>> waiting for clients");
 
 			} catch (Exception e)

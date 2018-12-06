@@ -1,8 +1,11 @@
 package ssl.server.model;
 
 import java.util.ArrayList;
+import java.util.concurrent.ThreadPoolExecutor;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import ssl.server.connection.SingleClientConnection;
 
 public class ServerDataModel
 {
@@ -12,13 +15,17 @@ public class ServerDataModel
 	private ObservableList<String> observableUserOnlineList;
 	private ObservableList<String> observableChatMessages;
 
-	public ServerDataModel()
+	private ArrayList<SingleClientConnection> openClientConnections;
+
+	public ServerDataModel(ThreadPoolExecutor pool)
 	{
 		// falls nichts gespeichter wurde
+		// macht bei onlienlist keinen sinn !!
 		this.userOnlineList = new ArrayList<>();
 		this.chatMessages = new ArrayList<>();
 		this.observableUserOnlineList = FXCollections.observableList(this.userOnlineList);
 		this.observableChatMessages = FXCollections.observableList(this.chatMessages);
+		this.openClientConnections = new ArrayList<>();
 
 		// Persistente verläufe einlesen!
 		// TODO
@@ -26,17 +33,44 @@ public class ServerDataModel
 	}
 
 	/**
-	 * für die(PLURAL) ClientServeThreads Die clientServeThread aktualisieren
+	 * Wird bei der neuaufnahme eines Clients aufgerufen ! hier werden offene
+	 * Verbindungen gespeichert
+	 */
+	public synchronized void addSingleClientConnection(SingleClientConnection scc)
+	{
+		this.openClientConnections.add(scc);
+		// adde auch in OnlineList
+		this.addUserInOnlineList(scc.getUserName());
+	}
+
+	public synchronized void removeSingleClientConnection(SingleClientConnection scc)
+	{
+		this.openClientConnections.remove(scc);
+		// remove auch aus OnlineList
+		this.removeUserInOnlineList(scc.getUserName());
+	}
+
+	public synchronized ArrayList<SingleClientConnection> getAllOpenSingleClientConnections()
+	{
+		return this.openClientConnections;
+	}
+
+	/**
+	 * für die(PLURAL) ClientServeThreads Die clientServeThreads aktualisieren
 	 * regelmäßig ob User online kommen, offline gehen oder etwas in den Chat
 	 * schreiben
+	 * 
+	 * Anschließend muss eine Änderung TRIGGERN dass alle Clients über den
+	 * aktuellen Stand benachrichtigt werden
+	 * 
 	 */
 
-	public synchronized void addUserInOnlineList(String s)
+	private synchronized void addUserInOnlineList(String s)
 	{
 		this.observableUserOnlineList.add(s);
 	}
 
-	public synchronized void removeUserInOnlineList(String s)
+	private synchronized void removeUserInOnlineList(String s)
 	{
 		this.observableUserOnlineList.remove(s);
 	}

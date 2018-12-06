@@ -1,6 +1,10 @@
 package ssl.server.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -9,7 +13,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import ssl.server.jobs.ServerConnection;
+import ssl.server.connection.CallableSendBroadcastUpdate;
+import ssl.server.connection.RunnableObserveSingleClientConnections;
+import ssl.server.connection.ServerSocketEntrace;
+import ssl.server.connection.SingleClientConnection;
 import ssl.server.model.ServerDataModel;
 
 public class ServerController
@@ -19,15 +26,18 @@ public class ServerController
 
 	@FXML
 	private Button btn_shutDown;
-	
+
 	private static String[] params;
 
 	private ObservableList<String> observableUserOnlineList;
 	private ObservableList<String> observableChatMessages;
 
+	private ThreadPoolExecutor pool;
+
 	public void initialize()
 	{
-		ServerDataModel model = new ServerDataModel();
+		this.pool = new ThreadPoolExecutor(2, 4, 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+		ServerDataModel model = new ServerDataModel(pool);
 		this.observableUserOnlineList = model.getUserObservableOnlineList();
 		this.observableChatMessages = model.getObservableChatMessages();
 		this.observableUserOnlineList.addListener(new ListChangeListener<String>()
@@ -40,6 +50,22 @@ public class ServerController
 					onlineList += (s + "\n");
 				}
 				txt_User.setText(onlineList);
+
+				// trigger die Änderungen bei den Clients
+				// ! Model muss synchronisiert werden damit niemand anderes
+				// dazwischenspucken
+				// kann !
+				synchronized (model)
+				{
+
+					ArrayList<SingleClientConnection> openConnections = model.getAllOpenSingleClientConnections();
+					ArrayList<String> actuelUserOnlineList = model.getUserOnlineList();
+					for (SingleClientConnection scc : openConnections)
+					{
+						pool.submit(new CallableSendBroadcastUpdate(scc, SingleClientConnection.USER_UPDATE,
+								actuelUserOnlineList));
+					}
+				}
 			}
 		});
 		this.observableChatMessages.addListener(new ListChangeListener<String>()
@@ -52,32 +78,57 @@ public class ServerController
 					chat += (s + "\n");
 				}
 				txt_Msg.setText(chat);
+
+				// trigger die Änderungen bei den Clients
+				// ! Model muss synchronisiert werden damit niemand anderes
+				// dazwischenspucken
+				// kann !
+				synchronized (model)
+				{
+					ArrayList<SingleClientConnection> openConnections = model.getAllOpenSingleClientConnections();
+					ArrayList<String> actuelChat = model.getChatMessages();
+					for (SingleClientConnection scc : openConnections)
+					{
+						pool.submit(
+								new CallableSendBroadcastUpdate(scc, SingleClientConnection.CHAT_UPDATE, actuelChat));
+					}
+				}
 			}
 		});
 
 		try
 		{
-			ServerConnection sc = new ServerConnection(Integer.parseInt(params[0]), model);
+			ServerSocketEntrace sc = new ServerSocketEntrace(Integer.parseInt(params[0]), model);
 			sc.start();
+
+			/**
+			 * Es muss ein Etwas gestartet werden was in Regelmäßigen abstanden
+			 * abhört ob bei der SingleClientConnectionSAMMLUNG ein Client etwas
+			 * zum Server gesendet hat
+			 */
+			ThreadPoolExecutor pool2 = new ThreadPoolExecutor(2, 4, 1000, TimeUnit.MILLISECONDS,
+					new LinkedBlockingQueue<>());
+			pool2.submit(new RunnableObserveSingleClientConnections(model, this.pool));
+
 		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 
 	}
-	
+
 	public void shutDown(ActionEvent e)
 	{
-	    Platform.exit();
+		Platform.exit();
 	}
-	
+
 	/**
-     * Setzt die zum Start mitgegebenen Parameter
-     * 
-     * @param args
-     */
-    public static void setParams(String[] args)
-    {
-        params = args;
-    }
+	 * Setzt die zum Start mitgegebenen Parameter
+	 * 
+	 * @param args
+	 */
+	public static void setParams(String[] args)
+	{
+		params = args;
+	}
 }

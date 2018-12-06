@@ -3,7 +3,9 @@ package ssl.client.model;
 import java.util.ArrayList;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.control.TextArea;
 
 public class ClientDataModel
 {
@@ -13,13 +15,43 @@ public class ClientDataModel
 	private ObservableList<String> observableUserOnlineList;
 	private ObservableList<String> observableChatMessages;
 
-	public ClientDataModel()
+	public ClientDataModel(TextArea chatArea, TextArea onlineListArea)
 	{
 		// falls nichts gespeichter wurde
 		this.userOnlineList = new ArrayList<>();
 		this.chatMessages = new ArrayList<>();
 		this.observableUserOnlineList = FXCollections.observableList(this.userOnlineList);
 		this.observableChatMessages = FXCollections.observableList(this.chatMessages);
+
+		this.observableUserOnlineList.addListener(new ListChangeListener<String>()
+		{
+			public void onChanged(ListChangeListener.Change<? extends String> change)
+			{
+				String onlineList = "";
+				for (String s : observableUserOnlineList)
+				{
+					onlineList += (s + "\n");
+				}
+				onlineListArea.setText(onlineList);
+			}
+		});
+		this.observableChatMessages.addListener(new ListChangeListener<String>()
+		{
+			public void onChanged(ListChangeListener.Change<? extends String> change)
+			{
+				String chat = "";
+				for (String s : observableChatMessages)
+				{
+					chat += (s + "\n");
+				}
+				chatArea.setText(chat);
+			}
+		});
+
+		// ArrayList<String> test = new ArrayList<>();
+		// test.add("HAHSHHHDHSHD");
+		// test.add("XD");
+		// updateMessageToChat(test);
 
 		// Persistente verläufe einlesen!
 		// TODO
@@ -33,30 +65,19 @@ public class ClientDataModel
 	public synchronized void updateUserInOnlineList(ArrayList<String> userOnlineList)
 	{
 		// Parameter ist die Akutelle OnlineList
+		this.observableUserOnlineList.clear();
 		for (String s : userOnlineList)
 		{
-			if (this.observableUserOnlineList.contains(s))
-			{
-				continue;
-			} else
-			{
-				this.observableUserOnlineList.add(s);
-			}
+			this.observableUserOnlineList.add(s);
 		}
 	}
 
-	public synchronized void updateMessageToChat(ArrayList<String> msgs)
+	public void updateMessageToChat(ArrayList<String> msgs)
 	{
 		// Parameter ist der AktuelleChat
-		for (String s : msgs)
+		for (int i = this.observableChatMessages.size(); i < msgs.size(); i++)
 		{
-			if (this.observableChatMessages.contains(s))
-			{
-				continue;
-			} else
-			{
-				this.observableChatMessages.add(s);
-			}
+			this.observableChatMessages.add(msgs.get(i));
 		}
 	}
 

@@ -2,6 +2,9 @@ package ssl.client.controller;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -10,9 +13,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import ssl.client.jobs.ClientConnection;
-import ssl.client.jobs.ReceiveThread;
+import ssl.client.connection.CallableReceiveServerInfos;
+import ssl.client.connection.CallableSendObject;
+import ssl.client.connection.ClientConnection;
 import ssl.client.model.ClientDataModel;
+import ssl.streamedObjects.MessageFromClient;
 
 public class ClientController
 {
@@ -27,52 +32,23 @@ public class ClientController
 
 	private static String[] params;
 
-	private ObservableList<String> observableUserOnlineList;
-	
-	private ObservableList<String> observableChatMessages;
-
 	private ClientConnection connection;
 	private ClientDataModel model;
+	private ThreadPoolExecutor pool;
 
 	public void initialize()
 	{
-		this.model = new ClientDataModel();
-		this.observableUserOnlineList = this.model.getUserObservableOnlineList();
-		this.observableChatMessages = this.model.getObservableChatMessages();
-		this.observableUserOnlineList.addListener(new ListChangeListener<String>()
-		{
-			public void onChanged(ListChangeListener.Change<? extends String> change)
-			{
-				String onlineList = "";
-				for (String s : observableUserOnlineList)
-				{
-					onlineList += (s + "\n");
-				}
-				txt_User.setText(onlineList);
-			}
-		});
-		this.observableChatMessages.addListener(new ListChangeListener<String>()
-		{
-			public void onChanged(ListChangeListener.Change<? extends String> change)
-			{
-				String chat = "";
-				for (String s : observableChatMessages)
-				{
-					chat += (s + "\n");
-				}
-				txt_Msg.setText(chat);
-			}
-		});
-
+		this.model = new ClientDataModel(this.txt_Msg,this.txt_User);
+		this.pool = new ThreadPoolExecutor(2, 4, 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 		try
 		{
 			/**
 			 * Hier werden die Params ausgelesen !! und der Client-technisch
 			 * alles gestartet
 			 */
-			this.connection = new ClientConnection(params[0], Integer.parseInt(params[1]), "Peter", model);
-			ReceiveThread rt = new ReceiveThread(this.connection, this.model);
-			rt.start();
+			this.connection = new ClientConnection(params[0], Integer.parseInt(params[1]), params[2], model);
+			this.pool.submit(new CallableReceiveServerInfos(connection));
+
 		} catch (ConnectException e)
 		{
 			System.out.println("SERVER OFFLINE !!! ");
@@ -93,9 +69,9 @@ public class ClientController
 		txt_Input.setText("");
 		try
 		{
-			this.connection.send(msg);
-		} 
-		catch (Exception ee)
+			// this.connection.send(msg);
+			this.pool.submit(new CallableSendObject(this.connection, new MessageFromClient(msg)));
+		} catch (Exception ee)
 		{
 			ee.printStackTrace();
 		}
