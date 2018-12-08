@@ -1,4 +1,4 @@
-package ssl.server.connection;
+package server.connection;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -6,9 +6,10 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import ssl.server.model.ServerDataModel;
-import ssl.streamedObjects.MessageFromClient;
-import ssl.streamedObjects.UpdateFromServer;
+import server.model.ServerDataModel;
+import streamedObjects.MessageFromClient;
+import streamedObjects.Ping;
+import streamedObjects.UpdateFromServer;
 
 /**
  * Spezifikation
@@ -58,13 +59,10 @@ public class SingleClientConnection
 	 **/
 	public synchronized void receiveClientRequests() throws IOException, InterruptedException, ClassNotFoundException
 	{
-
 		if (this.socket.getInputStream().available() == 0)
 		{
-			// System.out.println("return");
 			return;
 		}
-
 		Object requestFromClient = this.fromClient.readObject();
 
 		/**
@@ -79,6 +77,22 @@ public class SingleClientConnection
 		} else
 		{
 			throw new RuntimeException("NICHT ERWARTETES OBJECT VOM CLIENT");
+		}
+
+	}
+
+	public synchronized boolean isClientStillAlive() throws IOException, ClassNotFoundException
+	{
+		this.toClient.writeObject(new Ping());
+		Object o = null;
+		this.socket.setSoTimeout(100);
+		o = this.fromClient.readObject();
+		if (o == null)
+		{
+			return true;
+		} else
+		{
+			return false;
 		}
 
 	}

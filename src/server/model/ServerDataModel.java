@@ -1,11 +1,11 @@
-package ssl.server.model;
+package server.model;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import ssl.server.connection.SingleClientConnection;
+import server.connection.SingleClientConnection;
 
 public class ServerDataModel
 {

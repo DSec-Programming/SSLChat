@@ -1,4 +1,4 @@
-package ssl.client.connection;
+package client.connection;
 
 import java.io.IOException;
 
@@ -26,7 +26,7 @@ public class RunnableReceiveServerBroadcasts implements Runnable
 {
 	private ClientConnection connection;
 
-	private static final int TAKT = 50;
+	private static final int TAKT = 25;
 
 	private boolean stopped = false;
 

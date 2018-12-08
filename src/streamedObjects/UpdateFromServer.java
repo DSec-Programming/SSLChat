@@ -1,4 +1,4 @@
-package ssl.streamedObjects;
+package streamedObjects;
 
 import java.io.Serializable;
 import java.util.ArrayList;

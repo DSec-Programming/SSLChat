@@ -1,4 +1,4 @@
-package ssl.server.controller;
+package server.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,12 +11,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import ssl.server.connection.CallableSendBroadcastUpdate;
-import ssl.server.connection.RunnableObserveSingleClientConnections;
-import ssl.server.connection.RunnableRemoveInactivesClients;
-import ssl.server.connection.ServerSocketEntrace;
-import ssl.server.connection.SingleClientConnection;
-import ssl.server.model.ServerDataModel;
+import server.connection.CallableSendBroadcastUpdate;
+import server.connection.RunnableObserveSingleClientConnections;
+import server.connection.RunnableRemoveInactivesClients;
+import server.connection.ServerSocketEntrace;
+import server.connection.SingleClientConnection;
+import server.model.ServerDataModel;
 
 public class ServerController
 {
@@ -63,6 +63,8 @@ public class ServerController
                     for (SingleClientConnection scc : openConnections)
                     {
                         pool.submit(new CallableSendBroadcastUpdate(scc, SingleClientConnection.USER_UPDATE, actuelUserOnlineList));
+                        pool.submit(new CallableSendBroadcastUpdate(scc, SingleClientConnection.CHAT_UPDATE, model.getChatMessages()));
+                        
                     }
                 }
             }

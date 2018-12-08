@@ -1,10 +1,10 @@
-package ssl.server.connection;
+package server.connection;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import ssl.server.model.ServerDataModel;
+import server.model.ServerDataModel;
 
 /**
  * Spezifikation
@@ -45,16 +45,18 @@ public class ServerSocketEntrace extends Thread
 	{
 		System.out.println("init ServerDataModel ...");
 
-		System.out.println("(SERVERSOCKET)>>> waiting for clients ... ");
+		System.out.println("(TCPServerSocket)>>> waiting for clients ... ");
 		// so lange wie server nicht terminiert
 		while (true)
 		{
 			try
 			{
 				Socket socketForClient = serverSocket.accept();
-				System.out.println("(SERVERSOCKET)>>> NEW CLIENT : " + socketForClient.getRemoteSocketAddress());
+				System.out.println("(TCPServerSocket)>>> NEW CLIENT : " + socketForClient.getRemoteSocketAddress());
 				SingleClientConnection connection = new SingleClientConnection(socketForClient, this.model);
 				this.model.addSingleClientConnection(connection);
+				//schicke dem neuen User gleich den aktuellen Chat !!
+				
 
 			} catch (Exception e)
 			{

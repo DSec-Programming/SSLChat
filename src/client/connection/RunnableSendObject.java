@@ -1,11 +1,11 @@
-package ssl.client.connection;
+package client.connection;
 
 import java.io.IOException;
 
 /**
  * Spezifikation:
  * 
- * Dieses Runnable sendet ein Object O 
+ * Dieses Runnable sendet ein Object O
  * über die PASSIVE Klasse @ClientConnection.
  * 
  * Die Klasse @ClientConnection stellt hierfür die methode
@@ -33,7 +33,6 @@ public class RunnableSendObject implements Runnable
 		try
 		{
 			this.connection.send(this.toSend);
-			System.out.println("send: " + this.toSend + " to Server");
 		} catch (IOException e)
 		{
 			e.printStackTrace();

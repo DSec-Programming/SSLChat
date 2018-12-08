@@ -1,9 +1,9 @@
-package ssl.server.connection;
+package server.connection;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import ssl.server.model.ServerDataModel;
+import server.model.ServerDataModel;
 
 public class RunnableObserveSingleClientConnections implements Runnable
 {
@@ -25,7 +25,7 @@ public class RunnableObserveSingleClientConnections implements Runnable
 			// verzögern
 			try
 			{
-				Thread.sleep(100);
+				Thread.sleep(50);
 			} catch (InterruptedException e)
 			{
 				e.printStackTrace();

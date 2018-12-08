@@ -1,4 +1,4 @@
-package ssl.server.connection;
+package server.connection;
 
 import java.util.concurrent.Callable;
 
