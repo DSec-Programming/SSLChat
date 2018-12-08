@@ -59,6 +59,7 @@ public class RunnableReceiveServerBroadcasts implements Runnable
 
 			catch (InterruptedException e)
 			{
+			    Thread.currentThread().interrupt();
 				e.printStackTrace();
 			} catch (ClassNotFoundException e)
 			{

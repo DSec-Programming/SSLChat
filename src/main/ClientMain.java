@@ -1,10 +1,12 @@
 package main;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import ssl.client.controller.ClientController;
 
 public class ClientMain extends Application
@@ -24,6 +26,12 @@ public class ClientMain extends Application
 		primaryStage.setTitle("SSL Client v0.1");
 		primaryStage.setScene(scene);
 		primaryStage.setResizable(false);
+		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+		       @Override
+		       public void handle(WindowEvent e) {
+		          System.exit(0);
+		       }
+		    });
 		primaryStage.show();
 	}
 }

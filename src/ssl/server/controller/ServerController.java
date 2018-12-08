@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,119 +20,119 @@ import ssl.server.model.ServerDataModel;
 
 public class ServerController
 {
-	@FXML
-	private TextArea txt_Msg, txt_User;
+    @FXML
+    private TextArea txt_Msg, txt_User;
 
-	@FXML
-	private Button btn_shutDown;
+    @FXML
+    private Button btn_shutDown;
 
-	private static String[] params;
+    private static String[] params;
 
-	private ObservableList<String> observableUserOnlineList;
-	private ObservableList<String> observableChatMessages;
+    private ObservableList<String> observableUserOnlineList;
 
-	private ThreadPoolExecutor pool;
+    private ObservableList<String> observableChatMessages;
 
-	public void initialize()
-	{
-		this.pool = new ThreadPoolExecutor(4, 8, 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
-		ServerDataModel model = new ServerDataModel(pool);
-		this.observableUserOnlineList = model.getUserObservableOnlineList();
-		this.observableChatMessages = model.getObservableChatMessages();
-		this.observableUserOnlineList.addListener(new ListChangeListener<String>()
-		{
-			public void onChanged(ListChangeListener.Change<? extends String> change)
-			{
-				String onlineList = "";
-				for (String s : observableUserOnlineList)
-				{
-					onlineList += (s + "\n");
-				}
-				txt_User.setText(onlineList);
+    private ThreadPoolExecutor pool;
 
-				// trigger die Änderungen bei den Clients
-				// ! Model muss synchronisiert werden damit niemand anderes
-				// dazwischenspucken
-				// kann !
-				synchronized (model)
-				{
+    public void initialize()
+    {
+        this.pool = new ThreadPoolExecutor(4, 8, 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+        ServerDataModel model = new ServerDataModel(pool);
+        this.observableUserOnlineList = model.getUserObservableOnlineList();
+        this.observableChatMessages = model.getObservableChatMessages();
+        this.observableUserOnlineList.addListener(new ListChangeListener<String>()
+        {
+            public void onChanged(ListChangeListener.Change<? extends String> change)
+            {
+                String onlineList = "";
+                for (String s : observableUserOnlineList)
+                {
+                    onlineList += (s + "\n");
+                }
+                txt_User.setText(onlineList);
 
-					ArrayList<SingleClientConnection> openConnections = model.getAllOpenSingleClientConnections();
-					ArrayList<String> actuelUserOnlineList = model.getUserOnlineList();
-					for (SingleClientConnection scc : openConnections)
-					{
-						pool.submit(new CallableSendBroadcastUpdate(scc, SingleClientConnection.USER_UPDATE,
-								actuelUserOnlineList));
-					}
-				}
-			}
-		});
-		this.observableChatMessages.addListener(new ListChangeListener<String>()
-		{
-			public void onChanged(ListChangeListener.Change<? extends String> change)
-			{
-				String chat = "";
-				for (String s : observableChatMessages)
-				{
-					chat += (s + "\n");
-				}
-				txt_Msg.setText(chat);
+                // trigger die Änderungen bei den Clients
+                // ! Model muss synchronisiert werden damit niemand anderes
+                // dazwischenspucken
+                // kann !
+                synchronized (model)
+                {
 
-				// trigger die Änderungen bei den Clients
-				// ! Model muss synchronisiert werden damit niemand anderes
-				// dazwischenspucken
-				// kann !
-				synchronized (model)
-				{
-					ArrayList<SingleClientConnection> openConnections = model.getAllOpenSingleClientConnections();
-					ArrayList<String> actuelChat = model.getChatMessages();
-					for (SingleClientConnection scc : openConnections)
-					{
-						pool.submit(
-								new CallableSendBroadcastUpdate(scc, SingleClientConnection.CHAT_UPDATE, actuelChat));
-					}
-				}
-			}
-		});
+                    ArrayList<SingleClientConnection> openConnections = model.getAllOpenSingleClientConnections();
+                    ArrayList<String> actuelUserOnlineList = model.getUserOnlineList();
+                    for (SingleClientConnection scc : openConnections)
+                    {
+                        pool.submit(new CallableSendBroadcastUpdate(scc, SingleClientConnection.USER_UPDATE, actuelUserOnlineList));
+                    }
+                }
+            }
+        });
+        this.observableChatMessages.addListener(new ListChangeListener<String>()
+        {
+            public void onChanged(ListChangeListener.Change<? extends String> change)
+            {
+                String chat = "";
+                for (String s : observableChatMessages)
+                {
+                    chat += (s + "\n");
+                }
+                txt_Msg.setText(chat);
 
-		try
-		{
-			ServerSocketEntrace sc = new ServerSocketEntrace(Integer.parseInt(params[0]), model);
-			sc.start();
+                // trigger die Änderungen bei den Clients
+                // ! Model muss synchronisiert werden damit niemand anderes
+                // dazwischenspucken
+                // kann !
+                synchronized (model)
+                {
+                    ArrayList<SingleClientConnection> openConnections = model.getAllOpenSingleClientConnections();
+                    ArrayList<String> actuelChat = model.getChatMessages();
+                    for (SingleClientConnection scc : openConnections)
+                    {
+                        pool.submit(new CallableSendBroadcastUpdate(scc, SingleClientConnection.CHAT_UPDATE, actuelChat));
+                    }
+                }
+            }
+        });
 
-			/**
-			 * Es muss ein Etwas gestartet werden was in Regelmäßigen abstanden
-			 * abhört ob bei der SingleClientConnectionSAMMLUNG ein Client etwas
-			 * zum Server gesendet hat
-			 */
+        try
+        {
+            ServerSocketEntrace sc = new ServerSocketEntrace(Integer.parseInt(params[0]), model);
+            sc.start();
 
-			this.pool.submit(new RunnableObserveSingleClientConnections(model, this.pool));
+            /**
+             * Es muss ein Etwas gestartet werden was in Regelmäßigen abstanden
+             * abhört ob bei der SingleClientConnectionSAMMLUNG ein Client etwas
+             * zum Server gesendet hat
+             */
 
-			/**
-			 * Inactive Clients müssen ausgetragen werden
-			 */
+            this.pool.submit(new RunnableObserveSingleClientConnections(model, this.pool));
 
-			this.pool.submit(new RunnableRemoveInactivesClients(model));
+            /**
+             * Inactive Clients müssen ausgetragen werden
+             */
 
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+            this.pool.submit(new RunnableRemoveInactivesClients(model));
 
-	}
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
-	public void shutDown(ActionEvent e)
-	{
-		Platform.exit();
-	}
+    }
 
-	/**
-	 * Setzt die zum Start mitgegebenen Parameter
-	 * 
-	 * @param args
-	 */
-	public static void setParams(String[] args)
-	{
-		params = args;
-	}
+    public void shutDown(ActionEvent e)
+    {
+        System.exit(0);
+    }
+
+    /**
+     * Setzt die zum Start mitgegebenen Parameter
+     * 
+     * @param args
+     */
+    public static void setParams(String[] args)
+    {
+        params = args;
+    }
 }

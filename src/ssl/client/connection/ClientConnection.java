@@ -11,107 +11,106 @@ import ssl.streamedObjects.UpdateFromServer;
 /**
  * Spezifikation
  * 
- * Die Klasse ClientConnection ist eine PASSIVE Klasse
- * --> Sie wird von verschiedenen Runnables als GEMEINSAMES Object benutzt
- * -->synchronisieren!
+ * Die Klasse ClientConnection ist eine PASSIVE Klasse --> Sie wird von
+ * verschiedenen Runnables als GEMEINSAMES Object benutzt -->synchronisieren!
  * 
  * Ein TreadPool steutert den Zugriff auf die Daten
  * 
- * RUNNABLES:
- * - Runnable-SendObject
- * - Runnable-ReceiveSerferBroadcasts
+ * RUNNABLES: - Runnable-SendObject - Runnable-ReceiveSerferBroadcasts
  * 
  * 
  */
 
 public class ClientConnection
 {
-	private Socket socket;
-	private ObjectOutputStream toServer;
-	private ObjectInputStream fromServer;
+    private Socket socket;
 
-	private ClientDataModel model;
+    private ObjectOutputStream toServer;
 
-	public static final String USER_UPDATE = "userupdate";
-	public static final String CHAT_UPDATE = "chatupdate";
+    private ObjectInputStream fromServer;
 
-	/**
-	 * Der Kontruckter wird ...
-	 * 
-	 * UMBAUEN !! vielleicht Model nachtr‰glich setzen als im Konstuktor
-	 * mitzugeeeben
-	 * 
-	 */
+    private ClientDataModel model;
 
-	public ClientConnection(String host, int port, String username, ClientDataModel model) throws IOException
-	{
-		this.socket = new Socket(host, port);
-		this.toServer = new ObjectOutputStream(this.socket.getOutputStream());
-		this.fromServer = new ObjectInputStream(this.socket.getInputStream());
-		this.model = model;
+    public static final String USER_UPDATE = "userupdate";
 
-		// Beim Server anmelden !
-		this.send(username);
-	}
+    public static final String CHAT_UPDATE = "chatupdate";
 
-	/**
-	 * schreibt ein Object auf den Stream
-	 * und sendet in entg¸ltig (sp¸ht den Stream durch)
-	 * ! Das ¸bergebene Object muss das INTERFACE Serilizable implementieren !
-	 */
-	public void send(Object o) throws IOException
-	{
-		this.toServer.writeObject(o);
-		this.toServer.flush();
-	}
+    /**
+     * Der Kontruckter wird ...
+     * 
+     * UMBAUEN !! vielleicht Model nachtr‰glich setzen als im Konstuktor
+     * mitzugeeeben
+     * 
+     */
 
-	/**
-	 * schaut nach ob etwas auf dem Stream liegt
-	 * falls ja -> return sofort
-	 * Ansonsten lieﬂt die Methode EIN Object vom Stream
-	 * durch instanceof kann entschieden werden wie es
-	 * Gecastet werden muss.
-	 * Empfohlene Verbesserung: Benutzung INTERPRETER TODO
-	 */
+    public ClientConnection(String host, int port, String username, ClientDataModel model) throws IOException
+    {
+        this.socket = new Socket(host, port);
+        this.toServer = new ObjectOutputStream(this.socket.getOutputStream());
+        this.fromServer = new ObjectInputStream(this.socket.getInputStream());
+        this.model = model;
 
-	public synchronized void waitReceiveAndUpdateModel()
-			throws IOException, ClassNotFoundException, InterruptedException
-	{
-		if (this.socket.getInputStream().available() == 0)
-		{
-			return;
-		}
-		Object data = this.fromServer.readObject();
+        // Beim Server anmelden !
+        this.send(username);
+    }
 
-		// geht noch schˆner und Dynamischer
-		// hier jetzt ehr statisch ...
+    /**
+     * schreibt ein Object auf den Stream und sendet in entg¸ltig (sp¸ht den
+     * Stream durch) ! Das ¸bergebene Object muss das INTERFACE Serilizable
+     * implementieren !
+     */
+    public void send(Object o) throws IOException
+    {
+        this.toServer.writeObject(o);
+        this.toServer.flush();
+    }
 
-		if (data instanceof UpdateFromServer)
-		{
-			UpdateFromServer update = (UpdateFromServer) data;
-			if (update.getUpdateType().equals(CHAT_UPDATE))
-			{
-				// chatUpdate
-				this.model.updateMessageToChat(update.getUpDate());
+    /**
+     * schaut nach ob etwas auf dem Stream liegt falls ja -> return sofort
+     * Ansonsten lieﬂt die Methode EIN Object vom Stream durch instanceof kann
+     * entschieden werden wie es Gecastet werden muss. Empfohlene Verbesserung:
+     * Benutzung INTERPRETER TODO
+     */
 
-			} else if (update.getUpdateType().equals(USER_UPDATE))
-			{
-				// userupdate
-				this.model.updateUserInOnlineList(update.getUpDate());
-			} else
-			{
-				System.out.println("RUNTIMEEXECEPTION");
-				throw new RuntimeException("NICHT ERWARTETES OBJECT VOM SERVER");
-			}
-		}
-	}
+    public synchronized void waitReceiveAndUpdateModel() throws IOException, ClassNotFoundException, InterruptedException
+    {
+        if (this.socket.getInputStream().available() == 0)
+        {
+            return;
+        }
+        Object data = this.fromServer.readObject();
 
-	/*
-	 * schlieﬂt den Socket
-	 */
-	public synchronized void close() throws IOException
-	{
-		this.socket.close();
-	}
+        // geht noch schˆner und Dynamischer
+        // hier jetzt ehr statisch ...
+
+        if (data instanceof UpdateFromServer)
+        {
+            UpdateFromServer update = (UpdateFromServer) data;
+            if (update.getUpdateType().equals(CHAT_UPDATE))
+            {
+                // chatUpdate
+                this.model.updateMessageToChat(update.getUpDate());
+
+            }
+            else if (update.getUpdateType().equals(USER_UPDATE))
+            {
+                // userupdate
+                this.model.updateUserInOnlineList(update.getUpDate());
+            }
+            else
+            {
+                System.out.println("RUNTIMEEXECEPTION");
+                throw new RuntimeException("NICHT ERWARTETES OBJECT VOM SERVER");
+            }
+        }
+    }
+
+    /*
+     * schlieﬂt den Socket
+     */
+    public synchronized void close() throws IOException
+    {
+        this.socket.close();
+    }
 
 }
