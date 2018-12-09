@@ -1,27 +1,29 @@
 package client.controller;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import client.connection.ClientConnection;
-import client.connection.RunnableReceiveServerBroadcasts;
-import client.connection.RunnableSendObject;
 import client.model.ClientDataModel;
-import client.model.User;
+import client.model.ConnectionModel;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import streamedObjects.MessageFromClient;
 
 /**
@@ -39,12 +41,8 @@ import streamedObjects.MessageFromClient;
 
 public class UIController
 {
-	// ClientInformationen
-	// ======================================================================
-	private static String[] params;
-	// private ClientConnection connection;
-	private ClientDataModel model;
-	// private ThreadPoolExecutor pool;
+	private static ClientDataModel clientDataModel;
+	private static ConnectionModel connectionModel;
 
 	// FXML
 	// ======================================================================
@@ -58,17 +56,33 @@ public class UIController
 	private TextField messageInputField;
 	@FXML
 	private Button sendButton;
+
+	@FXML
+	private VBox rigthVbox;
+	@FXML
+	private HBox leftHbox;
+	@FXML
+	private VBox parentVboxChatNotify;
+	@FXML
+	private VBox vboxNotofications;
 	@FXML
 	private VBox ChatPaneBox;
-
-	// ! set not Editibar
+	@FXML
+	private Pane ChatPaneBoxPane;
+	@FXML
+	private HBox hboxbottominfos;
+	@FXML
+	private VBox vboxConfigurations;
+	@FXML
+	private VBox vboxClientAuth;
+	@FXML
 	private TextArea connectionInfos;
-	// ! set not Editibar
+	@FXML
 	private TextArea lokalInfos;
-
-	private VBox configurationVBox;
-
-	private VBox authenticationVBox;
+	@FXML
+	private Button connectButton;
+	@FXML
+	private Button disconnectButton;
 
 	// zu überwachende Dinge aus dem Model!
 	// welche gleichzeitig auch im UI angezegit werden
@@ -76,73 +90,55 @@ public class UIController
 	private ObservableList<String> activeUserContent;
 	private ObservableList<String> chatContent;
 	private ObservableList<String> notificationContent;
+
+	private StringProperty connectionType;
+	private StringProperty serverStatus;
+	private StringProperty clientStatus;
+
+	private BooleanProperty existKeystore;
+	private BooleanProperty haveImportetCert;
+	private BooleanProperty haveOwnCert;
 	// ENDE==================================================================
 
 	public void initialize()
 	{
-		// UI
-		// this.ChatPaneBox.setVisible(true);
-		// for (Node n : this.ChatPaneBox.getChildren())
-		// {
-		// n.setMouseTransparent(true);
-		// n.setStyle("-fx-background-color: transparent;");
-		// }
-
-		// this.sendButton.setStyle("-fx-background-color: transparent;");
-
-		try
-		{
-			System.out.println(params[0]);
-			System.out.println(params[1]);
-			this.model = new ClientDataModel();
-
-			User u = new User();
-			u.setUsername(params[2]);
-			this.model.setUser(u);
-
-			this.model.setConnection(
-					new ClientConnection(new Socket(params[0], Integer.parseInt(params[1])), this.model));
-
-		} catch (IOException e)
-		{
-			System.out.println("SERVER OFFLINE !!! ");
-			System.out.println(e.getMessage());
-			System.exit(0);
-		}
-
-		// hier noch aus dem Params geholt...
-		// geht schöner ....
-		User user = new User();
-		user.setUsername(params[2]);
-		// später noch .. holen uns bevor das Programm startet schon
-		// die wichtigen Parameter für das erstellen eines Zertifikats
-		// user.set()
-		// user.set()
-
-		this.model.setUser(user);
-
 		// für die Automatische UI-Aktualisierung
-		this.chatContent = this.model.getObservableChatList();
-		this.activeUserContent = this.model.getUserObservableOnlineList();
-		this.notificationContent = this.model.getObservableNotificationList();
+		this.chatContent = clientDataModel.getObservableChatList();
+		this.activeUserContent = clientDataModel.getUserObservableOnlineList();
+		this.notificationContent = clientDataModel.getObservableNotificationList();
+
+		this.connectionType = connectionModel.getConnectionType();
+		this.serverStatus = connectionModel.getServerStatus();
+		this.clientStatus = connectionModel.getClientStatus();
+
+		this.existKeystore = clientDataModel.getExistKeyStore();
+		this.haveImportetCert = clientDataModel.getHaveAnImportedCert();
+		this.haveOwnCert = clientDataModel.getHaveAnCertFromServer();
 
 		// add Listener damit der CHAT automatisch Aktualisiert wird
 		this.setAllListener();
-
-		// der von allen Klassen genutzte ThreadPool
-		// this.pool = new ThreadPoolExecutor(2, 4, 1000, TimeUnit.MILLISECONDS,
-		// new LinkedBlockingQueue<>());
+		//
+		this.setAllBorders();
+		//
+		hideChatPane();
+		//
+		this.disconnectButton.disableProperty().set(true);
 
 	}
 
 	/**
-	 * Setzt die zum Start mitgegebenen Parameter
+	 * Setzt die zum Start mitgegebenen Parameters
 	 * 
 	 * @param args
 	 */
-	public static void setParams(String[] args)
+	public static void setClientDataModel(ClientDataModel m)
 	{
-		params = args;
+		clientDataModel = m;
+	}
+
+	public static void setConnectionModel(ConnectionModel m)
+	{
+		connectionModel = m;
 	}
 
 	/**
@@ -159,7 +155,7 @@ public class UIController
 		messageInputField.setText("");
 		try
 		{
-			this.model.sendMessageOverClientConnection(new MessageFromClient(msg));
+			connectionModel.sendMessageOverClientConnection(new MessageFromClient(msg));
 		} catch (Exception ee)
 		{
 			ee.printStackTrace();
@@ -168,19 +164,43 @@ public class UIController
 
 	public void handleClearNotifications(ActionEvent e)
 	{
-		this.model.clearNotifications();
+		clientDataModel.clearNotifications();
 	}
 
 	public void handleConnectButton(ActionEvent e)
 	{
-		// TODO
-		String s;
+		showChatPane();
+		this.connectButton.disableProperty().set(true);
+		this.disconnectButton.disableProperty().set(false);
+		try
+		{
+			ClientConnection connection = new ClientConnection(new Socket("localhost", 55555), clientDataModel,
+					connectionModel);
+			connectionModel.setConnection(connection);
+			connectionModel.startWorkingConnection();
+		} catch (IOException ee)
+		{
+			clientDataModel.addNotification("IOException " + ee.getMessage());
+			ee.printStackTrace();
+		}
 	}
 
 	public void handleDisconnectButton(ActionEvent e)
 	{
-		// TODO
-		String s;
+		hideChatPane();
+		this.disconnectButton.disableProperty().set(true);
+		this.connectButton.disableProperty().set(false);
+		try
+		{
+			connectionModel.killConnectoin();
+			// chat oberfläche clearen
+			// chat oberfläche ausschalten
+			this.activeUserContent.clear();
+			this.chatContent.clear();
+		} catch (IOException ee)
+		{
+			ee.printStackTrace();
+		}
 	}
 
 	public void handleImportCertificate(ActionEvent e)
@@ -238,6 +258,83 @@ public class UIController
 				notificationsTextArea.setText(notifications);
 			}
 		});
+
+		ChangeListener<String> connectionInfoslistener = new ChangeListener<String>()
+		{
+			public void changed(ObservableValue<? extends String> s1, String s2, String s3)
+			{
+				String info = "";
+				info += "Protokoll: " + connectionModel.getConnectionType().get() + "\n";
+				info += "Server status: " + connectionModel.getServerStatus().get() + "\n";
+				info += "Client status : " + connectionModel.getClientStatus().get() + "\n";
+				connectionInfos.setText(info);
+			}
+		};
+
+		this.connectionType.addListener(connectionInfoslistener);
+		this.serverStatus.addListener(connectionInfoslistener);
+		this.clientStatus.addListener(connectionInfoslistener);
+
+		ChangeListener<Boolean> lokalInfoslistener = new ChangeListener<Boolean>()
+		{
+			public void changed(ObservableValue<? extends Boolean> b1, Boolean b2, Boolean b3)
+			{
+				String info = "";
+				info += "keyStore: " + clientDataModel.getExistKeyStore().get() + "\n";
+				info += "import cert : " + clientDataModel.getHaveAnImportedCert().get() + "\n";
+				info += "own server cert: " + clientDataModel.getHaveAnCertFromServer() + "\n";
+				lokalInfos.setText(info);
+			}
+		};
+
+		this.existKeystore.addListener(lokalInfoslistener);
+		this.haveImportetCert.addListener(lokalInfoslistener);
+		this.haveOwnCert.addListener(lokalInfoslistener);
+
+	}
+
+	private void setAllBorders()
+	{
+		this.rigthVbox.setStyle("-fx-border-style: solid;" + "-fx-border-width: 1;" + "-fx-border-color: grey;");
+
+		this.leftHbox.setStyle("-fx-border-style: solid;" + "-fx-border-width: 1;" + "-fx-border-color: grey;");
+
+		this.vboxNotofications
+				.setStyle("-fx-border-style: solid;" + "-fx-border-width: 1;" + "-fx-border-color: grey;");
+
+		this.ChatPaneBox.setStyle("-fx-border-style: solid;" + "-fx-border-width: 1;" + "-fx-border-color: grey;");
+		this.hboxbottominfos.setStyle("-fx-border-style: solid;" + "-fx-border-width: 1;" + "-fx-border-color: grey;");
+
+		this.vboxClientAuth.setStyle("-fx-border-style: solid;" + "-fx-border-width: 1;" + "-fx-border-color: grey;");
+		this.vboxConfigurations
+				.setStyle("-fx-border-style: solid;" + "-fx-border-width: 1;" + "-fx-border-color: grey;");
+		this.ChatPaneBoxPane.setStyle("-fx-border-style: solid;" + "-fx-border-width: 1;" + "-fx-border-color: grey;");
+	}
+
+	private void hideChatPane()
+	{
+		VBox emptyCopyOfChatPaneBox = new VBox();
+		emptyCopyOfChatPaneBox.setPrefHeight(ChatPaneBox.getPrefHeight());
+		emptyCopyOfChatPaneBox.setPrefWidth(ChatPaneBox.getPrefWidth());
+
+		Text offlineInformation = new Text();
+		offlineInformation.setFont(Font.font("Verdana", 30));
+		offlineInformation.setFill(Color.LIGHTGRAY);
+		offlineInformation.setText("You are Offline");
+
+		emptyCopyOfChatPaneBox.setAlignment(Pos.CENTER);
+		emptyCopyOfChatPaneBox.getChildren().add(offlineInformation);
+
+		parentVboxChatNotify.getChildren().clear();
+		parentVboxChatNotify.getChildren().add(emptyCopyOfChatPaneBox);
+		parentVboxChatNotify.getChildren().add(vboxNotofications);
+	}
+
+	private void showChatPane()
+	{
+		parentVboxChatNotify.getChildren().clear();
+		parentVboxChatNotify.getChildren().add(ChatPaneBoxPane);
+		parentVboxChatNotify.getChildren().add(vboxNotofications);
 	}
 
 }

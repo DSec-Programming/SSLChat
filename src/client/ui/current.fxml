@@ -8,7 +8,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="464.0" prefWidth="936.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.UIController">
    <children>
-      <BorderPane prefHeight="465.0" prefWidth="936.0">
+      <BorderPane prefHeight="466.0" prefWidth="936.0">
          <top>
             <HBox prefHeight="19.0" prefWidth="566.0" BorderPane.alignment="CENTER">
                <children>
@@ -36,11 +36,11 @@
          <center>
             <HBox fx:id="leftHbox" prefHeight="444.0" prefWidth="683.0" BorderPane.alignment="CENTER">
                <children>
-                  <VBox prefHeight="423.0" prefWidth="715.0">
+                  <VBox fx:id="parentVboxChatNotify" prefHeight="423.0" prefWidth="715.0">
                      <children>
                         <VBox fx:id="ChatPaneBox" prefHeight="303.0" prefWidth="522.0">
                            <children>
-                              <Pane fx:id="ChatPane" prefHeight="303.0" prefWidth="579.0">
+                              <Pane fx:id="ChatPaneBoxPane" prefHeight="303.0" prefWidth="579.0">
                                  <children>
                                     <HBox fx:id="hboxchatalls" prefHeight="297.0" prefWidth="707.0">
                                        <children>
@@ -114,28 +114,14 @@
                                                       <Insets bottom="4.0" left="6.0" top="5.0" />
                                                    </VBox.margin>
                                                 </Text>
-                                                <VBox prefHeight="70.0" prefWidth="153.0">
+                                                <TextArea fx:id="connectionInfos" editable="false" prefHeight="75.0" prefWidth="76.0">
                                                    <VBox.margin>
-                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="3.0" />
+                                                      <Insets bottom="7.0" left="7.0" top="7.0" />
                                                    </VBox.margin>
-                                                   <children>
-                                                      <Text fx:id="connectionTypeText" strokeType="OUTSIDE" strokeWidth="0.0">
-                                                         <VBox.margin>
-                                                            <Insets left="5.0" />
-                                                         </VBox.margin>
-                                                      </Text>
-                                                      <Text fx:id="serverStatusText" strokeType="OUTSIDE" strokeWidth="0.0">
-                                                         <VBox.margin>
-                                                            <Insets left="5.0" />
-                                                         </VBox.margin>
-                                                      </Text>
-                                                      <Text fx:id="clientStatusText" strokeType="OUTSIDE" strokeWidth="0.0">
-                                                         <VBox.margin>
-                                                            <Insets left="5.0" />
-                                                         </VBox.margin>
-                                                      </Text>
-                                                   </children>
-                                                </VBox>
+                                                   <font>
+                                                      <Font size="10.0" />
+                                                   </font>
+                                                </TextArea>
                                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Lokal infos">
                                                    <VBox.margin>
                                                       <Insets left="10.0" />
@@ -257,12 +243,12 @@
                               </HBox>
                               <HBox prefHeight="24.0" prefWidth="160.0">
                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#handleConnectButton" prefHeight="25.0" prefWidth="87.0" text="Connect">
+                                    <Button fx:id="connectButton" mnemonicParsing="false" onAction="#handleConnectButton" prefHeight="25.0" prefWidth="87.0" text="Connect">
                                        <HBox.margin>
                                           <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                        </HBox.margin>
                                     </Button>
-                                    <Button mnemonicParsing="false" onAction="#handleDisconnectButton" prefHeight="25.0" prefWidth="89.0" text="Disconnect">
+                                    <Button fx:id="disconnectButton" mnemonicParsing="false" onAction="#handleDisconnectButton" prefHeight="25.0" prefWidth="89.0" text="Disconnect">
                                        <HBox.margin>
                                           <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                        </HBox.margin>

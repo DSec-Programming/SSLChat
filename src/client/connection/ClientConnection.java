@@ -8,7 +8,7 @@ import java.net.Socket;
 import javax.net.ssl.SSLSocket;
 
 import client.model.ClientDataModel;
-import client.model.User;
+import client.model.ConnectionModel;
 import streamedObjects.Ping;
 import streamedObjects.UpdateFromServer;
 
@@ -33,13 +33,15 @@ public class ClientConnection
 
 	private ObjectInputStream fromServer;
 
-	private ClientDataModel model;
+	private ClientDataModel clientDataModel;
+
+	private ConnectionModel connectionModel;
 
 	public static final String USER_UPDATE = "userupdate";
 	public static final String CHAT_UPDATE = "chatupdate";
 
-	public static final String AUTHORIZED = "authorized";
-	public static final String UNAUTHORIZED = "unauthorized";
+	public static final String AUTHORIZED = "AUTHORIZED";
+	public static final String UNAUTHORIZED = "UNAUTHORIZED";
 
 	public static final String SSL = "SSL";
 	public static final String TCP = "TCP";
@@ -53,23 +55,30 @@ public class ClientConnection
 	 */
 
 	// TCP Construcktor
-	public ClientConnection(Socket s, ClientDataModel model) throws IOException
+	public ClientConnection(Socket s, ClientDataModel clientConnectionModel, ConnectionModel connectionModel)
+			throws IOException
 	{
 		this.tcpSocket = s;
 
 		this.toServer = new ObjectOutputStream(this.tcpSocket.getOutputStream());
 		this.fromServer = new ObjectInputStream(this.tcpSocket.getInputStream());
-		this.model = model;
+		this.clientDataModel = clientConnectionModel;
+		this.connectionModel = connectionModel;
 
 		// Alle wichtigen Informationen beim Model Eintragen
 		// damit die Oberfläche aktualisiert werden kann
 
-		// Da hier ein TCPSocket vorliegt muss das Model
-		// wie folgt aktualisiert werden
-		this.model.setConnectionTyp("TCP");
-		this.model.setServerStatus(UNAUTHORIZED);
-		this.model.setClientStatus(UNAUTHORIZED);
+		if (s instanceof SSLSocket)
+		{
 
+		} else
+		{
+			// Da hier ein TCPSocket vorliegt muss das Model
+			// wie folgt aktualisiert werden
+			this.connectionModel.setConnectionTyp("TCP");
+			this.connectionModel.setServerStatus(UNAUTHORIZED);
+			this.connectionModel.setClientStatus(UNAUTHORIZED);
+		}
 		// hiermit schließt der Socket automatisch
 		// sollte das Programm terminieren
 		Runtime.getRuntime().addShutdownHook(new Thread()
@@ -106,15 +115,13 @@ public class ClientConnection
 	 * Benutzung INTERPRETER TODO
 	 */
 
-	public synchronized void waitReceiveAndUpdateModel()
-			throws IOException, ClassNotFoundException, InterruptedException
+	public synchronized void tryReceiveAndUpdateModel() throws IOException, ClassNotFoundException, InterruptedException
 	{
 		if (this.tcpSocket.getInputStream().available() == 0)
 		{
 			return;
 		}
 		Object data = this.fromServer.readObject();
-
 		// geht noch schöner und Dynamischer
 		// hier jetzt ehr statisch ...
 
@@ -127,12 +134,12 @@ public class ClientConnection
 			if (update.getUpdateType().equals(CHAT_UPDATE))
 			{
 				// chatUpdate
-				this.model.updateMessageToChat(update.getUpDate());
+				this.clientDataModel.updateMessageToChat(update.getUpDate());
 
 			} else if (update.getUpdateType().equals(USER_UPDATE))
 			{
 				// userupdate
-				this.model.updateUserInOnlineList(update.getUpDate());
+				this.clientDataModel.updateUserInOnlineList(update.getUpDate());
 			} else
 			{
 				System.out.println("RUNTIMEEXECEPTION");

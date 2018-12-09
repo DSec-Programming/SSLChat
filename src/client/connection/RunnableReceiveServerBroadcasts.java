@@ -1,6 +1,7 @@
 package client.connection;
 
 import java.io.IOException;
+import java.net.SocketException;
 
 /**
  * Spezifikation:
@@ -54,12 +55,15 @@ public class RunnableReceiveServerBroadcasts implements Runnable
 			try
 			{
 				Thread.sleep(TAKT);
-				connection.waitReceiveAndUpdateModel();
+				connection.tryReceiveAndUpdateModel();
+			} catch (SocketException e)
+			{
+				System.out.println("RunnableReceiveServerBroadcasts: Socket closed, i terminate");
 			}
 
 			catch (InterruptedException e)
 			{
-			    Thread.currentThread().interrupt();
+				Thread.currentThread().interrupt();
 				e.printStackTrace();
 			} catch (ClassNotFoundException e)
 			{
