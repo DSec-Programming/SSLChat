@@ -1,12 +1,22 @@
 package client.model;
 
+import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import client.connection.ClientConnection;
+import client.connection.RunnableReceiveServerBroadcasts;
+import client.connection.RunnableSendObject;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import streamedObjects.MessageFromClient;
 
 /**
  * Spezifikation
@@ -28,6 +38,11 @@ import javafx.collections.ObservableList;
 
 public class ClientDataModel
 {
+	// Gespeichterte ..
+
+	private ClientConnection connection;
+	private ThreadPoolExecutor pool;
+
 	// Gespeicherte Infos über die Verbindung
 	// ===============================================================================
 
@@ -72,8 +87,10 @@ public class ClientDataModel
 	// ===============================================================================
 	private StringProperty authenticationMode;
 
-	public ClientDataModel()
+	public ClientDataModel() throws IOException
 	{
+		this.pool = new ThreadPoolExecutor(2, 4, 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+
 		this.observableUserOnlineList = FXCollections.observableList(new ArrayList<>());
 		this.observableChatList = FXCollections.observableList(new ArrayList<>());
 		this.observableNotificationList = FXCollections.observableList(new ArrayList<>());
@@ -236,6 +253,18 @@ public class ClientDataModel
 	public synchronized void haveAnCertFromServer(boolean bool)
 	{
 		this.haveAnCertFromServer.set(bool);
+	}
+
+	public synchronized void sendMessageOverClientConnection(MessageFromClient msg)
+	{
+		this.pool.submit(new RunnableSendObject(this.connection, msg));
+	}
+
+	public synchronized void setConnection(ClientConnection c) throws IOException
+	{
+		this.connection = c;
+		this.pool.submit(new RunnableReceiveServerBroadcasts(connection));
+		c.send(this.getUser().getUsername());
 	}
 
 }

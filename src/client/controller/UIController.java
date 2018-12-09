@@ -3,6 +3,7 @@ package client.controller;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -33,10 +34,6 @@ import streamedObjects.MessageFromClient;
  * args) gesetzt!!!
  * 
  * ------> GEHT DAS NOCH SCHÖNER ?
- *
- *
- * !!! TODO beim terminieren des ClientControllers muss noch der Socket
- * ordentlich geschlossen werden !
  * 
  */
 
@@ -45,9 +42,9 @@ public class UIController
 	// ClientInformationen
 	// ======================================================================
 	private static String[] params;
-	private ClientConnection connection;
+	// private ClientConnection connection;
 	private ClientDataModel model;
-	private ThreadPoolExecutor pool;
+	// private ThreadPoolExecutor pool;
 
 	// FXML
 	// ======================================================================
@@ -91,9 +88,27 @@ public class UIController
 		// n.setStyle("-fx-background-color: transparent;");
 		// }
 
-		//this.sendButton.setStyle("-fx-background-color: transparent;");
+		// this.sendButton.setStyle("-fx-background-color: transparent;");
 
-		this.model = new ClientDataModel();
+		try
+		{
+			System.out.println(params[0]);
+			System.out.println(params[1]);
+			this.model = new ClientDataModel();
+
+			User u = new User();
+			u.setUsername(params[2]);
+			this.model.setUser(u);
+
+			this.model.setConnection(
+					new ClientConnection(new Socket(params[0], Integer.parseInt(params[1])), this.model));
+
+		} catch (IOException e)
+		{
+			System.out.println("SERVER OFFLINE !!! ");
+			System.out.println(e.getMessage());
+			System.exit(0);
+		}
 
 		// hier noch aus dem Params geholt...
 		// geht schöner ....
@@ -115,10 +130,19 @@ public class UIController
 		this.setAllListener();
 
 		// der von allen Klassen genutzte ThreadPool
-		this.pool = new ThreadPoolExecutor(2, 4, 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+		// this.pool = new ThreadPoolExecutor(2, 4, 1000, TimeUnit.MILLISECONDS,
+		// new LinkedBlockingQueue<>());
 
-		main();
+	}
 
+	/**
+	 * Setzt die zum Start mitgegebenen Parameter
+	 * 
+	 * @param args
+	 */
+	public static void setParams(String[] args)
+	{
+		params = args;
 	}
 
 	/**
@@ -135,7 +159,7 @@ public class UIController
 		messageInputField.setText("");
 		try
 		{
-			this.pool.submit(new RunnableSendObject(this.connection, new MessageFromClient(msg)));
+			this.model.sendMessageOverClientConnection(new MessageFromClient(msg));
 		} catch (Exception ee)
 		{
 			ee.printStackTrace();
@@ -163,16 +187,6 @@ public class UIController
 	{
 		// TODO
 		String s;
-	}
-
-	/**
-	 * Setzt die zum Start mitgegebenen Parameter
-	 * 
-	 * @param args
-	 */
-	public static void setParams(String[] args)
-	{
-		params = args;
 	}
 
 	/*
@@ -226,34 +240,4 @@ public class UIController
 		});
 	}
 
-	private void main()
-	{
-		try
-		{
-			/**
-			 * Das ist der Hauptteil
-			 * 
-			 * hier wird die Verbindung zum Server aufgebaut ! Die Klasse
-			 * ClientConnection ist PASSIV !
-			 * 
-			 * für das Überwachen des InStreams wird nun auch das dafür
-			 * spezifizierte Runnable in den pool gelegt
-			 * 
-			 * (Der MainThread darf nicht blockieren) daher wird das überwachen
-			 * und senden auf den Threadpool ausgelagert
-			 */
-			Socket socket = new Socket(params[0], Integer.parseInt(params[1]));
-
-			this.connection = new ClientConnection(socket, model);
-			this.pool.submit(new RunnableReceiveServerBroadcasts(connection));
-
-		} catch (ConnectException e)
-		{
-			System.out.println("SERVER OFFLINE !!! ");
-			System.exit(0);
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
 }

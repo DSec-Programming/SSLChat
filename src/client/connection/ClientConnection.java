@@ -8,6 +8,7 @@ import java.net.Socket;
 import javax.net.ssl.SSLSocket;
 
 import client.model.ClientDataModel;
+import client.model.User;
 import streamedObjects.Ping;
 import streamedObjects.UpdateFromServer;
 
@@ -27,8 +28,6 @@ import streamedObjects.UpdateFromServer;
 public class ClientConnection
 {
 	private Socket tcpSocket;
-
-	private SSLSocket sslSocket;
 
 	private ObjectOutputStream toServer;
 
@@ -70,9 +69,6 @@ public class ClientConnection
 		this.model.setConnectionTyp("TCP");
 		this.model.setServerStatus(UNAUTHORIZED);
 		this.model.setClientStatus(UNAUTHORIZED);
-
-		// Beim Server anmelden !
-		this.send(this.model.getUser().getUsername());
 
 		// hiermit schlieﬂt der Socket automatisch
 		// sollte das Programm terminieren
