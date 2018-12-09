@@ -54,10 +54,10 @@ public class SecondSSLserver
 
 			
 			
-	
-			s.setEnabledProtocols(SslConstants.intersection(s.getSupportedProtocols(), StrongSsl.ENABLED_PROTOCOLS));
-			s.setEnabledCipherSuites(
-					SslConstants.intersection(s.getSupportedCipherSuites(), StrongSsl.ENABLED_CIPHER_SUITES));
+//	
+//			s.setEnabledProtocols(SslConstants.intersection(s.getSupportedProtocols(), StrongSsl.ENABLED_PROTOCOLS));
+//			s.setEnabledCipherSuites(
+//					SslConstants.intersection(s.getSupportedCipherSuites(), StrongSsl.ENABLED_CIPHER_SUITES));
 
 		} catch (Exception e)
 		{

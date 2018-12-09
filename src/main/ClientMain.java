@@ -1,7 +1,7 @@
 package main;
 
 
-import client.controller.ClientController;
+import client.controller.UIController;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -16,14 +16,17 @@ public class ClientMain extends Application
 	{
 		args = new String[]
 		{ "localhost", "55555", "Tim" };
-		ClientController.setParams(args);
+		UIController.setParams(args);
+		
+		
+		
 		launch(args);
 	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception
 	{
-		Pane root = (Pane) FXMLLoader.load(getClass().getResource("../client/ui/ClientUI.fxml"));
+		Pane root = (Pane) FXMLLoader.load(getClass().getResource("../client/ui/alt2.fxml"));
 		Scene scene = new Scene(root);
 
 		primaryStage.setTitle("SSL Client v0.1");

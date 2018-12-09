@@ -16,6 +16,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -39,7 +40,7 @@ import streamedObjects.MessageFromClient;
  * 
  */
 
-public class ClientController
+public class UIController
 {
 	// ClientInformationen
 	// ======================================================================
@@ -60,6 +61,8 @@ public class ClientController
 	private TextField messageInputField;
 	@FXML
 	private Button sendButton;
+	@FXML
+	private VBox ChatPaneBox;
 
 	// ! set not Editibar
 	private TextArea connectionInfos;
@@ -80,6 +83,16 @@ public class ClientController
 
 	public void initialize()
 	{
+		// UI
+		// this.ChatPaneBox.setVisible(true);
+		// for (Node n : this.ChatPaneBox.getChildren())
+		// {
+		// n.setMouseTransparent(true);
+		// n.setStyle("-fx-background-color: transparent;");
+		// }
+
+		//this.sendButton.setStyle("-fx-background-color: transparent;");
+
 		this.model = new ClientDataModel();
 
 		// hier noch aus dem Params geholt...

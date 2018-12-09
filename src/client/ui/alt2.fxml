@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="464.0" prefWidth="936.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.UIController">
+   <children>
+      <BorderPane prefHeight="464.0" prefWidth="936.0">
+         <top>
+            <HBox prefHeight="19.0" prefWidth="566.0" BorderPane.alignment="CENTER">
+               <children>
+                  <MenuBar prefHeight="25.0" prefWidth="942.0">
+                    <menus>
+                      <Menu mnemonicParsing="false" text="File">
+                        <items>
+                          <MenuItem mnemonicParsing="false" text="Close" />
+                        </items>
+                      </Menu>
+                      <Menu mnemonicParsing="false" text="Edit">
+                        <items>
+                          <MenuItem mnemonicParsing="false" text="Delete" />
+                        </items>
+                      </Menu>
+                      <Menu mnemonicParsing="false" text="Help">
+                        <items>
+                          <MenuItem mnemonicParsing="false" text="About" />
+                        </items>
+                      </Menu>
+                    </menus>
+                  </MenuBar>
+               </children></HBox>
+         </top>
+         <center>
+            <HBox prefHeight="423.0" prefWidth="701.0" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox prefHeight="423.0" prefWidth="694.0">
+                     <children>
+                        <VBox fx:id="ChatPaneBox" prefHeight="303.0" prefWidth="522.0">
+                           <children>
+                              <Pane fx:id="ChatPane" prefHeight="303.0" prefWidth="579.0">
+                                 <children>
+                                    <HBox prefHeight="303.0" prefWidth="696.0">
+                                       <children>
+                                          <VBox prefHeight="298.0" prefWidth="182.0">
+                                             <children>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Online">
+                                                   <VBox.margin>
+                                                      <Insets left="15.0" />
+                                                   </VBox.margin>
+                                                   <font>
+                                                      <Font size="13.0" />
+                                                   </font>
+                                                </Text>
+                                                <TextArea fx:id="activeUserTextArea" prefHeight="241.0" prefWidth="85.0">
+                                                   <VBox.margin>
+                                                      <Insets bottom="7.0" left="15.0" top="7.0" />
+                                                   </VBox.margin>
+                                                   <font>
+                                                      <Font size="10.0" />
+                                                   </font>
+                                                </TextArea>
+                                             </children>
+                                             <HBox.margin>
+                                                <Insets top="5.0" />
+                                             </HBox.margin>
+                                          </VBox>
+                                          <VBox prefHeight="298.0" prefWidth="383.0">
+                                             <children>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Chat">
+                                                   <font>
+                                                      <Font size="13.0" />
+                                                   </font>
+                                                   <VBox.margin>
+                                                      <Insets left="10.0" />
+                                                   </VBox.margin>
+                                                </Text>
+                                                <TextArea fx:id="chatTextArea" prefHeight="212.0" prefWidth="378.0">
+                                                   <font>
+                                                      <Font size="10.0" />
+                                                   </font>
+                                                   <VBox.margin>
+                                                      <Insets bottom="7.0" left="7.0" top="7.0" />
+                                                   </VBox.margin>
+                                                </TextArea>
+                                                <HBox prefHeight="24.0" prefWidth="354.0">
+                                                   <children>
+                                                      <HBox prefHeight="25.0" prefWidth="463.0">
+                                                         <children>
+                                                            <TextField fx:id="messageInputField" prefHeight="25.0" prefWidth="310.0">
+                                                               <HBox.margin>
+                                                                  <Insets left="7.0" right="10.0" />
+                                                               </HBox.margin>
+                                                            </TextField>
+                                                            <Button fx:id="sendButton" mnemonicParsing="false" onAction="#handleSendButton" prefHeight="25.0" prefWidth="142.0" text="send" />
+                                                         </children>
+                                                      </HBox>
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                             <HBox.margin>
+                                                <Insets top="5.0" />
+                                             </HBox.margin>
+                                          </VBox>
+                                          <VBox prefHeight="279.0" prefWidth="113.0">
+                                             <children>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Connection info">
+                                                   <font>
+                                                      <Font size="14.0" />
+                                                   </font>
+                                                   <VBox.margin>
+                                                      <Insets bottom="4.0" left="6.0" top="5.0" />
+                                                   </VBox.margin>
+                                                </Text>
+                                                <TextArea prefHeight="75.0" prefWidth="76.0">
+                                                   <font>
+                                                      <Font size="10.0" />
+                                                   </font>
+                                                   <VBox.margin>
+                                                      <Insets bottom="7.0" left="7.0" top="7.0" />
+                                                   </VBox.margin>
+                                                </TextArea>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Lokal infos">
+                                                   <VBox.margin>
+                                                      <Insets left="10.0" />
+                                                   </VBox.margin>
+                                                </Text>
+                                                <TextArea prefHeight="75.0" prefWidth="76.0">
+                                                   <font>
+                                                      <Font size="10.0" />
+                                                   </font>
+                                                   <VBox.margin>
+                                                      <Insets bottom="7.0" left="7.0" top="7.0" />
+                                                   </VBox.margin>
+                                                </TextArea>
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </Pane>
+                           </children>
+                        </VBox>
+                        <VBox prefHeight="133.0" prefWidth="694.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Notifications" />
+                              <TextArea fx:id="notificationsTextArea" prefHeight="85.0" prefWidth="520.0">
+                                 <VBox.margin>
+                                    <Insets right="18.0" />
+                                 </VBox.margin>
+                              </TextArea>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="15.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+         </center>
+         <bottom>
+            <HBox prefHeight="15.0" prefWidth="566.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="send/receive" wrappingWidth="100.095703125" />
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Own IP" wrappingWidth="130.7109375" />
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Standardgateway" wrappingWidth="173.845703125" />
+               </children>
+            </HBox>
+         </bottom>
+         <right>
+            <VBox prefHeight="423.0" prefWidth="223.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Pane prefHeight="267.0" prefWidth="199.0">
+                     <children>
+                        <VBox layoutX="-6.0" layoutY="-1.0" prefHeight="270.0" prefWidth="230.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Configurations">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Text>
+                              <HBox prefHeight="24.0" prefWidth="160.0">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="ServerIP">
+                                       <HBox.margin>
+                                          <Insets left="2.0" right="10.0" top="4.0" />
+                                       </HBox.margin>
+                                    </Text>
+                                    <TextField prefHeight="3.0" prefWidth="98.0">
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font>
+                                    </TextField>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="7.0" left="7.0" right="7.0" top="7.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox prefHeight="24.0" prefWidth="160.0">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Protokoll">
+                                       <HBox.margin>
+                                          <Insets left="2.0" right="10.0" top="4.0" />
+                                       </HBox.margin>
+                                    </Text>
+                                    <RadioButton mnemonicParsing="false" prefHeight="17.0" prefWidth="54.0" text="TCP">
+                                       <HBox.margin>
+                                          <Insets left="5.0" right="5.0" top="4.0" />
+                                       </HBox.margin>
+                                    </RadioButton>
+                                    <RadioButton mnemonicParsing="false" prefHeight="17.0" prefWidth="51.0" text="TLS">
+                                       <HBox.margin>
+                                          <Insets left="5.0" right="5.0" top="4.0" />
+                                       </HBox.margin>
+                                    </RadioButton>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="7.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox prefHeight="24.0" prefWidth="160.0">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="KryptoProvider">
+                                       <HBox.margin>
+                                          <Insets left="2.0" right="10.0" top="4.0" />
+                                       </HBox.margin>
+                                    </Text>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="7.0" left="7.0" right="7.0" top="7.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox prefHeight="24.0" prefWidth="160.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="87.0" text="Connect">
+                                       <HBox.margin>
+                                          <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="89.0" text="Disconnect">
+                                       <HBox.margin>
+                                          <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="7.0" left="7.0" right="7.0" top="20.0" />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                     <VBox.margin>
+                        <Insets top="5.0" />
+                     </VBox.margin>
+                  </Pane>
+                  <Pane prefHeight="145.0" prefWidth="161.0">
+                     <children>
+                        <VBox prefHeight="148.0" prefWidth="215.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="ClientAuthentication" wrappingWidth="161.24609375">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                              </Text>
+                              <HBox prefHeight="17.0" prefWidth="190.0">
+                                 <children>
+                                    <RadioButton mnemonicParsing="false" prefHeight="17.0" prefWidth="82.0" text="vom Server">
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </RadioButton>
+                                    <RadioButton mnemonicParsing="false" prefHeight="17.0" prefWidth="104.0" text="import cert">
+                                       <HBox.margin>
+                                          <Insets left="15.0" />
+                                       </HBox.margin>
+                                    </RadioButton>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="7.0" left="7.0" right="7.0" top="7.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox prefHeight="14.0" prefWidth="162.0">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="    Secret :">
+                                       <HBox.margin>
+                                          <Insets right="10.0" />
+                                       </HBox.margin>
+                                    </Text>
+                                    <TextField prefHeight="17.0" prefWidth="96.0">
+                                       <font>
+                                          <Font size="7.0" />
+                                       </font>
+                                       <padding>
+                                          <Insets left="10.0" />
+                                       </padding>
+                                    </TextField>
+                                    <Button alignment="TOP_CENTER" mnemonicParsing="false" prefHeight="23.0" prefWidth="33.0">
+                                       <font>
+                                          <Font size="1.0" />
+                                       </font>
+                                    </Button>
+                                 </children>
+                                 <opaqueInsets>
+                                    <Insets bottom="7.0" left="7.0" right="7.0" top="7.0" />
+                                 </opaqueInsets>
+                                 <VBox.margin>
+                                    <Insets bottom="7.0" left="7.0" right="7.0" top="14.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox prefHeight="14.0" prefWidth="162.0">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="cert Path :">
+                                       <HBox.margin>
+                                          <Insets right="10.0" />
+                                       </HBox.margin>
+                                    </Text>
+                                    <TextField prefHeight="15.0" prefWidth="96.0">
+                                       <font>
+                                          <Font size="7.0" />
+                                       </font>
+                                       <padding>
+                                          <Insets left="10.0" />
+                                       </padding>
+                                    </TextField>
+                                    <Button alignment="TOP_CENTER" mnemonicParsing="false" prefHeight="23.0" prefWidth="33.0">
+                                       <font>
+                                          <Font size="1.0" />
+                                       </font>
+                                    </Button>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="7.0" left="7.0" right="7.0" top="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </VBox>
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </Pane>
+               </children>
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+            </VBox>
+         </right>
+      </BorderPane>
+   </children>
+</AnchorPane>
