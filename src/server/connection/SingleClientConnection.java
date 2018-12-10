@@ -6,7 +6,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import server.model.ConnectionModel;
 import server.model.ServerDataModel;
+import streamedObjects.ClientSaysBye;
 import streamedObjects.MessageFromClient;
 import streamedObjects.Ping;
 import streamedObjects.UpdateFromServer;
@@ -27,15 +29,18 @@ public class SingleClientConnection
 	private ObjectInputStream fromClient;
 
 	private ServerDataModel model;
+	private ConnectionModel connectionModel;
 
 	private String username;
 
 	public static final String USER_UPDATE = "userupdate";
 	public static final String CHAT_UPDATE = "chatupdate";
 
-	public SingleClientConnection(Socket s, ServerDataModel model) throws IOException, ClassNotFoundException
+	public SingleClientConnection(Socket s, ServerDataModel model, ConnectionModel conModel)
+			throws IOException, ClassNotFoundException
 	{
 		this.model = model;
+		this.connectionModel = conModel;
 		this.socket = s;
 		this.toClient = new ObjectOutputStream(this.socket.getOutputStream());
 		this.fromClient = new ObjectInputStream(this.socket.getInputStream());
@@ -63,14 +68,12 @@ public class SingleClientConnection
 		{
 			return;
 		}
-		
-		//wenn geschlossen
-		//dann müsste exception fliegen !!! 
-		//wenn exception fliegt SOcket geschlossen !!
-		//wenn request vielleciht null
+
 		Object requestFromClient = this.fromClient.readObject();
-		
-		
+		// wenn geschlossen
+		// dann müsste exception fliegen !!!
+		// wenn exception fliegt SOcket geschlossen !!
+		// wenn request vielleciht null
 
 		/**
 		 * Wieder sehr statisch geht schöner !!
@@ -80,6 +83,11 @@ public class SingleClientConnection
 			MessageFromClient msgFromClient = (MessageFromClient) requestFromClient;
 			String preparedString = "<" + this.username + ">:  " + msgFromClient.getMsg();
 			this.model.addMsgAtChat(preparedString);
+
+		} else if (requestFromClient instanceof ClientSaysBye)
+		{
+			connectionModel.removeSingleClientConnection(this);
+			socket.close();
 
 		} else
 		{
@@ -96,10 +104,10 @@ public class SingleClientConnection
 		o = this.fromClient.readObject();
 		if (o == null)
 		{
-			return true;
+			return false;
 		} else
 		{
-			return false;
+			return true;
 		}
 
 	}

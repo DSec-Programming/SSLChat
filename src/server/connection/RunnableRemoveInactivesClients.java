@@ -32,7 +32,7 @@ public class RunnableRemoveInactivesClients implements Runnable
 				for (SingleClientConnection scc : list)
 				{
 					current = scc;
-					if (scc.isClientStillAlive())
+					if (!scc.isClientStillAlive())
 					{
 						System.out.println("REMOVE");
 						this.model.removeSingleClientConnection(scc);

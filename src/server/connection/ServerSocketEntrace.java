@@ -55,7 +55,7 @@ public class ServerSocketEntrace extends Thread
 				Socket socketForClient = serverSocket.accept();
 				System.out.println("(TCPServerSocket)>>> NEW CLIENT : " + socketForClient.getRemoteSocketAddress());
 				SingleClientConnection connection = new SingleClientConnection(socketForClient,
-						this.model.getServerDataModel());
+						this.model.getServerDataModel(),model);
 				this.model.addSingleClientConnection(connection);
 				// schicke dem neuen User gleich den aktuellen Chat !!
 

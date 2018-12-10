@@ -36,13 +36,8 @@ public class ConnectionModel
 	{
 		this.serverSocketEntrace = sse;
 		this.pool.submit(new RunnableObserveSingleClientConnections(this, this.pool));
-		this.pool.submit(new RunnableRemoveInactivesClients(this));
+		//this.pool.submit(new RunnableRemoveInactivesClients(this));
 
-		/**
-		 * Inactive Clients müssen ausgetragen werden
-		 */
-
-		this.pool.submit(new RunnableRemoveInactivesClients(this));
 	}
 
 	public synchronized void sendUpdate(SingleClientConnection scc, String type, ArrayList<String> update)

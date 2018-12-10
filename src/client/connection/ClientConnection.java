@@ -9,6 +9,7 @@ import javax.net.ssl.SSLSocket;
 
 import client.model.ClientDataModel;
 import client.model.ConnectionModel;
+import streamedObjects.ClientSaysBye;
 import streamedObjects.Ping;
 import streamedObjects.UpdateFromServer;
 
@@ -87,6 +88,7 @@ public class ClientConnection
 			{
 				try
 				{
+					toServer.writeObject(new ClientSaysBye());
 					tcpSocket.close();
 					System.out.println("The ClientSocket is shut down!");
 				} catch (IOException e)
@@ -153,6 +155,7 @@ public class ClientConnection
 	 */
 	public synchronized void close() throws IOException
 	{
+		this.toServer.writeObject(new ClientSaysBye());
 		this.tcpSocket.close();
 	}
 
