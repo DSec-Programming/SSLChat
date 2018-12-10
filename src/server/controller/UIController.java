@@ -120,6 +120,8 @@ public class UIController
 				// ! Model muss synchronisiert werden damit niemand anderes
 				// dazwischenspucken
 				// kann !
+				
+				//hallo test ets tets 
 				synchronized (model)
 				{
 					synchronized (connectionModel)
