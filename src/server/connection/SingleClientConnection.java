@@ -10,7 +10,6 @@ import server.model.ConnectionModel;
 import server.model.ServerDataModel;
 import streamedObjects.ClientSaysBye;
 import streamedObjects.MessageFromClient;
-import streamedObjects.Ping;
 import streamedObjects.UpdateFromServer;
 
 /**
@@ -96,21 +95,6 @@ public class SingleClientConnection
 
 	}
 
-	public synchronized boolean isClientStillAlive() throws IOException, ClassNotFoundException
-	{
-		this.toClient.writeObject(new Ping());
-		Object o = null;
-		this.socket.setSoTimeout(100);
-		o = this.fromClient.readObject();
-		if (o == null)
-		{
-			return false;
-		} else
-		{
-			return true;
-		}
-
-	}
 
 	public synchronized String getUserName()
 	{

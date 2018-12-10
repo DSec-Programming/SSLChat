@@ -10,7 +10,6 @@ import javax.net.ssl.SSLSocket;
 import client.model.ClientDataModel;
 import client.model.ConnectionModel;
 import streamedObjects.ClientSaysBye;
-import streamedObjects.Ping;
 import streamedObjects.UpdateFromServer;
 
 /**
@@ -127,10 +126,7 @@ public class ClientConnection
 		// geht noch schöner und Dynamischer
 		// hier jetzt ehr statisch ...
 
-		if (data instanceof Ping)
-		{
-			this.toServer.writeObject(new Ping());
-		} else if (data instanceof UpdateFromServer)
+		if (data instanceof UpdateFromServer)
 		{
 			UpdateFromServer update = (UpdateFromServer) data;
 			if (update.getUpdateType().equals(CHAT_UPDATE))
