@@ -82,21 +82,21 @@ public class ClientConnection
 		}
 		// hiermit schlieﬂt der Socket automatisch
 		// sollte das Programm terminieren
-		Runtime.getRuntime().addShutdownHook(new Thread()
-		{
-			public void run()
-			{
-				try
-				{
-					toServer.writeObject(new ClientSaysBye());
-					tcpSocket.close();
-					System.out.println("The ClientSocket is shut down!");
-				} catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-			}
-		});
+		// Runtime.getRuntime().addShutdownHook(new Thread()
+		// {
+		// public void run()
+		// {
+		// try
+		// {
+		// toServer.writeObject(new ClientSaysBye());
+		// tcpSocket.close();
+		// System.out.println("The ClientSocket is shut down!");
+		// } catch (IOException e)
+		// {
+		// e.printStackTrace();
+		// }
+		// }
+		// });
 	}
 
 	/**
@@ -156,7 +156,9 @@ public class ClientConnection
 	public synchronized void close() throws IOException
 	{
 		this.toServer.writeObject(new ClientSaysBye());
+		System.out.println("SAY BYE");
 		this.tcpSocket.close();
+		System.out.println("socket closed");
 	}
 
 }

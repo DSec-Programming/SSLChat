@@ -5,20 +5,20 @@ import client.model.ClientDataModel;
 import client.model.ConnectionModel;
 import client.model.User;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 public class ClientMain extends Application
 {
+	private static ConnectionModel connectionModel;
+
 	public static void main(String[] args)
 	{
 		ClientDataModel clientDatamodel = new ClientDataModel();
-		ConnectionModel connectionModel = new ConnectionModel();
-		
+		connectionModel = new ConnectionModel();
+
 		clientDatamodel.setExistKeyStore(false);
 		clientDatamodel.setHavAnImportedCert(false);
 		clientDatamodel.setHaveAnCertFromServer(false);
@@ -31,6 +31,17 @@ public class ClientMain extends Application
 		UIController.setConnectionModel(connectionModel);
 
 		launch(args);
+
+	}
+
+	@Override
+	public void stop() throws Exception
+	{
+		connectionModel.killConnectoin();
+		System.out.println("Kill connection");
+		connectionModel.shutdownThreadPool();
+		System.out.println("Shutdown pool");
+
 	}
 
 	@Override
@@ -42,14 +53,16 @@ public class ClientMain extends Application
 		primaryStage.setTitle("SSL Client v0.1");
 		primaryStage.setScene(scene);
 		primaryStage.setResizable(false);
-		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>()
-		{
-			@Override
-			public void handle(WindowEvent e)
-			{
-				System.exit(0);
-			}
-		});
+		// primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>()
+		// {
+		// @Override
+		// public void handle(WindowEvent e)
+		// {
+		// connectionModel.killConnectoin();
+		// System.out.println("Kill connection");
+		// }
+		// });
+		System.out.println("show");
 		primaryStage.show();
 	}
 }

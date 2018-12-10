@@ -34,10 +34,10 @@ public class ConnectionModel
 	{
 		this.user = null;
 		this.connection = null;
-		
+
 		this.pool = new ThreadPoolExecutor(2, 4, 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 		this.runnableReceiveServerBroadcasts = null;
-		
+
 		this.ServerIP = new SimpleStringProperty();
 		this.usedProvider = new SimpleStringProperty();
 
@@ -119,9 +119,20 @@ public class ConnectionModel
 
 	public synchronized void killConnectoin() throws IOException
 	{
-		this.runnableReceiveServerBroadcasts.stopRunning();
-		this.connection.close();
+		if (this.runnableReceiveServerBroadcasts != null)
+		{
+			this.runnableReceiveServerBroadcasts.stopRunning();
+		}
+		if (this.connection != null)
+		{
+			this.connection.close();
+		}
 		this.connection = null;
+	}
+
+	public synchronized void shutdownThreadPool()
+	{
+		this.pool.shutdown();
 	}
 
 }

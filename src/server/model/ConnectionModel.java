@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 
 import server.connection.CallableSendBroadcastUpdate;
 import server.connection.RunnableObserveSingleClientConnections;
-import server.connection.RunnableRemoveInactivesClients;
 import server.connection.ServerSocketEntrace;
 import server.connection.SingleClientConnection;
 
@@ -36,7 +35,7 @@ public class ConnectionModel
 	{
 		this.serverSocketEntrace = sse;
 		this.pool.submit(new RunnableObserveSingleClientConnections(this, this.pool));
-		//this.pool.submit(new RunnableRemoveInactivesClients(this));
+		// this.pool.submit(new RunnableRemoveInactivesClients(this));
 
 	}
 
