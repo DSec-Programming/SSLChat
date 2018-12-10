@@ -63,7 +63,14 @@ public class SingleClientConnection
 		{
 			return;
 		}
+		
+		//wenn geschlossen
+		//dann müsste exception fliegen !!! 
+		//wenn exception fliegt SOcket geschlossen !!
+		//wenn request vielleciht null
 		Object requestFromClient = this.fromClient.readObject();
+		
+		
 
 		/**
 		 * Wieder sehr statisch geht schöner !!

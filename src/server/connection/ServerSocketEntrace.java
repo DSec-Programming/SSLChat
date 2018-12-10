@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import server.model.ConnectionModel;
 import server.model.ServerDataModel;
 
 /**
@@ -29,9 +30,9 @@ import server.model.ServerDataModel;
 public class ServerSocketEntrace extends Thread
 {
 	private ServerSocket serverSocket;
-	private ServerDataModel model;
+	private ConnectionModel model;
 
-	public ServerSocketEntrace(int port, ServerDataModel model) throws IOException
+	public ServerSocketEntrace(int port, ConnectionModel model) throws IOException
 	{
 		setDaemon(true);
 		System.out.println("=============== SSLServer v01 ===============");
@@ -53,10 +54,10 @@ public class ServerSocketEntrace extends Thread
 			{
 				Socket socketForClient = serverSocket.accept();
 				System.out.println("(TCPServerSocket)>>> NEW CLIENT : " + socketForClient.getRemoteSocketAddress());
-				SingleClientConnection connection = new SingleClientConnection(socketForClient, this.model);
+				SingleClientConnection connection = new SingleClientConnection(socketForClient,
+						this.model.getServerDataModel());
 				this.model.addSingleClientConnection(connection);
-				//schicke dem neuen User gleich den aktuellen Chat !!
-				
+				// schicke dem neuen User gleich den aktuellen Chat !!
 
 			} catch (Exception e)
 			{

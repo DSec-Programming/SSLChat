@@ -3,13 +3,14 @@ package server.connection;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import server.model.ConnectionModel;
 import server.model.ServerDataModel;
 
 public class RunnableRemoveInactivesClients implements Runnable
 {
-	private ServerDataModel model;
+	private ConnectionModel model;
 
-	public RunnableRemoveInactivesClients(ServerDataModel model)
+	public RunnableRemoveInactivesClients(ConnectionModel model)
 	{
 		this.model = model;
 	}

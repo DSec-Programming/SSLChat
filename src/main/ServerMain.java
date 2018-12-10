@@ -7,13 +7,21 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import server.controller.ServerController;
+import server.controller.UIController;
+import server.model.ConnectionModel;
+import server.model.ServerDataModel;
 
 public class ServerMain extends Application
 {
 	public static void main(String[] args)
 	{
-		ServerController.setParams(args);
+
+		ServerDataModel model = new ServerDataModel();
+		ConnectionModel connectionModel = new ConnectionModel(model);
+
+		UIController.setModel(model);
+		UIController.setConnectionModel(connectionModel);
+
 		launch(args);
 	}
 

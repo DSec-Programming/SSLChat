@@ -3,14 +3,14 @@ package server.connection;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import server.model.ServerDataModel;
+import server.model.ConnectionModel;
 
 public class RunnableObserveSingleClientConnections implements Runnable
 {
-	private ServerDataModel model;
+	private ConnectionModel model;
 	private ThreadPoolExecutor pool;
 
-	public RunnableObserveSingleClientConnections(ServerDataModel model, ThreadPoolExecutor pool)
+	public RunnableObserveSingleClientConnections(ConnectionModel model, ThreadPoolExecutor pool)
 	{
 		this.model = model;
 		this.pool = pool;
