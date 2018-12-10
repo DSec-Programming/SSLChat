@@ -182,6 +182,10 @@ public class UIController
 		{
 			clientDataModel.addNotification("IOException " + ee.getMessage());
 			ee.printStackTrace();
+			hideChatPane();
+			this.connectButton.disableProperty().set(false);
+			this.disconnectButton.disableProperty().set(true);
+			return;
 		}
 	}
 
