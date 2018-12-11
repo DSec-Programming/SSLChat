@@ -5,16 +5,42 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<Pane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="server.controller.UIController">
+
+<AnchorPane minHeight="460.0" minWidth="930.0" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="server.controller.UIController">
    <children>
-      <AnchorPane>
-	<!-- TODO Add Nodes -->
-</AnchorPane>
-      <TextArea fx:id="txt_Msg" editable="false" layoutX="14.0" layoutY="45.0" prefHeight="343.0" prefWidth="311.0" />
-      <TextArea fx:id="txt_User" editable="false" layoutX="343.0" layoutY="45.0" prefHeight="145.0" prefWidth="245.0" />
-      <Button fx:id="btn_shutDown" layoutX="421.0" layoutY="357.0" mnemonicParsing="false" onAction="#shutDown" text="Server herunterfahren" />
-      <Label layoutX="14.0" layoutY="14.0" text="Ereignisse" />
-      <Label layoutX="343.0" layoutY="14.0" text="Benutzer online" />
-      <TextArea fx:id="txt_Info" layoutX="343.0" layoutY="200.0" prefHeight="134.0" prefWidth="245.0" />
+      <Separator layoutX="893.0" layoutY="25.0" orientation="VERTICAL" prefHeight="435.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="381.0" AnchorPane.topAnchor="25.0" />
+      <TextArea fx:id="chatTextArea" editable="false" layoutX="226.0" layoutY="59.0" prefHeight="380.0" prefWidth="423.0" AnchorPane.bottomAnchor="281.0" AnchorPane.leftAnchor="226.0" AnchorPane.rightAnchor="631.0" AnchorPane.topAnchor="59.0" />
+      <Button fx:id="shutDownButton" layoutX="823.0" layoutY="415.0" mnemonicParsing="false" onAction="#shutDown" text="Shut Down" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+      <Label layoutX="227.0" layoutY="38.0" text="Chat" AnchorPane.topAnchor="38.0" />
+      <Label layoutX="14.0" layoutY="38.0" text="Online" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="38.0" />
+      <TextArea fx:id="infoTextArea" editable="false" layoutX="905.0" layoutY="59.0" prefHeight="588.0" prefWidth="366.0" AnchorPane.bottomAnchor="73.0" AnchorPane.rightAnchor="9.0" AnchorPane.topAnchor="59.0" />
+      <MenuBar layoutY="-2.0" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <ListView fx:id="activeUserListView" layoutX="14.0" layoutY="59.0" prefHeight="380.0" prefWidth="200.0" AnchorPane.bottomAnchor="281.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="59.0" />
+      <Label layoutX="905.0" layoutY="38.0" text="Infos" AnchorPane.rightAnchor="342.0" AnchorPane.topAnchor="38.0" />
+      <ListView fx:id="certReqListView" layoutX="14.0" layoutY="344.0" prefHeight="216.0" prefWidth="360.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" />
+      <Label layoutX="14.0" layoutY="461.0" text="Certificate-Requests" AnchorPane.bottomAnchor="238.0" AnchorPane.leftAnchor="14.0" />
+      <Button fx:id="allowCertButton" layoutX="388.0" layoutY="675.0" mnemonicParsing="false" text="Allow Cert." AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="388.0" />
+      <TextArea fx:id="certTextArea" editable="false" layoutX="521.0" layoutY="490.0" prefHeight="216.0" prefWidth="352.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="521.0" AnchorPane.rightAnchor="407.0" />
+      <Label layoutX="521.0" layoutY="461.0" text="Server Certificate" AnchorPane.bottomAnchor="238.0" AnchorPane.leftAnchor="521.0" />
+      <Button fx:id="clearChatButton" layoutX="663.0" layoutY="59.0" mnemonicParsing="false" onAction="#clearChat" text="Clear Chat" AnchorPane.rightAnchor="528.0" AnchorPane.topAnchor="59.0" />
+      <Button fx:id="kickUserButton" layoutX="664.0" layoutY="100.0" mnemonicParsing="false" onAction="#kickUser" text="Kick User" AnchorPane.rightAnchor="535.0" AnchorPane.topAnchor="100.0" />
    </children>
-</Pane>
+</AnchorPane>

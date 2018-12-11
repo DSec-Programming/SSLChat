@@ -174,8 +174,8 @@ public class UIController
 		this.disconnectButton.disableProperty().set(false);
 		try
 		{
-			Socket s = new Socket("143.93.55.138", 55555);
-			//Socket s = new Socket("localhost", 55555);
+
+			Socket s = new Socket("localhost", 55555);
 			ClientConnection connection = new ClientConnection(s, clientDataModel,
 					connectionModel);
 			connectionModel.setConnection(connection);
