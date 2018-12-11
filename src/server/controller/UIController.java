@@ -2,12 +2,16 @@ package server.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import server.connection.ServerSocketEntrace;
 import server.connection.SingleClientConnection;
@@ -20,9 +24,13 @@ public class UIController
 	private static ConnectionModel connectionModel;
 
 	@FXML
-	private TextArea txt_Msg, txt_User;
+	private TextArea chatTextArea, infoTextArea, certTextArea;
+	
 	@FXML
-	private Button btn_shutDown;
+	private ListView<String> activeUserListView, certReqListView;
+	
+	@FXML
+	private Button shutDownButton, clearChatButton, kickUserButton, allowCertButton;
 
 	private ObservableList<String> observableUserOnlineList;
 
@@ -69,6 +77,22 @@ public class UIController
 	{
 		System.exit(0);
 	}
+	
+	public void clearChat()
+	{
+	    // TODO
+	    // textArea der Clients aktualisiert sich nicht
+	    // observableChatMessages.clear() --> update wird nicht getriggered
+	}
+	
+	public void kickUser()
+	{
+	    int index = activeUserListView.getSelectionModel().getSelectedIndex();
+	    String user = model.getUserOnlineList().get(index);
+	    // TODO Client soll Flag gesendet bekommen --> Gezwungenermaßen ausloggen
+	    model.removeUserInOnlineList(user);
+	    activeUserListView.getSelectionModel().select(0);
+	}
 
 	private void setAllListener()
 	{
@@ -76,12 +100,17 @@ public class UIController
 		{
 			public void onChanged(ListChangeListener.Change<? extends String> change)
 			{
-				String onlineList = "";
+			    /*
+			     * onlineList dient als tmp Liste
+			     * Platform.runLater -> gibt Änderung der Oberfläche an Main-Thread weiter
+			     * FXCollections.observableList(onlineList) -> wandelt tmp-Liste in ObservableList um
+			     */
+				List<String> onlineList = new ArrayList<String>();
 				for (String s : observableUserOnlineList)
 				{
-					onlineList += (s + "\n");
+					onlineList.add(s);
 				}
-				txt_User.setText(onlineList);
+				Platform.runLater(() -> activeUserListView.setItems(FXCollections.observableList(onlineList)));
 
 				// trigger die Änderungen bei den Clients
 				// ! Model muss synchronisiert werden damit niemand anderes
@@ -114,7 +143,7 @@ public class UIController
 				{
 					chat += (s + "\n");
 				}
-				txt_Msg.setText(chat);
+				chatTextArea.setText(chat);
 
 				// trigger die Änderungen bei den Clients
 				// ! Model muss synchronisiert werden damit niemand anderes
