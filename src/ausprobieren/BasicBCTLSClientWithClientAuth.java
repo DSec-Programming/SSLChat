@@ -1,7 +1,6 @@
 package ausprobieren;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.security.SecureRandom;
 import java.security.Security;
 
@@ -23,6 +22,10 @@ public class BasicBCTLSClientWithClientAuth
 {
 	public static void main(String[] args) throws Exception
 	{
+		try
+		{
+			
+		
 		Security.addProvider(new BouncyCastleJsseProvider());
 
 		SSLContext sslContext = SSLContext.getInstance("TLS", "BCJSSE");
@@ -36,7 +39,7 @@ public class BasicBCTLSClientWithClientAuth
 		sslContext.init(null, trustMgrFact.getTrustManagers(), null);
 		SSLSocketFactory fact = sslContext.getSocketFactory();
 
-		SSLSocket cSock = (SSLSocket) fact.createSocket("143.93.55.138", 55555);
+		SSLSocket cSock = (SSLSocket) fact.createSocket("143.93.55.138", 443);
 
 		TlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
 		TlsClient client = new DefaultTlsClient(crypto)
@@ -46,7 +49,6 @@ public class BasicBCTLSClientWithClientAuth
 			public TlsAuthentication getAuthentication() throws IOException
 			{
 				// TODO Auto-generated method stub
-
 				return null;
 			}
 		};
@@ -57,6 +59,11 @@ public class BasicBCTLSClientWithClientAuth
 
 		protocol.close();
 
-		cSock.close();
+			cSock.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
