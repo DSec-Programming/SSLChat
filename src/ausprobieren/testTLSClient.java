@@ -17,11 +17,14 @@ public class testTLSClient
 	public static void main(String[] args) throws Exception
 	{
 		// TlsCrypto to support client functionality
-		TlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
 
-		InetAddress address = InetAddress.getByName("www.example.com");
+		InetAddress address = InetAddress.getByName("143.93.55.138");
 		int port = 443;
 		Socket s = new Socket(address, port);
+		
+		
+		
+		TlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
 		TlsClient client = new DefaultTlsClient(crypto)
 		{
 			// MUST implement TlsClient.getAuthentication() here

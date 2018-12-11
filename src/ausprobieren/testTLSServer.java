@@ -14,12 +14,13 @@ public class testTLSServer
 {
 	public static void main(String[] args) throws Exception
 	{
-		TlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
 
 		int port = 55555;
 		ServerSocket ss = new ServerSocket(port);
 		Socket s = ss.accept();
 
+		
+		TlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
 		TlsServer server = new DefaultTlsServer(crypto)
 		{
 			
