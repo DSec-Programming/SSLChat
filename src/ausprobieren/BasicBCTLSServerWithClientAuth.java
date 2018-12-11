@@ -32,7 +32,7 @@ public class BasicBCTLSServerWithClientAuth
 		TrustManagerFactory tmf = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
 		tmf.init(Utils.createClientTrustStore());
 
-		sslContext.init(kmf.getKeyManagers(), null, null);
+		sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 
 		SSLServerSocketFactory fact = sslContext.getServerSocketFactory();
 		SSLServerSocket serverSocket = (SSLServerSocket) fact.createServerSocket(55555);

@@ -24,44 +24,45 @@ public class BasicBCTLSClientWithClientAuth
 	{
 		try
 		{
-			
-		
-		Security.addProvider(new BouncyCastleJsseProvider());
 
-		SSLContext sslContext = SSLContext.getInstance("TLS", "BCJSSE");
+			Security.addProvider(new BouncyCastleJsseProvider());
 
-		KeyManagerFactory kmf = KeyManagerFactory.getInstance("PKIX", "BCJSSE");
-		kmf.init(Utils.createClientKeyStore(), Utils.CLIENT_PASSWORD);
+			SSLContext sslContext = SSLContext.getInstance("TLS", "BCJSSE");
 
-		TrustManagerFactory trustMgrFact = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
-		trustMgrFact.init(Utils.createServerTrustStore());
+			KeyManagerFactory kmf = KeyManagerFactory.getInstance("PKIX", "BCJSSE");
+			kmf.init(Utils.createClientKeyStore(), Utils.CLIENT_PASSWORD);
 
-		sslContext.init(null, trustMgrFact.getTrustManagers(), null);
-		SSLSocketFactory fact = sslContext.getSocketFactory();
+			TrustManagerFactory trustMgrFact = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
+			trustMgrFact.init(Utils.createServerTrustStore());
 
-		SSLSocket cSock = (SSLSocket) fact.createSocket("143.93.55.138", 443);
+			sslContext.init(kmf.getKeyManagers(), trustMgrFact.getTrustManagers(), null);
+			SSLSocketFactory fact = sslContext.getSocketFactory();
 
-		TlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
-		TlsClient client = new DefaultTlsClient(crypto)
-		{
-			// MUST implement TlsClient.getAuthentication() here
-			@Override
-			public TlsAuthentication getAuthentication() throws IOException
+			SSLSocket cSock = (SSLSocket) fact.createSocket("143.93.55.138", 55555);
+
+			TlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
+			TlsClient client = new DefaultTlsClient(crypto)
 			{
-				// TODO Auto-generated method stub
-				return null;
-			}
-		};
-		TlsClientProtocol protocol = new TlsClientProtocol(cSock.getInputStream(), cSock.getOutputStream());
-		// Performs a TLS handshake
-		protocol.connect(client);
-		// Read/write to protocol.getInputStream(), protocol.getOutputStream()
+				// MUST implement TlsClient.getAuthentication() here
+				@Override
+				public TlsAuthentication getAuthentication() throws IOException
+				{
+					// TODO Auto-generated method stub
+					return null;
+				}
+			};
+			TlsClientProtocol protocol = new TlsClientProtocol(cSock.getInputStream(), cSock.getOutputStream());
+			// Performs a TLS handshake
+			protocol.connect(client);
+			// Read/write to protocol.getInputStream(),
+			// protocol.getOutputStream()
 
-		protocol.close();
+			System.out.println("skippe Senden/Empfangen");
+
+			protocol.close();
 
 			cSock.close();
-		}
-		catch(Exception e)
+		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
