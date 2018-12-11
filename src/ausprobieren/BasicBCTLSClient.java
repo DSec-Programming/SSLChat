@@ -21,7 +21,7 @@ public class BasicBCTLSClient
 		trustMgrFact.init(Utils.createServerTrustStore());
 		sslContext.init(null, trustMgrFact.getTrustManagers(), null);
 		SSLSocketFactory fact = sslContext.getSocketFactory();
-		SSLSocket cSock = (SSLSocket) fact.createSocket("localhost", 55555);
+		SSLSocket cSock = (SSLSocket) fact.createSocket("143.93.55.138", 55555);
 		System.out.println("do create socket on localhost, 55555");
 		cSock.close();
 		System.out.println("close Socket");

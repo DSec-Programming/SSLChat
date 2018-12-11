@@ -197,7 +197,7 @@
                                           <Insets left="2.0" right="10.0" top="4.0" />
                                        </HBox.margin>
                                     </Text>
-                                    <TextField prefHeight="3.0" prefWidth="98.0">
+                                    <TextField fx:id="serverIPField" prefHeight="3.0" prefWidth="98.0">
                                        <font>
                                           <Font size="10.0" />
                                        </font>
@@ -214,12 +214,12 @@
                                           <Insets left="2.0" right="10.0" top="4.0" />
                                        </HBox.margin>
                                     </Text>
-                                    <RadioButton mnemonicParsing="false" prefHeight="17.0" prefWidth="54.0" text="TCP">
+                                    <RadioButton fx:id="radioTCP" mnemonicParsing="false" prefHeight="17.0" prefWidth="54.0" text="TCP">
                                        <HBox.margin>
                                           <Insets left="5.0" right="5.0" top="4.0" />
                                        </HBox.margin>
                                     </RadioButton>
-                                    <RadioButton mnemonicParsing="false" prefHeight="17.0" prefWidth="51.0" text="TLS">
+                                    <RadioButton fx:id="radioTLS" mnemonicParsing="false" prefHeight="17.0" prefWidth="51.0" text="TLS">
                                        <HBox.margin>
                                           <Insets left="5.0" right="5.0" top="4.0" />
                                        </HBox.margin>

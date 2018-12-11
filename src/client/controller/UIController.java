@@ -16,8 +16,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -84,6 +86,15 @@ public class UIController
 	@FXML
 	private Button disconnectButton;
 
+	@FXML
+	private TextField serverIPField;
+
+	private ToggleGroup protokollToggleGroup;
+	@FXML
+	private RadioButton radioTCP;
+	@FXML
+	private RadioButton radioTLS;
+
 	// zu überwachende Dinge aus dem Model!
 	// welche gleichzeitig auch im UI angezegit werden
 	// ======================================================================
@@ -114,6 +125,12 @@ public class UIController
 		this.existKeystore = clientDataModel.getExistKeyStore();
 		this.haveImportetCert = clientDataModel.getHaveAnImportedCert();
 		this.haveOwnCert = clientDataModel.getHaveAnCertFromServer();
+
+		ToggleGroup group = new ToggleGroup();
+		group.getToggles().add(radioTCP);
+		group.getToggles().add(radioTLS);
+		this.protokollToggleGroup = group;
+		this.protokollToggleGroup.selectToggle(radioTCP);
 
 		// add Listener damit der CHAT automatisch Aktualisiert wird
 		this.setAllListener();
@@ -170,14 +187,15 @@ public class UIController
 	public void handleConnectButton(ActionEvent e)
 	{
 		showChatPane();
+		disableConnectConfig();
 		this.connectButton.disableProperty().set(true);
 		this.disconnectButton.disableProperty().set(false);
 		try
 		{
-
-			Socket s = new Socket("localhost", 55555);
-			ClientConnection connection = new ClientConnection(s, clientDataModel,
-					connectionModel);
+			// INS MODEL AUSLAGERN
+			String serverIP = this.serverIPField.getText();
+			Socket s = new Socket(serverIP, 55555);
+			ClientConnection connection = new ClientConnection(s, clientDataModel, connectionModel);
 			connectionModel.setConnection(connection);
 			connectionModel.startWorkingConnection();
 		} catch (IOException ee)
@@ -185,6 +203,7 @@ public class UIController
 			clientDataModel.addNotification("IOException " + ee.getMessage());
 			ee.printStackTrace();
 			hideChatPane();
+			enableConnectConfig();
 			this.connectButton.disableProperty().set(false);
 			this.disconnectButton.disableProperty().set(true);
 			return;
@@ -194,6 +213,7 @@ public class UIController
 	public void handleDisconnectButton(ActionEvent e)
 	{
 		hideChatPane();
+		enableConnectConfig();
 		this.disconnectButton.disableProperty().set(true);
 		this.connectButton.disableProperty().set(false);
 		try
@@ -341,6 +361,26 @@ public class UIController
 		parentVboxChatNotify.getChildren().clear();
 		parentVboxChatNotify.getChildren().add(ChatPaneBoxPane);
 		parentVboxChatNotify.getChildren().add(vboxNotofications);
+	}
+
+	private void disableConnectConfig()
+	{
+		this.serverIPField.disableProperty().set(true);
+		this.protokollToggleGroup.getToggles().forEach(toggle ->
+		{
+			RadioButton node = (RadioButton) toggle;
+			node.setDisable(true);
+		});
+	}
+
+	private void enableConnectConfig()
+	{
+		this.serverIPField.disableProperty().set(false);
+		this.protokollToggleGroup.getToggles().forEach(toggle ->
+		{
+			RadioButton node = (RadioButton) toggle;
+			node.setDisable(false);
+		});
 	}
 
 }
