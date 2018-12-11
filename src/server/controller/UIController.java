@@ -9,6 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -55,7 +56,6 @@ public class UIController
 		{
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -78,20 +78,25 @@ public class UIController
 		System.exit(0);
 	}
 	
-	public void clearChat()
+	public void clearChat(ActionEvent e)
 	{
+	    observableChatMessages.clear();
+	    System.out.println("Aufgerufen!");
 	    // TODO
 	    // textArea der Clients aktualisiert sich nicht
 	    // observableChatMessages.clear() --> update wird nicht getriggered
 	}
 	
-	public void kickUser()
+	public void kickUser(ActionEvent e)
 	{
-	    int index = activeUserListView.getSelectionModel().getSelectedIndex();
-	    String user = model.getUserOnlineList().get(index);
-	    // TODO Client soll Flag gesendet bekommen --> Gezwungenermaßen ausloggen
-	    model.removeUserInOnlineList(user);
-	    activeUserListView.getSelectionModel().select(0);
+	    if(!model.getUserOnlineList().isEmpty())
+	    {
+	        int index = activeUserListView.getSelectionModel().getSelectedIndex();
+	        String user = model.getUserOnlineList().get(index);
+	        // TODO Client soll Flag gesendet bekommen --> Gezwungenermaßen ausloggen
+	        model.removeUserInOnlineList(user);
+	        activeUserListView.getSelectionModel().select(0);
+	    }
 	}
 
 	private void setAllListener()
@@ -144,7 +149,7 @@ public class UIController
 					chat += (s + "\n");
 				}
 				chatTextArea.setText(chat);
-
+				System.out.println("jakdkajskdka");
 				// trigger die Änderungen bei den Clients
 				// ! Model muss synchronisiert werden damit niemand anderes
 				// dazwischenspucken

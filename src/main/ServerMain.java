@@ -33,7 +33,6 @@ public class ServerMain extends Application
 
 		primaryStage.setTitle("SSL Server v0.1");
 		primaryStage.setScene(scene);
-		primaryStage.setResizable(false);
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>()
 		{
 			@Override
