@@ -1,5 +1,6 @@
 package ausprobieren;
 
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.Security;
 
@@ -11,6 +12,7 @@ import javax.net.ssl.SSLSocket;
 
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 import org.bouncycastle.tls.DefaultTlsServer;
+import org.bouncycastle.tls.TlsCredentialedSigner;
 import org.bouncycastle.tls.TlsServer;
 import org.bouncycastle.tls.TlsServerProtocol;
 import org.bouncycastle.tls.crypto.TlsCrypto;
@@ -34,15 +36,20 @@ public class BasicBCTLSServer
 		SSLServerSocket serverSocket = (SSLServerSocket) fact.createServerSocket(55555);
 
 		SSLSocket socket = (SSLSocket) serverSocket.accept();
-		
+
 		System.out.println("Have new Client: " + socket.getRemoteSocketAddress());
-		
+
 		TlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
 		TlsServer server = new DefaultTlsServer(crypto)
 		{
-			
 			// Override e.g. TlsServer.getRSASignerCredentials() or
 			// similar here, depending on what credentials you wish to use.
+			@Override
+			protected TlsCredentialedSigner getRSASignerCredentials() throws IOException
+			{
+				// TODO Auto-generated method stub
+				return super.getRSASignerCredentials();
+			}
 		};
 		TlsServerProtocol protocol = new TlsServerProtocol(socket.getInputStream(), socket.getOutputStream());
 		// Performs a TLS handshake
