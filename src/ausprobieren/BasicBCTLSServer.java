@@ -10,18 +10,19 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 
+import org.bouncycastle.crypto.tls.TlsServerProtocol;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 import org.bouncycastle.tls.DefaultTlsServer;
 import org.bouncycastle.tls.TlsCredentialedSigner;
 import org.bouncycastle.tls.TlsServer;
-import org.bouncycastle.tls.TlsServerProtocol;
 import org.bouncycastle.tls.crypto.TlsCrypto;
 import org.bouncycastle.tls.crypto.impl.bc.BcTlsCrypto;
 
-public class BasicBCTLSServer
-{
-	public static void main(String[] args) throws Exception
-	{
+
+
+
+public class BasicBCTLSServer {
+	public static void main(String[] args) throws Exception {
 		System.out.println("StartServer");
 		Security.addProvider(new BouncyCastleJsseProvider());
 
@@ -39,6 +40,7 @@ public class BasicBCTLSServer
 
 		System.out.println("Have new Client: " + socket.getRemoteSocketAddress());
 
+
 		TlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
 		TlsServer server = new DefaultTlsServer(crypto)
 		{
@@ -51,12 +53,15 @@ public class BasicBCTLSServer
 				return super.getRSASignerCredentials();
 			}
 		};
-		TlsServerProtocol protocol = new TlsServerProtocol(socket.getInputStream(), socket.getOutputStream());
+		
+		TlsServerProtocol protocol = new TlsServerProtocol(socket.getInputStream(), socket.getOutputStream(),new SecureRandom());
 		// Performs a TLS handshake
-		protocol.accept(server);
+		//protocol.accept(server);
+		protocol.accept(new MockTlsServer());
 		// Read/write to protocol.getInputStream(), protocol.getOutputStream()
 
 		protocol.close();
 
 	}
+
 }
