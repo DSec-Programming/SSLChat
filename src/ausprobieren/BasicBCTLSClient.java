@@ -39,44 +39,46 @@ public class BasicBCTLSClient
 			trustMgrFact.init(Utils.createServerTrustStore());
 			sslContext.init(null, trustMgrFact.getTrustManagers(), null);
 			SSLSocketFactory fact = sslContext.getSocketFactory();
-			SSLSocket cSock = (SSLSocket) fact.createSocket("143.93.55.138", 55555);
+			SSLSocket cSock = (SSLSocket) fact.createSocket("192.168.168.57", 55555);
 
-			TlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
-			TlsClient client = new DefaultTlsClient(crypto)
-			{
-				// MUST implement TlsClient.getAuthentication() here
-				@Override
-				public TlsAuthentication getAuthentication() throws IOException
-				{
-					TlsAuthentication auth = new TlsAuthentication()
-					{
-
-						@Override
-						public void notifyServerCertificate(TlsServerCertificate arg0) throws IOException
-						{
-							// TODO Auto-generated method stub
-
-						}
-
-						@Override
-						public TlsCredentials getClientCredentials(CertificateRequest arg0) throws IOException
-						{
-							// TODO Auto-generated method stub
-							return null;
-						}
-					};
-					return auth;
-				}
-			};
-			TlsClientProtocol protocol = new TlsClientProtocol(cSock.getInputStream(), cSock.getOutputStream());
-			// Performs a TLS handshake
-			protocol.connect(client);
-			// Read/write to protocol.getInputStream(),
-			// protocol.getOutputStream()
-
-			System.out.println("skippe Senden/Empfangen");
-
-			protocol.close();
+//			TlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
+//			TlsClient client = new DefaultTlsClient(crypto)
+//			{
+//				// MUST implement TlsClient.getAuthentication() here
+//				@Override
+//				public TlsAuthentication getAuthentication() throws IOException
+//				{
+//					TlsAuthentication auth = new TlsAuthentication()
+//					{
+//
+//						@Override
+//						public void notifyServerCertificate(TlsServerCertificate arg0) throws IOException
+//						{
+//							// TODO Auto-generated method stub
+//
+//						}
+//
+//						@Override
+//						public TlsCredentials getClientCredentials(CertificateRequest arg0) throws IOException
+//						{
+//							// TODO Auto-generated method stub
+//							return null;
+//						}
+//					};
+//					return auth;
+//				}
+//			};
+//			TlsClientProtocol protocol = new TlsClientProtocol(cSock.getInputStream(), cSock.getOutputStream());
+//			// Performs a TLS handshake
+//			protocol.connect(client);
+//			// Read/write to protocol.getInputStream(),
+//			// protocol.getOutputStream()
+//
+//			System.out.println("skippe Senden/Empfangen");
+//
+//			protocol.close();
+			
+			System.out.println("yeea");
 
 			cSock.close();
 
