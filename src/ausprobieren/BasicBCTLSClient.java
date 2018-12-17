@@ -11,6 +11,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 import org.bouncycastle.tls.CertificateRequest;
 import org.bouncycastle.tls.DefaultTlsClient;
@@ -26,6 +27,8 @@ public class BasicBCTLSClient
 {
 	public static void main(String[] args)
 	{
+		Security.addProvider(new BouncyCastleProvider());
+		
 		try
 		{
 
