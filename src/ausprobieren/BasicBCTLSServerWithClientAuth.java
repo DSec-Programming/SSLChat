@@ -9,6 +9,7 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 
 public class BasicBCTLSServerWithClientAuth
@@ -17,6 +18,7 @@ public class BasicBCTLSServerWithClientAuth
 	{
 		System.out.println("StartServer");
 		Security.addProvider(new BouncyCastleJsseProvider());
+		Security.addProvider(new BouncyCastleProvider());
 
 		SSLContext sslContext = SSLContext.getInstance("TLS", "BCJSSE");
 		KeyManagerFactory kmf = KeyManagerFactory.getInstance("PKIX", "BCJSSE");
