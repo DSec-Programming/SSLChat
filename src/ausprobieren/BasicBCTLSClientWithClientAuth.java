@@ -10,6 +10,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 import org.bouncycastle.tls.CertificateRequest;
 import org.bouncycastle.tls.DefaultTlsClient;
@@ -29,6 +30,7 @@ public class BasicBCTLSClientWithClientAuth
 		{
 
 			Security.addProvider(new BouncyCastleJsseProvider());
+			Security.addProvider(new BouncyCastleProvider());
 
 			SSLContext sslContext = SSLContext.getInstance("TLS", "BCJSSE");
 
@@ -41,7 +43,7 @@ public class BasicBCTLSClientWithClientAuth
 			sslContext.init(kmf.getKeyManagers(), trustMgrFact.getTrustManagers(), null);
 			SSLSocketFactory fact = sslContext.getSocketFactory();
 
-			SSLSocket cSock = (SSLSocket) fact.createSocket("143.93.55.138", 55555);
+			SSLSocket cSock = (SSLSocket) fact.createSocket("192.168.178.57", 55555);
 
 			TlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
 			TlsClient client = new DefaultTlsClient(crypto)

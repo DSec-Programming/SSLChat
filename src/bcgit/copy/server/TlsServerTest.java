@@ -24,8 +24,8 @@ public class TlsServerTest {
 	private static final SecureRandom secureRandom = new SecureRandom();
 
 	public static void main(String[] args) throws Exception {
-		InetAddress address = InetAddress.getLocalHost();
-		int port = 5556;
+		InetAddress address = InetAddress.getByName("localhost");
+		int port = 55555;
 
 		ServerSocket ss = new ServerSocket(port, 16, address);
 		try {

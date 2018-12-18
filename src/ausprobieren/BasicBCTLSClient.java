@@ -39,7 +39,7 @@ public class BasicBCTLSClient
 			trustMgrFact.init(Utils.createServerTrustStore());
 			sslContext.init(null, trustMgrFact.getTrustManagers(), null);
 			SSLSocketFactory fact = sslContext.getSocketFactory();
-			SSLSocket cSock = (SSLSocket) fact.createSocket("localhost", 55555);
+			SSLSocket cSock = (SSLSocket) fact.createSocket("192.168.178.57", 55555);
 
 			TlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
 			TlsClient client = new DefaultTlsClient(crypto)

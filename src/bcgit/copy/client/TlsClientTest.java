@@ -26,8 +26,9 @@ public class TlsClientTest
     public static void main(String[] args)
         throws Exception
     {
-        InetAddress address = InetAddress.getLocalHost();
-        int port = 5556;
+        //InetAddress address = InetAddress.getLocalHost();
+    	InetAddress address = InetAddress.getByName("localhost");
+        int port = 55555;
 
         long time1 = System.currentTimeMillis();
 
