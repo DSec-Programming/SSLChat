@@ -70,7 +70,11 @@ public class ClientConnection
 
 		if (s instanceof SSLSocket)
 		{
-
+			
+			this.connectionModel.setConnectionTyp("TLS");
+			this.connectionModel.setServerStatus(AUTHORIZED);
+			this.connectionModel.setClientStatus("‰ndern !! ");
+			
 		} else
 		{
 			// Da hier ein TCPSocket vorliegt muss das Model
@@ -79,23 +83,7 @@ public class ClientConnection
 			this.connectionModel.setServerStatus(UNAUTHORIZED);
 			this.connectionModel.setClientStatus(UNAUTHORIZED);
 		}
-		// hiermit schlieﬂt der Socket automatisch
-		// sollte das Programm terminieren
-		// Runtime.getRuntime().addShutdownHook(new Thread()
-		// {
-		// public void run()
-		// {
-		// try
-		// {
-		// toServer.writeObject(new ClientSaysBye());
-		// tcpSocket.close();
-		// System.out.println("The ClientSocket is shut down!");
-		// } catch (IOException e)
-		// {
-		// e.printStackTrace();
-		// }
-		// }
-		// });
+	
 	}
 
 	/**

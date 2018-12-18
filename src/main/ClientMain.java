@@ -53,15 +53,7 @@ public class ClientMain extends Application
 		primaryStage.setTitle("SSL Client v0.1");
 		primaryStage.setScene(scene);
 		primaryStage.setResizable(false);
-		// primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>()
-		// {
-		// @Override
-		// public void handle(WindowEvent e)
-		// {
-		// connectionModel.killConnectoin();
-		// System.out.println("Kill connection");
-		// }
-		// });
+
 		System.out.println("show");
 		primaryStage.show();
 	}

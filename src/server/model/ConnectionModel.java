@@ -7,12 +7,14 @@ import java.util.concurrent.TimeUnit;
 
 import server.connection.CallableSendBroadcastUpdate;
 import server.connection.RunnableObserveSingleClientConnections;
+import server.connection.SSLServerSocketEntrace;
 import server.connection.ServerSocketEntrace;
 import server.connection.SingleClientConnection;
 
 public class ConnectionModel
 {
 	private ServerSocketEntrace serverSocketEntrace;
+	private SSLServerSocketEntrace sslServerSocketEntrace;
 	private ThreadPoolExecutor pool;
 
 	private ArrayList<SingleClientConnection> openClientConnections;
@@ -36,7 +38,15 @@ public class ConnectionModel
 		this.serverSocketEntrace = sse;
 		this.pool.submit(new RunnableObserveSingleClientConnections(this, this.pool));
 		// this.pool.submit(new RunnableRemoveInactivesClients(this));
-
+	}
+	
+	public synchronized void setSSLServerSocketEntrace(SSLServerSocketEntrace SSLsse)
+	{
+		String s; //Redundant zu oben ??? 
+		
+		this.sslServerSocketEntrace = SSLsse;
+		this.pool.submit(new RunnableObserveSingleClientConnections(this, this.pool));
+		// this.pool.submit(new RunnableRemoveInactivesClients(this));
 	}
 
 	public synchronized void sendUpdate(SingleClientConnection scc, String type, ArrayList<String> update)

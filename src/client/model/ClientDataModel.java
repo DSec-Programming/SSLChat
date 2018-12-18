@@ -127,8 +127,8 @@ public class ClientDataModel
 
 	public synchronized void updateMessageToChat(ArrayList<String> updateList)
 	{
-		// Parameter ist der AktuelleChat
-		for (int i = this.observableChatList.size(); i < updateList.size(); i++)
+		this.observableChatList.clear();
+		for (int i = 0; i < updateList.size(); i++)
 		{
 			this.observableChatList.add(updateList.get(i));
 		}

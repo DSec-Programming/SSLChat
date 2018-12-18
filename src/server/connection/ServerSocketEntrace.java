@@ -35,8 +35,6 @@ public class ServerSocketEntrace extends Thread
 	public ServerSocketEntrace(int port, ConnectionModel model) throws IOException
 	{
 		setDaemon(true);
-		System.out.println("=============== SSLServer v01 ===============");
-		System.out.println("open ServerSocket...");
 		this.serverSocket = new ServerSocket(port);
 		this.model = model;
 	}

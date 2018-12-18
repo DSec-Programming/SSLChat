@@ -14,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import server.connection.SSLServerSocketEntrace;
 import server.connection.ServerSocketEntrace;
 import server.connection.SingleClientConnection;
 import server.model.ConnectionModel;
@@ -48,9 +49,13 @@ public class UIController
 		// später in buttonHandler
 		try
 		{
+			//INS MODEL AUSLAGERN !!! 
 			ServerSocketEntrace sse = new ServerSocketEntrace(55555, connectionModel);
+			SSLServerSocketEntrace SSLsse = new SSLServerSocketEntrace(44444, connectionModel);
 			connectionModel.setServerSocketEntrace(sse);
+			connectionModel.setSSLServerSocketEntrace(SSLsse);
 			sse.start();
+			SSLsse.start();
 
 		} catch (IOException e)
 		{

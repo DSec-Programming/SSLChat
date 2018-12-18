@@ -192,12 +192,19 @@ public class UIController
 		this.disconnectButton.disableProperty().set(false);
 		try
 		{
-			// INS MODEL AUSLAGERN
 			String serverIP = this.serverIPField.getText();
-			Socket s = new Socket(serverIP, 55555);
-			ClientConnection connection = new ClientConnection(s, clientDataModel, connectionModel);
-			connectionModel.setConnection(connection);
-			connectionModel.startWorkingConnection();
+			
+			if(this.protokollToggleGroup.getSelectedToggle().equals(this.radioTCP))
+			{
+				connectionModel.openSocket(serverIP, clientDataModel);
+			}
+			else if(this.protokollToggleGroup.getSelectedToggle().equals(this.radioTLS))
+			{
+				connectionModel.openSSLSocket(serverIP,clientDataModel);
+			}
+			
+			
+			
 		} catch (IOException ee)
 		{
 			clientDataModel.addNotification("IOException " + ee.getMessage());
