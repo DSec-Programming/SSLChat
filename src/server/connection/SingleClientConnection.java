@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import server.model.ConnectionModel;
@@ -63,38 +64,42 @@ public class SingleClientConnection
 	 **/
 	public synchronized void receiveClientRequests() throws IOException, InterruptedException, ClassNotFoundException
 	{
-		if (this.socket.getInputStream().available() == 0)
+		try
+		{
+			// Kurzen TimeOut setzen, damit der Server merkt, dass nichts auf dem InputStream anliegt --> SocketTimeOutException
+			this.socket.setSoTimeout(10);
+
+			Object requestFromClient = this.fromClient.readObject();
+
+			// wenn geschlossen
+			// dann müsste exception fliegen !!!
+			// wenn exception fliegt SOcket geschlossen !!
+			// wenn request vielleciht null
+
+			/**
+			 * Wieder sehr statisch geht schöner !!
+			 **/
+			if (requestFromClient instanceof MessageFromClient)
+			{
+				MessageFromClient msgFromClient = (MessageFromClient) requestFromClient;
+				String preparedString = "<" + this.username + ">:  " + msgFromClient.getMsg();
+				this.model.addMsgAtChat(preparedString);
+
+			} else if (requestFromClient instanceof ClientSaysBye)
+			{
+				connectionModel.removeSingleClientConnection(this);
+				socket.close();
+
+			} else
+			{
+				throw new RuntimeException("NICHT ERWARTETES OBJECT VOM CLIENT");
+			}
+		} catch (SocketTimeoutException e)
 		{
 			return;
 		}
 
-		Object requestFromClient = this.fromClient.readObject();
-		// wenn geschlossen
-		// dann müsste exception fliegen !!!
-		// wenn exception fliegt SOcket geschlossen !!
-		// wenn request vielleciht null
-
-		/**
-		 * Wieder sehr statisch geht schöner !!
-		 **/
-		if (requestFromClient instanceof MessageFromClient)
-		{
-			MessageFromClient msgFromClient = (MessageFromClient) requestFromClient;
-			String preparedString = "<" + this.username + ">:  " + msgFromClient.getMsg();
-			this.model.addMsgAtChat(preparedString);
-
-		} else if (requestFromClient instanceof ClientSaysBye)
-		{
-			connectionModel.removeSingleClientConnection(this);
-			socket.close();
-
-		} else
-		{
-			throw new RuntimeException("NICHT ERWARTETES OBJECT VOM CLIENT");
-		}
-
 	}
-
 
 	public synchronized String getUserName()
 	{

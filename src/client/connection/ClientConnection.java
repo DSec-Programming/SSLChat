@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 import javax.net.ssl.SSLSocket;
 
@@ -106,32 +107,39 @@ public class ClientConnection
 
 	public synchronized void tryReceiveAndUpdateModel() throws IOException, ClassNotFoundException, InterruptedException
 	{
-		if (this.tcpSocket.getInputStream().available() == 0)
+		try
+		{
+			// Kurzen TimeOut setzen, damit der Client merkt, dass nichts auf dem InputStream anliegt --> SocketTimeOutException
+			this.tcpSocket.setSoTimeout(10);
+			
+			Object data = this.fromServer.readObject();
+			// geht noch schöner und Dynamischer
+			// hier jetzt ehr statisch ...
+
+			if (data instanceof UpdateFromServer)
+			{
+				UpdateFromServer update = (UpdateFromServer) data;
+				if (update.getUpdateType().equals(CHAT_UPDATE))
+				{
+					// chatUpdate
+					this.clientDataModel.updateMessageToChat(update.getUpDate());
+
+				} else if (update.getUpdateType().equals(USER_UPDATE))
+				{
+					// userupdate
+					this.clientDataModel.updateUserInOnlineList(update.getUpDate());
+				} else
+				{
+					System.out.println("RUNTIMEEXECEPTION");
+					throw new RuntimeException("NICHT ERWARTETES OBJECT VOM SERVER");
+				}
+			}
+		}
+		catch(SocketTimeoutException e)
 		{
 			return;
 		}
-		Object data = this.fromServer.readObject();
-		// geht noch schöner und Dynamischer
-		// hier jetzt ehr statisch ...
-
-		if (data instanceof UpdateFromServer)
-		{
-			UpdateFromServer update = (UpdateFromServer) data;
-			if (update.getUpdateType().equals(CHAT_UPDATE))
-			{
-				// chatUpdate
-				this.clientDataModel.updateMessageToChat(update.getUpDate());
-
-			} else if (update.getUpdateType().equals(USER_UPDATE))
-			{
-				// userupdate
-				this.clientDataModel.updateUserInOnlineList(update.getUpDate());
-			} else
-			{
-				System.out.println("RUNTIMEEXECEPTION");
-				throw new RuntimeException("NICHT ERWARTETES OBJECT VOM SERVER");
-			}
-		}
+		
 	}
 
 	/*
