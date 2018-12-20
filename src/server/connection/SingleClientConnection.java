@@ -88,7 +88,8 @@ public class SingleClientConnection
 
 			} else if (requestFromClient instanceof ClientSaysBye)
 			{
-				connectionModel.removeSingleClientConnection(this);
+				String s;
+				//connectionModel.removeSingleClientConnection(this);
 				socket.close();
 
 			} else

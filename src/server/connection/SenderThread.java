@@ -1,11 +1,10 @@
-package client.connection;
+package server.connection;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-import streamedObjects.ClientHello;
 import streamedObjects.Sendable;
 
 public class SenderThread extends Thread

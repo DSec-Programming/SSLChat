@@ -9,7 +9,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -17,6 +16,7 @@ import javafx.scene.control.TextArea;
 import server.connection.SSLServerSocketEntrace;
 import server.connection.ServerSocketEntrace;
 import server.connection.SingleClientConnection;
+import server.connection.SingleClientConnection2;
 import server.model.ConnectionModel;
 import server.model.ServerDataModel;
 
@@ -131,10 +131,10 @@ public class UIController
 					synchronized (connectionModel)
 					{
 
-						ArrayList<SingleClientConnection> openConnections = connectionModel
+						ArrayList<SingleClientConnection2> openConnections = connectionModel
 								.getAllOpenSingleClientConnections();
 						ArrayList<String> actuelUserOnlineList = model.getUserOnlineList();
-						for (SingleClientConnection scc : openConnections)
+						for (SingleClientConnection2 scc : openConnections)
 						{
 							connectionModel.sendUpdate(scc, SingleClientConnection.USER_UPDATE, actuelUserOnlineList);
 							connectionModel.sendUpdate(scc, SingleClientConnection.CHAT_UPDATE,
@@ -166,10 +166,10 @@ public class UIController
 					synchronized (connectionModel)
 					{
 
-						ArrayList<SingleClientConnection> openConnections = connectionModel
+						ArrayList<SingleClientConnection2> openConnections = connectionModel
 								.getAllOpenSingleClientConnections();
 						ArrayList<String> actuelChat = model.getChatMessages();
-						for (SingleClientConnection scc : openConnections)
+						for (SingleClientConnection2 scc : openConnections)
 						{
 							connectionModel.sendUpdate(scc, SingleClientConnection.CHAT_UPDATE, actuelChat);
 						}

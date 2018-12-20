@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import client.model.ClientDataModel;
+import streamedObjects.ClientHello;
 import streamedObjects.ClientSaysBye;
 import streamedObjects.Sendable;
 

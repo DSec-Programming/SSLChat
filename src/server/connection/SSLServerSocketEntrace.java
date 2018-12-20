@@ -65,8 +65,10 @@ public class SSLServerSocketEntrace extends Thread
 				SSLSocket socketForClient = (SSLSocket) this.serverSocket.accept();
 				System.out.println("(SSLServerSocket)>>> NEW CLIENT : " + socketForClient.getRemoteSocketAddress());
 				
-				SingleClientConnection connection = new SingleClientConnection(socketForClient,
+				SingleClientConnection2 connection = new SingleClientConnection2(socketForClient,
 						this.model.getServerDataModel(), model);
+				
+				System.out.println("Create new (SSL) SingleClientConnection2");
 				
 				this.model.addSingleClientConnection(connection);
 				// schicke dem neuen User gleich den aktuellen Chat !!
