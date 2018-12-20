@@ -15,22 +15,20 @@ import javax.net.ssl.TrustManagerFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 
-
 import ausprobieren.Utils;
-import client.connection.ClientConnection;
-import client.connection.RunnableReceiveServerBroadcasts;
+import client.connection.ClientConnection2;
 import client.connection.RunnableSendObject;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import streamedObjects.ClientHello;
 import streamedObjects.MessageFromClient;
 
 public class ConnectionModel
 {
 	private User user;
-	private ClientConnection connection;
+	private ClientConnection2 connection;
 
 	private ThreadPoolExecutor pool;
-	private RunnableReceiveServerBroadcasts runnableReceiveServerBroadcasts;
 
 	private StringProperty ServerIP;
 	private StringProperty usedProvider;
@@ -48,7 +46,6 @@ public class ConnectionModel
 		this.connection = null;
 
 		this.pool = new ThreadPoolExecutor(2, 4, 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
-		this.runnableReceiveServerBroadcasts = null;
 
 		this.ServerIP = new SimpleStringProperty();
 		this.usedProvider = new SimpleStringProperty();
@@ -62,9 +59,11 @@ public class ConnectionModel
 	{
 		String str;//änder den port !?! so dass nict statisch 
 		Socket s = new Socket(ip, 55555);
-		ClientConnection connection = new ClientConnection(s, clientDataModel, this);
-		this.setConnection(connection);
-		this.startWorkingConnection();
+		ClientConnection2 connection = new ClientConnection2(s, clientDataModel);
+		this.connection = connection;
+		//Hallo sagen
+		this.pool.submit(new RunnableSendObject(this.connection, new ClientHello(user.getUsername())));
+
 	}
 
 	public synchronized void openSSLSocket(String ip, ClientDataModel clientDataModel) throws IOException
@@ -87,9 +86,8 @@ public class ConnectionModel
 			SSLSocketFactory fact = sslContext.getSocketFactory();
 			SSLSocket s = (SSLSocket) fact.createSocket(ip, 44444); //port änderungen !! 
 
-			ClientConnection connection = new ClientConnection(s, clientDataModel, this);
-			this.setConnection(connection);
-			this.startWorkingConnection();
+			ClientConnection2 connection = new ClientConnection2(s, clientDataModel);
+			this.connection = connection;
 
 		} catch (Exception e)
 		{
@@ -155,28 +153,9 @@ public class ConnectionModel
 		this.pool.submit(new RunnableSendObject(this.connection, msg));
 	}
 
-	public synchronized void setConnection(ClientConnection c) throws IOException
-	{
-		this.connection = c;
-	}
-
-	public synchronized void startWorkingConnection() throws IOException
-	{
-		this.runnableReceiveServerBroadcasts = new RunnableReceiveServerBroadcasts(connection);
-		this.pool.submit(this.runnableReceiveServerBroadcasts);
-		this.connection.send(this.getUser().getUsername());
-	}
-
 	public synchronized void killConnectoin() throws IOException
 	{
-		if (this.runnableReceiveServerBroadcasts != null)
-		{
-			this.runnableReceiveServerBroadcasts.stopRunning();
-		}
-		if (this.connection != null)
-		{
-			this.connection.close();
-		}
+		this.connection.stop();
 		this.connection = null;
 	}
 

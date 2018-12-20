@@ -1,9 +1,7 @@
 package client.controller;
 
 import java.io.IOException;
-import java.net.Socket;
 
-import client.connection.ClientConnection;
 import client.model.ClientDataModel;
 import client.model.ConnectionModel;
 import javafx.beans.property.BooleanProperty;

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import server.model.ConnectionModel;
 import server.model.ServerDataModel;
+import streamedObjects.ClientHello;
 import streamedObjects.ClientSaysBye;
 import streamedObjects.MessageFromClient;
 import streamedObjects.UpdateFromServer;
@@ -46,7 +47,7 @@ public class SingleClientConnection
 		this.fromClient = new ObjectInputStream(this.socket.getInputStream());
 
 		// ErsterRequest ist "anmeldung" des Users
-		this.username = (String) this.fromClient.readObject();
+		this.username = ((ClientHello)this.fromClient.readObject()).getUsername();
 	}
 
 	/**
@@ -64,10 +65,10 @@ public class SingleClientConnection
 	 **/
 	public synchronized void receiveClientRequests() throws IOException, InterruptedException, ClassNotFoundException
 	{
-		try
-		{
-			// Kurzen TimeOut setzen, damit der Server merkt, dass nichts auf dem InputStream anliegt --> SocketTimeOutException
-			this.socket.setSoTimeout(10);
+//		try
+//		{
+//			// Kurzen TimeOut setzen, damit der Server merkt, dass nichts auf dem InputStream anliegt --> SocketTimeOutException
+//			this.socket.setSoTimeout(50);
 
 			Object requestFromClient = this.fromClient.readObject();
 
@@ -94,10 +95,10 @@ public class SingleClientConnection
 			{
 				throw new RuntimeException("NICHT ERWARTETES OBJECT VOM CLIENT");
 			}
-		} catch (SocketTimeoutException e)
-		{
-			return;
-		}
+//		} catch (SocketTimeoutException e)
+//		{
+//			return;
+//		}
 
 	}
 

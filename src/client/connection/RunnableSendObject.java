@@ -1,6 +1,7 @@
 package client.connection;
 
-import java.io.IOException;
+
+import streamedObjects.Sendable;
 
 /**
  * Spezifikation:
@@ -17,25 +18,20 @@ import java.io.IOException;
 public class RunnableSendObject implements Runnable
 {
 
-	private ClientConnection connection;
-	private Object toSend;
+	private ClientConnection2 connection;
+	private Sendable toSend;
 
-	public RunnableSendObject(ClientConnection connection, Object o)
+	public RunnableSendObject(ClientConnection2 connection, Sendable s)
 	{
 		// TODO Auto-generated constructor stub
 		this.connection = connection;
-		this.toSend = o;
+		this.toSend = s;
 	}
 
 	@Override
 	public void run()
 	{
-		try
-		{
-			this.connection.send(this.toSend);
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+		this.connection.send(this.toSend);
+
 	}
 }

@@ -24,7 +24,7 @@ public class ConnectionModel
 	public ConnectionModel(ServerDataModel model)
 	{
 		this.serverDataModel = model;
-		this.pool = new ThreadPoolExecutor(4, 8, 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+		this.pool = new ThreadPoolExecutor(16, 16, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 		this.openClientConnections = new ArrayList<>();
 	}
 
