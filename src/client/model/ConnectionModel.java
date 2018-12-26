@@ -155,7 +155,10 @@ public class ConnectionModel
 
 	public synchronized void killConnectoin() throws IOException
 	{
-		this.connection.stop();
+		if(this.connection != null)
+		{
+			this.connection.stop();
+		}
 		this.connection = null;
 	}
 

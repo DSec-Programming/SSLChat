@@ -37,10 +37,13 @@ public class ClientMain extends Application
 	@Override
 	public void stop() throws Exception
 	{
-		connectionModel.killConnectoin();
-		System.out.println("Kill connection");
-		connectionModel.shutdownThreadPool();
-		System.out.println("Shutdown pool");
+		if(connectionModel != null)
+		{
+			connectionModel.killConnectoin();
+			System.out.println("Kill connection");
+			connectionModel.shutdownThreadPool();
+			System.out.println("Shutdown pool");
+		}
 
 	}
 
