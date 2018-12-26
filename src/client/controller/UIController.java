@@ -20,6 +20,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -110,6 +111,8 @@ public class UIController
 	private Menu menuFile, menuProperties, menuInfo;
 	@FXML
 	private MenuItem itemUsername;
+	@FXML
+	private Label labelLoggedInUser;
 	
 	private User user;
 	
@@ -160,6 +163,7 @@ public class UIController
 		//
 		this.disconnectButton.disableProperty().set(true);
 		
+		labelLoggedInUser.setVisible(false);
 		user = new User();
 
 	}
@@ -226,6 +230,8 @@ public class UIController
 			openAlert();
 			return;
 		}
+		labelLoggedInUser.setVisible(true);
+		labelLoggedInUser.setText("Logged in as: " + user.getUsername());
 		showChatPane();
 		disableConnectConfig();
 		this.connectButton.disableProperty().set(true);
@@ -259,6 +265,7 @@ public class UIController
 
 	public void handleDisconnectButton(ActionEvent e)
 	{
+		labelLoggedInUser.setVisible(false);
 		hideChatPane();
 		enableConnectConfig();
 		this.disconnectButton.disableProperty().set(true);

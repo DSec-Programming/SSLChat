@@ -258,6 +258,14 @@
                                     <Insets bottom="7.0" left="15.0" right="7.0" top="20.0" />
                                  </VBox.margin>
                               </HBox>
+                        <Label fx:id="labelLoggedInUser" text="Logged in as: Test" textFill="#750707">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="7.0" left="15.0" right="7.0" top="7.0" />
+                           </VBox.margin>
+                        </Label>
                            </children>
                      <VBox.margin>
                         <Insets />
