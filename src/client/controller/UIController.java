@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import client.model.ClientDataModel;
 import client.model.ConnectionModel;
+import client.model.User;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -12,8 +13,16 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -24,6 +33,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import streamedObjects.MessageFromClient;
 
 /**
@@ -92,6 +103,16 @@ public class UIController
 	private RadioButton radioTCP;
 	@FXML
 	private RadioButton radioTLS;
+	
+	@FXML
+	private MenuBar menuBar;
+	@FXML
+	private Menu menuFile, menuProperties, menuInfo;
+	@FXML
+	private MenuItem itemUsername;
+	
+	private User user;
+	
 
 	// zu überwachende Dinge aus dem Model!
 	// welche gleichzeitig auch im UI angezegit werden
@@ -138,6 +159,8 @@ public class UIController
 		hideChatPane();
 		//
 		this.disconnectButton.disableProperty().set(true);
+		
+		user = new User();
 
 	}
 
@@ -181,9 +204,28 @@ public class UIController
 	{
 		clientDataModel.clearNotifications();
 	}
+	
+	public void openAlert()
+	{
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Info: Set Username !");
+		alert.setHeaderText("");
+		alert.setContentText("Before you loggin, please visit the menu and go to \n"
+				+ "'Properties' --> 'Username', and set your Username !");
+		alert.showAndWait();
+	}
 
 	public void handleConnectButton(ActionEvent e)
 	{
+		/*
+		 * Wenn der Benutzername noch nicht gesetzt ist,
+		 * wird eine Warnung angezeigt
+		 */
+		if(user.getUsername() == null || user.getUsername().equals(""))
+		{
+			openAlert();
+			return;
+		}
 		showChatPane();
 		disableConnectConfig();
 		this.connectButton.disableProperty().set(true);
@@ -231,6 +273,33 @@ public class UIController
 		} catch (IOException ee)
 		{
 			ee.printStackTrace();
+		}
+	}
+	
+	/**
+	 * öffnet eine neue Stage. --> Wenn der Button "Apply" 
+	 * gedrückt wurde, wirde der Benutzername gesetzt
+	 * @param e
+	 */
+	public void handleSetUsername(ActionEvent e)
+	{	
+		try
+		{
+			Parent root = FXMLLoader.load(getClass().getResource("../ui/username.fxml"));	
+			Scene scene = new Scene(root);
+			Stage stage = new Stage();
+			stage.setTitle("Change username");
+			stage.setScene(scene);
+			stage.initModality(Modality.APPLICATION_MODAL);
+			stage.setResizable(false);
+			stage.showAndWait();
+			user.setUsername(UsernameController.getUsername());
+			connectionModel.setUser(user);
+			System.out.println(user.getUsername());
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
 		}
 	}
 

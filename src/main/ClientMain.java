@@ -23,10 +23,6 @@ public class ClientMain extends Application
 		clientDatamodel.setHavAnImportedCert(false);
 		clientDatamodel.setHaveAnCertFromServer(false);
 
-		User user = new User();
-		user.setUsername("Tim");
-		connectionModel.setUser(user);
-
 		UIController.setClientDataModel(clientDatamodel);
 		UIController.setConnectionModel(connectionModel);
 

@@ -12,19 +12,19 @@
          <top>
             <HBox prefHeight="19.0" prefWidth="566.0" BorderPane.alignment="CENTER">
                <children>
-                  <MenuBar prefHeight="25.0" prefWidth="942.0">
+                  <MenuBar fx:id="menuBar" prefHeight="25.0" prefWidth="942.0">
                     <menus>
-                      <Menu mnemonicParsing="false" text="File">
+                      <Menu fx:id="menuFile" mnemonicParsing="false" text="File">
                         <items>
                           <MenuItem mnemonicParsing="false" text="Close" />
                         </items>
                       </Menu>
-                      <Menu mnemonicParsing="false" text="Edit">
+                      <Menu fx:id="menuProperties" mnemonicParsing="false" text="Properties">
                         <items>
-                          <MenuItem mnemonicParsing="false" text="Delete" />
+                          <MenuItem fx:id="itemUsername" mnemonicParsing="false" onAction="#handleSetUsername" text="Username" />
                         </items>
                       </Menu>
-                      <Menu mnemonicParsing="false" text="Help">
+                      <Menu fx:id="menuInfo" mnemonicParsing="false" text="Info">
                         <items>
                           <MenuItem mnemonicParsing="false" text="About" />
                         </items>
@@ -122,7 +122,7 @@
                                                       <Font size="10.0" />
                                                    </font>
                                                 </TextArea>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Lokal infos">
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Local infos">
                                                    <VBox.margin>
                                                       <Insets left="10.0" />
                                                    </VBox.margin>
