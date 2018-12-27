@@ -94,7 +94,7 @@
                                                                   <Insets left="7.0" right="10.0" />
                                                                </HBox.margin>
                                                             </TextField>
-                                                            <Button fx:id="sendButton" mnemonicParsing="false" onAction="#handleSendButton" prefHeight="25.0" prefWidth="142.0" text="send" />
+                                                            <Button fx:id="sendButton" defaultButton="true" mnemonicParsing="false" onAction="#handleSendButton" prefHeight="25.0" prefWidth="142.0" text="send" />
                                                          </children>
                                                       </HBox>
                                                    </children>

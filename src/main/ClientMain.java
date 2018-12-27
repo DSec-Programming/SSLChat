@@ -3,7 +3,6 @@ package main;
 import client.controller.UIController;
 import client.model.ClientDataModel;
 import client.model.ConnectionModel;
-import client.model.User;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

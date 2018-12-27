@@ -5,6 +5,7 @@ import java.io.IOException;
 import client.model.ClientDataModel;
 import client.model.ConnectionModel;
 import client.model.User;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -334,7 +335,8 @@ public class UIController
 				{
 					chat += (s + "\n");
 				}
-				chatTextArea.setText(chat);
+				final String c = chat;
+				Platform.runLater(() -> chatTextArea.setText(c));
 			}
 		});
 
