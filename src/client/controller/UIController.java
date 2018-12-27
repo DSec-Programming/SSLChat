@@ -1,6 +1,14 @@
 package client.controller;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import client.model.ClientDataModel;
 import client.model.ConnectionModel;
@@ -105,7 +113,7 @@ public class UIController
 	private RadioButton radioTCP;
 	@FXML
 	private RadioButton radioTLS;
-	
+
 	@FXML
 	private MenuBar menuBar;
 	@FXML
@@ -114,9 +122,8 @@ public class UIController
 	private MenuItem itemUsername;
 	@FXML
 	private Label labelLoggedInUser;
-	
+
 	private User user;
-	
 
 	// zu überwachende Dinge aus dem Model!
 	// welche gleichzeitig auch im UI angezegit werden
@@ -163,7 +170,7 @@ public class UIController
 		hideChatPane();
 		//
 		this.disconnectButton.disableProperty().set(true);
-		
+
 		labelLoggedInUser.setVisible(false);
 		user = new User();
 	}
@@ -195,7 +202,7 @@ public class UIController
 	{
 		String msg = messageInputField.getText();
 		messageInputField.setText("");
-		if(!msg.equals(""))
+		if (!msg.equals(""))
 		{
 			try
 			{
@@ -211,7 +218,7 @@ public class UIController
 	{
 		clientDataModel.clearNotifications();
 	}
-	
+
 	public void openAlert()
 	{
 		Alert alert = new Alert(AlertType.INFORMATION);
@@ -230,7 +237,7 @@ public class UIController
 		 * Wenn der Benutzername noch nicht gesetzt ist,
 		 * wird eine Warnung angezeigt
 		 */
-		if(user.getUsername() == null || user.getUsername().equals(""))
+		if (user.getUsername() == null || user.getUsername().equals(""))
 		{
 			openAlert();
 			return;
@@ -244,18 +251,15 @@ public class UIController
 		try
 		{
 			String serverIP = this.serverIPField.getText();
-			
-			if(this.protokollToggleGroup.getSelectedToggle().equals(this.radioTCP))
+
+			if (this.protokollToggleGroup.getSelectedToggle().equals(this.radioTCP))
 			{
 				connectionModel.openSocket(serverIP, clientDataModel);
-			}
-			else if(this.protokollToggleGroup.getSelectedToggle().equals(this.radioTLS))
+			} else if (this.protokollToggleGroup.getSelectedToggle().equals(this.radioTLS))
 			{
-				connectionModel.openSSLSocket(serverIP,clientDataModel);
+				connectionModel.openSSLSocket(serverIP, clientDataModel);
 			}
-			
-			
-			
+
 		} catch (IOException ee)
 		{
 			clientDataModel.addNotification("IOException " + ee.getMessage());
@@ -287,17 +291,17 @@ public class UIController
 			ee.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * öffnet eine neue Stage. --> Wenn der Button "Apply" 
 	 * gedrückt wurde, wirde der Benutzername gesetzt
 	 * @param e
 	 */
 	public void handleSetUsername(ActionEvent e)
-	{	
+	{
 		try
 		{
-			Parent root = FXMLLoader.load(getClass().getResource("../ui/username.fxml"));	
+			Parent root = FXMLLoader.load(getClass().getResource("/client/ui/username.fxml"));
 			Scene scene = new Scene(root);
 			Stage stage = new Stage();
 			stage.setTitle("Change username");
@@ -310,11 +314,41 @@ public class UIController
 			user.setUsername(UsernameController.getUsername());
 			connectionModel.setUser(user);
 			System.out.println(user.getUsername());
-		}
-		catch(Exception ex)
+		} catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}
+	}
+
+	/*
+	 * öffnet die README-Datei im Standardprogramm
+	 */
+	public void handleShowReadme(ActionEvent e)
+	{
+		Thread t = new Thread()
+		{
+			@Override
+			public void run()
+			{
+				try
+				{
+					if(Desktop.isDesktopSupported())
+					{
+						InputStream resource = getClass().getResourceAsStream("/info/README.txt");					
+						File file = File.createTempFile("README", ".txt");
+						System.out.println(file.getName());
+						Files.copy(resource, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+						file.deleteOnExit();		
+						Desktop.getDesktop().open(file);
+						resource.close();						
+					}
+				} catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		};
+		t.start();
 	}
 
 	public void handleImportCertificate(ActionEvent e)
@@ -347,8 +381,8 @@ public class UIController
 				 * Dient nur dazu, um den ChangeListener der chatTextArea zu triggern,
 				 * damit diese immer ans Ende scrolled
 				 */
-				Platform.runLater(() -> chatTextArea.appendText("")); 
-				
+				Platform.runLater(() -> chatTextArea.appendText(""));
+
 			}
 		});
 
@@ -411,7 +445,7 @@ public class UIController
 		this.existKeystore.addListener(lokalInfoslistener);
 		this.haveImportetCert.addListener(lokalInfoslistener);
 		this.haveOwnCert.addListener(lokalInfoslistener);
-		
+
 		/*
 		 * ChangeListener der chatTextArea -> bei neuem Eintrag wird immer ans Ende gescrolled
 		 */
@@ -420,7 +454,7 @@ public class UIController
 			@Override
 			public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue)
 			{
-				chatTextArea.setScrollTop(Double.MAX_VALUE);			
+				chatTextArea.setScrollTop(Double.MAX_VALUE);
 			}
 		});
 	}

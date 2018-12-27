@@ -28,7 +28,7 @@ public class ServerMain extends Application
 	@Override
 	public void start(Stage primaryStage) throws Exception
 	{
-		Pane root = (Pane) FXMLLoader.load(getClass().getResource("../server/ui/ServerUI.fxml"));
+		Pane root = (Pane) FXMLLoader.load(getClass().getResource("/server/ui/ServerUI.fxml"));
 		Scene scene = new Scene(root);
 
 		primaryStage.setTitle("SSL Server v0.1");

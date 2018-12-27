@@ -45,7 +45,7 @@ public class ClientMain extends Application
 	@Override
 	public void start(Stage primaryStage) throws Exception
 	{
-		Pane root = (Pane) FXMLLoader.load(getClass().getResource("../client/ui/current.fxml"));
+		Pane root = (Pane) FXMLLoader.load(getClass().getResource("/client/ui/current.fxml"));
 		Scene scene = new Scene(root);
 
 		primaryStage.setTitle("SSL Client v0.1");
