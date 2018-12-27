@@ -166,7 +166,6 @@ public class UIController
 		
 		labelLoggedInUser.setVisible(false);
 		user = new User();
-
 	}
 
 	/**
@@ -196,12 +195,15 @@ public class UIController
 	{
 		String msg = messageInputField.getText();
 		messageInputField.setText("");
-		try
+		if(!msg.equals(""))
 		{
-			connectionModel.sendMessageOverClientConnection(new MessageFromClient(msg));
-		} catch (Exception ee)
-		{
-			ee.printStackTrace();
+			try
+			{
+				connectionModel.sendMessageOverClientConnection(new MessageFromClient(msg));
+			} catch (Exception ee)
+			{
+				ee.printStackTrace();
+			}
 		}
 	}
 
@@ -213,6 +215,8 @@ public class UIController
 	public void openAlert()
 	{
 		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setX(connectButton.getScene().getWindow().getX() + 100);
+		alert.setY(connectButton.getScene().getWindow().getY() + 100);
 		alert.setTitle("Info: Set Username !");
 		alert.setHeaderText("");
 		alert.setContentText("Before you loggin, please visit the menu and go to \n"
@@ -298,6 +302,8 @@ public class UIController
 			Stage stage = new Stage();
 			stage.setTitle("Change username");
 			stage.setScene(scene);
+			stage.setX(connectButton.getScene().getWindow().getX() + 200);
+			stage.setY(connectButton.getScene().getWindow().getY() + 100);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setResizable(false);
 			stage.showAndWait();
@@ -337,6 +343,12 @@ public class UIController
 				}
 				final String c = chat;
 				Platform.runLater(() -> chatTextArea.setText(c));
+				/* 
+				 * Dient nur dazu, um den ChangeListener der chatTextArea zu triggern,
+				 * damit diese immer ans Ende scrolled
+				 */
+				Platform.runLater(() -> chatTextArea.appendText("")); 
+				
 			}
 		});
 
@@ -399,7 +411,18 @@ public class UIController
 		this.existKeystore.addListener(lokalInfoslistener);
 		this.haveImportetCert.addListener(lokalInfoslistener);
 		this.haveOwnCert.addListener(lokalInfoslistener);
-
+		
+		/*
+		 * ChangeListener der chatTextArea -> bei neuem Eintrag wird immer ans Ende gescrolled
+		 */
+		chatTextArea.textProperty().addListener(new ChangeListener<Object>()
+		{
+			@Override
+			public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue)
+			{
+				chatTextArea.setScrollTop(Double.MAX_VALUE);			
+			}
+		});
 	}
 
 	private void setAllBorders()
