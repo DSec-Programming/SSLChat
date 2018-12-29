@@ -127,8 +127,6 @@ public class UIController
 	private Label labelLoggedInUser;
 
 	private User user;
-	
-	private DateTime date;
 
 	// zu überwachende Dinge aus dem Model!
 	// welche gleichzeitig auch im UI angezegit werden
@@ -178,10 +176,6 @@ public class UIController
 
 		labelLoggedInUser.setVisible(false);
 		user = new User();
-		/*
-		 * Datums und Zeit ausgabe
-		 */
-		date = new DateTime();
 	}
 
 	/**
@@ -330,6 +324,27 @@ public class UIController
 		{
 			ex.printStackTrace();
 		}
+	}
+	
+	public void handleDeveloperInfo(ActionEvent e)
+	{
+		Parent root;
+		try
+		{
+			root = FXMLLoader.load(getClass().getResource("/client/ui/developerInfo.fxml"));
+			Scene scene = new Scene(root);
+			Stage stage = new Stage();
+			stage.setTitle("Developer-Info");
+			stage.setScene(scene);
+			stage.setX(connectButton.getScene().getWindow().getX() + 200);
+			stage.setY(connectButton.getScene().getWindow().getY() + 100);
+			stage.initModality(Modality.APPLICATION_MODAL);
+			stage.setResizable(false);
+			stage.show();
+		} catch (IOException e1)
+		{
+			e1.printStackTrace();
+		}		
 	}
 
 	/*
