@@ -9,9 +9,12 @@ import java.io.OutputStream;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import client.model.ClientDataModel;
 import client.model.ConnectionModel;
+import client.model.DateTime;
 import client.model.User;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -124,6 +127,8 @@ public class UIController
 	private Label labelLoggedInUser;
 
 	private User user;
+	
+	private DateTime date;
 
 	// zu überwachende Dinge aus dem Model!
 	// welche gleichzeitig auch im UI angezegit werden
@@ -173,6 +178,10 @@ public class UIController
 
 		labelLoggedInUser.setVisible(false);
 		user = new User();
+		/*
+		 * Datums und Zeit ausgabe
+		 */
+		date = new DateTime();
 	}
 
 	/**
@@ -242,8 +251,6 @@ public class UIController
 			openAlert();
 			return;
 		}
-		labelLoggedInUser.setVisible(true);
-		labelLoggedInUser.setText("Logged in as: " + user.getUsername());
 		showChatPane();
 		disableConnectConfig();
 		this.connectButton.disableProperty().set(true);
@@ -259,10 +266,13 @@ public class UIController
 			{
 				connectionModel.openSSLSocket(serverIP, clientDataModel);
 			}
+			labelLoggedInUser.setText("Logged in as: " + user.getUsername());
+			labelLoggedInUser.setVisible(true);
+			clientDataModel.addNotification("Successfully logged in !");
 
 		} catch (IOException ee)
 		{
-			clientDataModel.addNotification("IOException " + ee.getMessage());
+			clientDataModel.addNotification("Server is not responding !");
 			ee.printStackTrace();
 			hideChatPane();
 			enableConnectConfig();
@@ -273,7 +283,7 @@ public class UIController
 	}
 
 	public void handleDisconnectButton(ActionEvent e)
-	{
+	{		
 		labelLoggedInUser.setVisible(false);
 		hideChatPane();
 		enableConnectConfig();
@@ -286,6 +296,7 @@ public class UIController
 			// chat oberfläche ausschalten
 			this.activeUserContent.clear();
 			this.chatContent.clear();
+			clientDataModel.addNotification("Successfully logged out !");
 		} catch (IOException ee)
 		{
 			ee.printStackTrace();
@@ -314,6 +325,7 @@ public class UIController
 			user.setUsername(UsernameController.getUsername());
 			connectionModel.setUser(user);
 			System.out.println(user.getUsername());
+			clientDataModel.addNotification("Username set in: " + user.getUsername());
 		} catch (Exception ex)
 		{
 			ex.printStackTrace();
@@ -411,6 +423,11 @@ public class UIController
 					notifications += (s + "\n");
 				}
 				notificationsTextArea.setText(notifications);
+				/* 
+				 * Dient nur dazu, um den ChangeListener der notificationsTextArea zu triggern,
+				 * damit diese immer ans Ende scrolled
+				 */
+				Platform.runLater(() -> notificationsTextArea.appendText(""));
 			}
 		});
 
@@ -457,6 +474,19 @@ public class UIController
 				chatTextArea.setScrollTop(Double.MAX_VALUE);
 			}
 		});
+		
+		/*
+		 * ChangeListener der notificationTextArea -> bei neuem Eintrag wird immer ans Ende gescrolled
+		 */
+		notificationsTextArea.textProperty().addListener(new ChangeListener<Object>()
+		{
+			@Override
+			public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue)
+			{
+				notificationsTextArea.setScrollTop(Double.MAX_VALUE);
+			}
+		});
+		
 	}
 
 	private void setAllBorders()

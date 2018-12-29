@@ -137,7 +137,8 @@ public class ClientDataModel
 	public synchronized void addNotification(String notification)
 	{
 		// Parameter ist eine neue Meldung
-		this.observableNotificationList.add(notification);
+		DateTime date = new DateTime();
+		this.observableNotificationList.add(date.getDateAndTime() + notification);
 	}
 
 	public synchronized void clearNotifications()

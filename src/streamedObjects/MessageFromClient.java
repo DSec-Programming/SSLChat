@@ -3,6 +3,8 @@ package streamedObjects;
 import java.io.Serializable;
 import java.security.SecureRandom;
 
+import client.model.DateTime;
+
 public class MessageFromClient extends Sendable implements Serializable
 {
 	public static final long serialVersionUID = 0L;
@@ -18,8 +20,8 @@ public class MessageFromClient extends Sendable implements Serializable
 		SecureRandom rand = new SecureRandom();
 		this.id = rand.nextLong();
 		this.timeStamp = System.currentTimeMillis();
-		
-		this.msg = msg;
+		DateTime time = new DateTime();
+		this.msg = msg + time.getTime();
 	}
 
 	public String getMsg()
