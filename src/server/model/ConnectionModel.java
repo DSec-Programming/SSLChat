@@ -63,6 +63,7 @@ public class ConnectionModel
 		// adde auch in OnlineList
 		
 		this.serverDataModel.addUserInOnlineList(scc.getUsername());
+		this.serverDataModel.addNotification(scc.getUsername() + " connected !");
 	}
 
 	public synchronized void removeSingleClientConnection(SingleClientConnection2 scc)
@@ -70,6 +71,7 @@ public class ConnectionModel
 		this.openClientConnections.remove(scc);
 		// remove auch aus OnlineList
 		this.serverDataModel.removeUserInOnlineList(scc.getUsername());
+		this.serverDataModel.addNotification(scc.getUsername() + " logged out !");
 	}
 
 	public synchronized ArrayList<SingleClientConnection2> getAllOpenSingleClientConnections()

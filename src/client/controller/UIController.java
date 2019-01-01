@@ -2,19 +2,14 @@ package client.controller;
 
 import java.awt.Desktop;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.CopyOption;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 import client.model.ClientDataModel;
 import client.model.ConnectionModel;
-import client.model.DateTime;
 import client.model.User;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -176,6 +171,15 @@ public class UIController
 
 		labelLoggedInUser.setVisible(false);
 		user = new User();
+		try
+		{
+			InetAddress address = InetAddress.getLocalHost();
+			clientDataModel.addNotification("Local IP: " + address.getHostAddress());
+		} catch (UnknownHostException e)
+		{
+			e.printStackTrace();
+		}			
+		
 	}
 
 	/**
@@ -318,8 +322,10 @@ public class UIController
 			stage.showAndWait();
 			user.setUsername(UsernameController.getUsername());
 			connectionModel.setUser(user);
-			System.out.println(user.getUsername());
-			clientDataModel.addNotification("Username set in: " + user.getUsername());
+			if(user.getUsername() != null)
+			{
+				clientDataModel.addNotification("Username set in: " + user.getUsername());
+			}
 		} catch (Exception ex)
 		{
 			ex.printStackTrace();

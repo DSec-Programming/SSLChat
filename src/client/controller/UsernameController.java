@@ -27,7 +27,7 @@ public class UsernameController
 	
 	public void handleSetUsername()
 	{
-		if(!textField.getText().equals(""))
+		if(!textField.getText().isEmpty())
 		{
 			 /** Ggf. noch anhand von onlineUserList überprüfen ob Name schon vorhanden
 			  * wenn ja --> (2) hinten an Namen anfügen

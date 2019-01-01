@@ -1,10 +1,13 @@
 package server.controller;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -37,11 +40,14 @@ public class UIController
 	private ObservableList<String> observableUserOnlineList;
 
 	private ObservableList<String> observableChatMessages;
+	
+	private ObservableList<String> observableNotificationList;
 
 	public void initialize()
 	{
 		this.observableUserOnlineList = model.getUserObservableOnlineList();
 		this.observableChatMessages = model.getObservableChatMessages();
+		this.observableNotificationList = model.getObservableNotificationList();
 
 		setAllListener();
 
@@ -56,6 +62,9 @@ public class UIController
 			connectionModel.setSSLServerSocketEntrace(SSLsse);
 			sse.start();
 			SSLsse.start();
+			InetAddress address = InetAddress.getLocalHost();			
+			model.addNotification("Server successfully started !");
+			model.addNotification("Local IP: " + address.getHostAddress());
 
 		} catch (IOException e)
 		{
@@ -86,10 +95,7 @@ public class UIController
 	public void clearChat(ActionEvent e)
 	{
 	    observableChatMessages.clear();
-	    System.out.println("Aufgerufen!");
-	    // TODO
-	    // textArea der Clients aktualisiert sich nicht
-	    // observableChatMessages.clear() --> update wird nicht getriggered
+	    model.addNotification("Chat cleared !");
 	}
 	
 	public void kickUser(ActionEvent e)
@@ -101,6 +107,7 @@ public class UIController
 	        // TODO Client soll Flag gesendet bekommen --> Gezwungenermaßen ausloggen
 	        model.removeUserInOnlineList(user);
 	        activeUserListView.getSelectionModel().select(0);
+	        model.addNotification(user + " successfully kicked !");
 	    }
 	}
 
@@ -153,8 +160,8 @@ public class UIController
 				{
 					chat += (s + "\n");
 				}
-				chatTextArea.setText(chat);
-				System.out.println("jakdkajskdka");
+				final String c = chat;
+				Platform.runLater(() -> chatTextArea.setText(c));
 				// trigger die Änderungen bei den Clients
 				// ! Model muss synchronisiert werden damit niemand anderes
 				// dazwischenspucken
@@ -175,6 +182,34 @@ public class UIController
 						}
 					}
 				}
+			}
+		});
+		
+		this.observableNotificationList.addListener(new ListChangeListener<String>()
+		{
+			public void onChanged(ListChangeListener.Change<? extends String> change)
+			{
+				String notifications = "";
+				for (String s : observableNotificationList)
+				{
+					notifications += (s + "\n");
+				}
+				final String noti = notifications;
+				Platform.runLater(() -> infoTextArea.setText(noti));
+				/* 
+				 * Dient nur dazu, um den ChangeListener der notificationsTextArea zu triggern,
+				 * damit diese immer ans Ende scrolled
+				 */
+				Platform.runLater(() -> infoTextArea.appendText(""));
+			}
+		});
+		
+		infoTextArea.textProperty().addListener(new ChangeListener<Object>()
+		{
+			@Override
+			public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue)
+			{
+				infoTextArea.setScrollTop(Double.MAX_VALUE);
 			}
 		});
 	}

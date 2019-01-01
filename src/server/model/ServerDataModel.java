@@ -2,6 +2,7 @@ package server.model;
 
 import java.util.ArrayList;
 
+import client.model.DateTime;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -13,6 +14,8 @@ public class ServerDataModel
 
 	private ObservableList<String> observableUserOnlineList;
 	private ObservableList<String> observableChatMessages;
+	// Notificaions
+	private ObservableList<String> observableNotificationList;
 
 	public ServerDataModel()
 	{
@@ -23,6 +26,7 @@ public class ServerDataModel
 		this.chatMessages = new ArrayList<>();
 		this.observableUserOnlineList = FXCollections.observableList(this.userOnlineList);
 		this.observableChatMessages = FXCollections.observableList(this.chatMessages);
+		this.observableNotificationList = FXCollections.observableList(new ArrayList<>());
 
 		// Persistente verläufe einlesen!
 		// TODO
@@ -52,6 +56,24 @@ public class ServerDataModel
 	public synchronized void addMsgAtChat(String s)
 	{
 		this.observableChatMessages.add(s);
+	}
+	
+	public synchronized void addNotification(String notification)
+	{
+		// Parameter ist eine neue Meldung
+		DateTime date = new DateTime();
+		this.observableNotificationList.add(date.getDateAndTime() + notification);
+	}
+
+	public synchronized void clearNotifications()
+	{
+		// löscht alle Meldungen
+		this.observableNotificationList.clear();
+	}
+	
+	public synchronized ObservableList<String> getObservableNotificationList()
+	{
+		return this.observableNotificationList;
 	}
 
 	/**
