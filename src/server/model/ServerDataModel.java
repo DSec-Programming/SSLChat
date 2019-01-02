@@ -11,6 +11,7 @@ public class ServerDataModel
 
 	private ArrayList<String> userOnlineList;
 	private ArrayList<String> chatMessages;
+	private ArrayList<String> infoMessages;
 
 	private ObservableList<String> observableUserOnlineList;
 	private ObservableList<String> observableChatMessages;
@@ -24,9 +25,10 @@ public class ServerDataModel
 		// macht bei onlienlist keinen sinn !!
 		this.userOnlineList = new ArrayList<>();
 		this.chatMessages = new ArrayList<>();
+		this.infoMessages = new ArrayList<>();
 		this.observableUserOnlineList = FXCollections.observableList(this.userOnlineList);
 		this.observableChatMessages = FXCollections.observableList(this.chatMessages);
-		this.observableNotificationList = FXCollections.observableList(new ArrayList<>());
+		this.observableNotificationList = FXCollections.observableList(this.infoMessages);
 
 		// Persistente verl‰ufe einlesen!
 		// TODO
@@ -106,6 +108,20 @@ public class ServerDataModel
 		// den Stand anfordert
 		ArrayList<String> copy = new ArrayList<>();
 		for (String s : this.chatMessages)
+		{
+			copy.add(s);
+		}
+		return copy;
+	}
+	
+	public synchronized ArrayList<String> getInfoMessages()
+	{
+		// COPY da ansonsten eine ConcurrentModificationException
+		// geworfen werden kann
+		// Diese Methode wird ausschlieﬂlich aufgerufen wenn ein Client
+		// den Stand anfordert
+		ArrayList<String> copy = new ArrayList<>();
+		for (String s : this.infoMessages)
 		{
 			copy.add(s);
 		}

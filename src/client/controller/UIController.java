@@ -22,6 +22,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.print.PageLayout;
+import javafx.print.PrinterJob;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -41,6 +43,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import streamedObjects.MessageFromClient;
@@ -99,9 +102,7 @@ public class UIController
 	@FXML
 	private TextArea lokalInfos;
 	@FXML
-	private Button connectButton;
-	@FXML
-	private Button disconnectButton;
+	private Button connectButton, disconnectButton, printButton;
 
 	@FXML
 	private TextField serverIPField;
@@ -270,7 +271,7 @@ public class UIController
 
 		} catch (IOException ee)
 		{
-			clientDataModel.addNotification("Server is not responding !");
+			clientDataModel.addNotification("SERVER NOT RESPONDING !");
 			ee.printStackTrace();
 			hideChatPane();
 			enableConnectConfig();
@@ -303,7 +304,7 @@ public class UIController
 
 	/**
 	 * öffnet eine neue Stage. --> Wenn der Button "Apply" 
-	 * gedrückt wurde, wirde der Benutzername gesetzt
+	 * gedrückt wurde, wird der Benutzername gesetzt
 	 * @param e
 	 */
 	public void handleSetUsername(ActionEvent e)
@@ -320,18 +321,23 @@ public class UIController
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setResizable(false);
 			stage.showAndWait();
-			user.setUsername(UsernameController.getUsername());
+			
+			user.setUsername(UsernameController.getUsername());		
 			connectionModel.setUser(user);
 			if(user.getUsername() != null)
 			{
 				clientDataModel.addNotification("Username set in: " + user.getUsername());
 			}
+			
 		} catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}
 	}
 	
+	/*
+	 * Öffnet eine neue Stage die die Entwickler anzeigt.
+	 */
 	public void handleDeveloperInfo(ActionEvent e)
 	{
 		Parent root;
@@ -354,7 +360,7 @@ public class UIController
 	}
 
 	/*
-	 * öffnet die README-Datei im Standardprogramm
+	 * Öffnet die README-Datei im Standardprogramm
 	 */
 	public void handleShowReadme(ActionEvent e)
 	{
@@ -379,6 +385,38 @@ public class UIController
 				{
 					e.printStackTrace();
 				}
+			}
+		};
+		t.start();
+	}
+	
+	/*
+	 * Druckt den Inhalt der Notification-TextArea
+	 */
+	public void handlePrintNotifications(ActionEvent e)
+	{
+		Thread t = new Thread()
+		{
+			@Override
+			public void run()
+			{				
+				TextFlow printArea = new TextFlow(new Text(notificationsTextArea.getText()));
+
+			    PrinterJob printerJob = PrinterJob.createPrinterJob();
+
+			    if (printerJob != null && printerJob.showPrintDialog(notificationsTextArea.getScene().getWindow())) {
+			        PageLayout pageLayout = printerJob.getJobSettings().getPageLayout();
+			        printArea.setMaxWidth(pageLayout.getPrintableWidth());
+
+			        if (printerJob.printPage(printArea)) {
+			            printerJob.endJob();
+			            clientDataModel.addNotification("Notifications printed !");
+			        } else {
+			            System.out.println("Failed to print");
+			        }
+			    } else {
+			        System.out.println("PrintJob Canceled");
+			    }
 			}
 		};
 		t.start();
@@ -443,7 +481,9 @@ public class UIController
 				{
 					notifications += (s + "\n");
 				}
+				
 				notificationsTextArea.setText(notifications);
+				
 				/* 
 				 * Dient nur dazu, um den ChangeListener der notificationsTextArea zu triggern,
 				 * damit diese immer ans Ende scrolled
@@ -556,6 +596,7 @@ public class UIController
 
 	private void disableConnectConfig()
 	{
+		this.itemUsername.setDisable(true);
 		this.serverIPField.disableProperty().set(true);
 		this.protokollToggleGroup.getToggles().forEach(toggle ->
 		{
@@ -566,6 +607,7 @@ public class UIController
 
 	private void enableConnectConfig()
 	{
+		this.itemUsername.setDisable(false);
 		this.serverIPField.disableProperty().set(false);
 		this.protokollToggleGroup.getToggles().forEach(toggle ->
 		{

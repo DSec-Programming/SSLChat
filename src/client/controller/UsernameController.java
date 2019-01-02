@@ -29,10 +29,6 @@ public class UsernameController
 	{
 		if(!textField.getText().isEmpty())
 		{
-			 /** Ggf. noch anhand von onlineUserList überprüfen ob Name schon vorhanden
-			  * wenn ja --> (2) hinten an Namen anfügen
-			  **/
-			String s;
 			setUsername(textField.getText());
 		}
 		Stage stage = (Stage) applyButton.getScene().getWindow();

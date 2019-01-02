@@ -7,20 +7,26 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import server.controller.CertificateController;
 import server.controller.UIController;
 import server.model.ConnectionModel;
 import server.model.ServerDataModel;
 
 public class ServerMain extends Application
 {
+	private static ConnectionModel connectionModel;
+	
 	public static void main(String[] args)
 	{
 
 		ServerDataModel model = new ServerDataModel();
-		ConnectionModel connectionModel = new ConnectionModel(model);
+		connectionModel = new ConnectionModel(model);
 
 		UIController.setModel(model);
 		UIController.setConnectionModel(connectionModel);
+		
+		CertificateController.setModel(model);
+		CertificateController.setConnectionModel(connectionModel);
 
 		launch(args);
 	}
@@ -33,6 +39,7 @@ public class ServerMain extends Application
 
 		primaryStage.setTitle("SSL Server v0.1");
 		primaryStage.setScene(scene);
+		primaryStage.setResizable(false);
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>()
 		{
 			@Override

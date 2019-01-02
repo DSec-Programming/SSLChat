@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -152,6 +153,15 @@
                                     <Insets right="18.0" />
                                  </VBox.margin>
                               </TextArea>
+                              <Button fx:id="printButton" mnemonicParsing="false" onAction="#handlePrintNotifications">
+                                 <graphic>
+                                    <ImageView>
+                                       <image>
+                                          <Image url="@../images/printer.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
                            </children>
                            <padding>
                               <Insets bottom="10.0" left="15.0" />
