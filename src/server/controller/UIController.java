@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -104,14 +106,16 @@ public class UIController
 		{
 			chat += s + "\n";
 		}
-		chatTextArea.setText(chat);
+		final String c = chat;
+		Platform.runLater(() -> chatTextArea.setText(c));
 
 		String info = "";
 		for (String s : model.getInfoMessages())
 		{
 			info += s + "\n";
 		}
-		infoTextArea.setText(info);
+		final String i = info;
+		Platform.runLater(() -> infoTextArea.setText(i));
 	}
 
 	public void changeView(ActionEvent e)
@@ -171,7 +175,7 @@ public class UIController
 			String user = model.getUserOnlineList().get(index);
 			// TODO Client soll Flag gesendet bekommen --> Gezwungenermaßen ausloggen
 			model.removeUserInOnlineList(user);
-			activeUserListView.getSelectionModel().select(0);
+			Platform.runLater(() -> activeUserListView.getSelectionModel().select(0));
 			model.addNotification(user + " successfully kicked !");
 		}
 	}
@@ -259,6 +263,12 @@ public class UIController
 				}
 				final String c = chat;
 				Platform.runLater(() -> chatTextArea.setText(c));
+				/* 
+				 * Dient nur dazu, um den ChangeListener der chatTextArea zu triggern,
+				 * damit diese immer ans Ende scrolled
+				 */
+				Platform.runLater(() -> chatTextArea.appendText(""));
+				
 				// trigger die Änderungen bei den Clients
 				// ! Model muss synchronisiert werden damit niemand anderes
 				// dazwischenspucken
@@ -298,6 +308,18 @@ public class UIController
 				 * damit diese immer ans Ende scrolled
 				 */
 				Platform.runLater(() -> infoTextArea.appendText(""));
+			}
+		});
+		
+		/*
+		 * ChangeListener der chatTextArea -> bei neuem Eintrag wird immer ans Ende gescrolled
+		 */
+		chatTextArea.textProperty().addListener(new ChangeListener<Object>()
+		{
+			@Override
+			public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue)
+			{
+				Platform.runLater(() -> chatTextArea.setScrollTop(Double.MAX_VALUE));
 			}
 		});
 	}

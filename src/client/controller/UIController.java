@@ -479,7 +479,8 @@ public class UIController
 				{
 					activeUser += (s + "\n");
 				}
-				activeUserTextArea.setText(activeUser);
+				final String a = activeUser;
+				Platform.runLater(() -> activeUserTextArea.setText(a));
 			}
 		});
 
@@ -493,8 +494,9 @@ public class UIController
 				{
 					notifications += (s + "\n");
 				}
+				final String n = notifications;
 				
-				notificationsTextArea.setText(notifications);
+				Platform.runLater(() -> notificationsTextArea.setText(n));
 				
 				/* 
 				 * Dient nur dazu, um den ChangeListener der notificationsTextArea zu triggern,
@@ -512,7 +514,8 @@ public class UIController
 				info += "Protokoll: " + connectionModel.getConnectionType().get() + "\n";
 				info += "Server status: " + connectionModel.getServerStatus().get() + "\n";
 				info += "Client status : " + connectionModel.getClientStatus().get() + "\n";
-				connectionInfos.setText(info);
+				final String i = info;
+				Platform.runLater(() -> connectionInfos.setText(i));
 			}
 		};
 
@@ -528,7 +531,8 @@ public class UIController
 				info += "keyStore: " + clientDataModel.getExistKeyStore().get() + "\n";
 				info += "import cert : " + clientDataModel.getHaveAnImportedCert().get() + "\n";
 				info += "own server cert: " + clientDataModel.getHaveAnCertFromServer() + "\n";
-				lokalInfos.setText(info);
+				final String i = info;
+				Platform.runLater(() ->  lokalInfos.setText(i));
 			}
 		};
 
@@ -544,7 +548,7 @@ public class UIController
 			@Override
 			public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue)
 			{
-				chatTextArea.setScrollTop(Double.MAX_VALUE);
+				Platform.runLater(() -> chatTextArea.setScrollTop(Double.MAX_VALUE));
 			}
 		});
 		
@@ -556,7 +560,7 @@ public class UIController
 			@Override
 			public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue)
 			{
-				notificationsTextArea.setScrollTop(Double.MAX_VALUE);
+				Platform.runLater(() -> notificationsTextArea.setScrollTop(Double.MAX_VALUE));
 			}
 		});
 		
