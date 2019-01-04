@@ -15,11 +15,6 @@
                <children>
                   <MenuBar fx:id="menuBar" prefHeight="25.0" prefWidth="942.0">
                     <menus>
-                      <Menu fx:id="menuFile" mnemonicParsing="false" text="File">
-                        <items>
-                          <MenuItem mnemonicParsing="false" text="Close" />
-                        </items>
-                      </Menu>
                       <Menu fx:id="menuProperties" mnemonicParsing="false" text="Properties">
                         <items>
                           <MenuItem fx:id="itemUsername" mnemonicParsing="false" onAction="#handleSetUsername" text="Username" />
@@ -179,8 +174,7 @@
                      <HBox.margin>
                         <Insets left="15.0" />
                      </HBox.margin></Text>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Own IP" wrappingWidth="130.7109375" />
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Standardgateway" wrappingWidth="173.845703125" />
+                  <Text fx:id="textIP" strokeType="OUTSIDE" strokeWidth="0.0" text="Local IP:" wrappingWidth="130.7109375" />
                </children>
                <opaqueInsets>
                   <Insets />

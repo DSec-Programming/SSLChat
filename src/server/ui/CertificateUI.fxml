@@ -22,11 +22,7 @@
       <Label layoutX="14.0" layoutY="32.0" text="Server Certificate" />
       <MenuBar fx:id="menuBar" layoutY="2.0" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <menus>
-            <Menu mnemonicParsing="false" text="File">
-               <items>
-                  <MenuItem mnemonicParsing="false" text="Close" />
-               </items>
-            </Menu>
+            <Menu mnemonicParsing="false" text="File" />
             <Menu mnemonicParsing="false" text="Properties" />
             <Menu mnemonicParsing="false" text="View">
                <items>

@@ -121,6 +121,8 @@ public class UIController
 	private MenuItem itemUsername;
 	@FXML
 	private Label labelLoggedInUser;
+	@FXML 
+	private Text textIP;
 
 	private User user;
 
@@ -175,7 +177,7 @@ public class UIController
 		try
 		{
 			InetAddress address = InetAddress.getLocalHost();
-			clientDataModel.addNotification("Local IP: " + address.getHostAddress());
+			textIP.setText("Local IP: " + address.getHostAddress());
 		} catch (UnknownHostException e)
 		{
 			e.printStackTrace();
