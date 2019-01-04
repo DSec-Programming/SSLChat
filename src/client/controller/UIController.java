@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
@@ -271,7 +272,17 @@ public class UIController
 			labelLoggedInUser.setVisible(true);
 			clientDataModel.addNotification("Successfully logged in !");
 
-		} catch (IOException ee)
+		} 
+		catch(ConnectException ce)
+		{
+			clientDataModel.addNotification("SERVER NOT RESPONDING !");
+			hideChatPane();
+			enableConnectConfig();
+			this.connectButton.disableProperty().set(false);
+			this.disconnectButton.disableProperty().set(true);
+			return;
+		}
+		catch (IOException ee)
 		{
 			clientDataModel.addNotification("SERVER NOT RESPONDING !");
 			ee.printStackTrace();

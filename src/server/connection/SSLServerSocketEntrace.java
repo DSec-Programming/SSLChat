@@ -69,9 +69,6 @@ public class SSLServerSocketEntrace extends Thread
 						this.model.getServerDataModel(), model);
 				
 				System.out.println("Create new (SSL) SingleClientConnection2");
-				
-				this.model.addSingleClientConnection(connection);
-				// schicke dem neuen User gleich den aktuellen Chat !!
 
 			} catch (Exception e)
 			{

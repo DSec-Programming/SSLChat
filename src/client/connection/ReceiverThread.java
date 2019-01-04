@@ -72,8 +72,11 @@ public class ReceiverThread extends Thread
 			this.ois.close();
 		} 
 		catch(SocketException se)
-		{
-			clientDataModel.addNotification("SERVER OFFLINE !");
+		{			
+			if(se.getMessage().equals("Connection reset"))
+			{
+				clientDataModel.addNotification("SERVER OFFLINE !");
+			}		
 		}
 		catch (Exception e)
 		{

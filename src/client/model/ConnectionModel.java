@@ -1,20 +1,18 @@
 package client.model;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.security.Security;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
-
 import ausprobieren.Utils;
 import client.connection.ClientConnection2;
 import client.connection.RunnableSendObject;
@@ -66,7 +64,7 @@ public class ConnectionModel
 
 	}
 
-	public synchronized void openSSLSocket(String ip, ClientDataModel clientDataModel) throws IOException
+	public synchronized void openSSLSocket(String ip, ClientDataModel clientDataModel) throws IOException, ConnectException
 	{
 		String str;//änder den port !?! so dass nict statisch
 
@@ -88,10 +86,17 @@ public class ConnectionModel
 
 			ClientConnection2 connection = new ClientConnection2(s, clientDataModel);
 			this.connection = connection;
+			this.pool.submit(new RunnableSendObject(this.connection, new ClientHello(user.getUsername())));
 
 		} catch (Exception e)
 		{
-			e.printStackTrace();
+			/*
+			 * Um anzudeuten, dass der Server nicht online ist
+			 */
+			if(e instanceof ConnectException)
+			{
+				throw new ConnectException();
+			}
 		}
 	}
 	// GETTER

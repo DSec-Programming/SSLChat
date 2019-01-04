@@ -57,10 +57,6 @@ public class ServerSocketEntrace extends Thread
 						this.model.getServerDataModel(),model);
 				
 				System.out.println("Create new (TCP) SingleClientConnection2");
-				
-				
-				// schicke dem neuen User gleich den aktuellen Chat !!
-
 			} catch (Exception e)
 			{
 				e.printStackTrace();
