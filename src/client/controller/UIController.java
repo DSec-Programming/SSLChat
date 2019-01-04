@@ -257,9 +257,15 @@ public class UIController
 			if (this.protokollToggleGroup.getSelectedToggle().equals(this.radioTCP))
 			{
 				connectionModel.openSocket(serverIP, clientDataModel);
+				serverStatus.set("ONLINE");
+				connectionType.set("TCP");
+				clientStatus.set("NOT_AUTHENTICATED");
 			} else if (this.protokollToggleGroup.getSelectedToggle().equals(this.radioTLS))
 			{
 				connectionModel.openSSLSocket(serverIP, clientDataModel);
+				serverStatus.set("ONLINE");
+				connectionType.set("TLS");
+				clientStatus.set("AUTHENTICATED");
 			}
 			labelLoggedInUser.setText("Logged in as: " + user.getUsername());
 			labelLoggedInUser.setVisible(true);
