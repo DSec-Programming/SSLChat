@@ -1,7 +1,6 @@
 package server.controller;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
@@ -23,6 +22,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import network.NetworkInfo;
 import server.connection.SSLServerSocketEntrace;
 import server.connection.ServerSocketEntrace;
 import server.connection.SingleClientConnection;
@@ -84,9 +84,8 @@ public class UIController
 				connectionModel.setSSLServerSocketEntrace(SSLsse);
 				sse.start();
 				SSLsse.start();
-				InetAddress address = InetAddress.getLocalHost();
 				model.addNotification("Server successfully started !");
-				model.addNotification("Local IP: " + address.getHostAddress());
+				model.addNotification("Local IP: " + NetworkInfo.getCurrentNetworkIp());
 			}
 		} catch (IOException e)
 		{

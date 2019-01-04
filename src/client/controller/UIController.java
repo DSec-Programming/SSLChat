@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ConnectException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import client.model.ClientDataModel;
@@ -47,6 +45,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import network.NetworkInfo;
 import streamedObjects.MessageFromClient;
 
 /**
@@ -175,14 +174,8 @@ public class UIController
 
 		labelLoggedInUser.setVisible(false);
 		user = new User();
-		try
-		{
-			InetAddress address = InetAddress.getLocalHost();
-			textIP.setText("Local IP: " + address.getHostAddress());
-		} catch (UnknownHostException e)
-		{
-			e.printStackTrace();
-		}			
+		
+		textIP.setText("Local IP: " + NetworkInfo.getCurrentNetworkIp());	
 		
 	}
 
