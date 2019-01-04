@@ -50,6 +50,11 @@ public class SingleClientConnection2
 		this.username = u;
 		
 	}
+	
+	public Socket getSocket()
+	{
+		return this.s;
+	}
 
 	/**
 	 * sendet ein update an DIESEN Client

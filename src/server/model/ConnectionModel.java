@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.SSLSocket;
+
 import server.connection.CallableSendBroadcastUpdate;
 import server.connection.SSLServerSocketEntrace;
 import server.connection.ServerSocketEntrace;
@@ -60,8 +63,14 @@ public class ConnectionModel
 	{
 		this.openClientConnections.add(scc);
 		// adde auch in OnlineList
-		
-		this.serverDataModel.addUserInOnlineList(scc.getUsername());
+		if(scc.getSocket() instanceof SSLSocket)
+		{
+			this.serverDataModel.addUserInOnlineList(scc.getUsername() + " [AUTHENTICATED]");
+		}
+		else
+		{
+			this.serverDataModel.addUserInOnlineList(scc.getUsername());
+		}
 		this.serverDataModel.addNotification(scc.getUsername() + " connected !");
 	}
 
@@ -69,7 +78,14 @@ public class ConnectionModel
 	{
 		this.openClientConnections.remove(scc);
 		// remove auch aus OnlineList
-		this.serverDataModel.removeUserInOnlineList(scc.getUsername());
+		if(scc.getSocket() instanceof SSLSocket)
+		{
+			this.serverDataModel.removeUserInOnlineList(scc.getUsername() + " [AUTHENTICATED]");
+		}
+		else
+		{
+			this.serverDataModel.removeUserInOnlineList(scc.getUsername());
+		}
 		this.serverDataModel.addNotification(scc.getUsername() + " logged out !");
 	}
 
