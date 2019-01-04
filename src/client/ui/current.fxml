@@ -174,7 +174,7 @@
                      <HBox.margin>
                         <Insets left="15.0" />
                      </HBox.margin></Text>
-                  <Text fx:id="textIP" strokeType="OUTSIDE" strokeWidth="0.0" text="Local IP:" wrappingWidth="130.7109375" />
+                  <Text fx:id="textIP" strokeType="OUTSIDE" strokeWidth="0.0" text="Local IP:" wrappingWidth="285.7109375" />
                </children>
                <opaqueInsets>
                   <Insets />
