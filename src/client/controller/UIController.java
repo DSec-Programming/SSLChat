@@ -7,6 +7,9 @@ import java.io.InputStream;
 import java.net.ConnectException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+
+import org.bouncycastle.asn1.ess.ContentHints;
+
 import client.model.ClientDataModel;
 import client.model.ConnectionModel;
 import client.model.User;
@@ -121,8 +124,12 @@ public class UIController
 	private MenuItem itemUsername;
 	@FXML
 	private Label labelLoggedInUser;
-	@FXML 
+	@FXML
 	private Text textIP;
+	@FXML
+	private Label certLabel;
+	@FXML
+	private Button certRequestButton;
 
 	private User user;
 
@@ -140,6 +147,8 @@ public class UIController
 	private BooleanProperty existKeystore;
 	private BooleanProperty haveImportetCert;
 	private BooleanProperty haveOwnCert;
+
+	private BooleanProperty isKicked;
 	// ENDE==================================================================
 
 	public void initialize()
@@ -157,6 +166,8 @@ public class UIController
 		this.haveImportetCert = clientDataModel.getHaveAnImportedCert();
 		this.haveOwnCert = clientDataModel.getHaveAnCertFromServer();
 
+		this.isKicked = clientDataModel.getkickedBool();
+
 		ToggleGroup group = new ToggleGroup();
 		group.getToggles().add(radioTCP);
 		group.getToggles().add(radioTLS);
@@ -170,13 +181,14 @@ public class UIController
 		//
 		hideChatPane();
 		//
+		disableCertRequestField();
 		this.disconnectButton.disableProperty().set(true);
 
 		labelLoggedInUser.setVisible(false);
 		user = new User();
-		
-		textIP.setText("Local IP: " + NetworkInfo.getCurrentNetworkIp());	
-		
+
+		textIP.setText("Local IP: " + NetworkInfo.getCurrentNetworkIp());
+
 	}
 
 	/**
@@ -218,6 +230,12 @@ public class UIController
 		}
 	}
 
+	//UNSCHÖN !!!!!! BESSER machen !! 
+	public void kickUser()
+	{
+		handleDisconnectButton(null);
+	}
+
 	public void handleClearNotifications(ActionEvent e)
 	{
 		clientDataModel.clearNotifications();
@@ -226,8 +244,8 @@ public class UIController
 	public void openAlert()
 	{
 		Alert alert = new Alert(AlertType.INFORMATION);
-		alert.setX(connectButton.getScene().getWindow().getX() + 100);
-		alert.setY(connectButton.getScene().getWindow().getY() + 100);
+		alert.setX(connectButton.getScene().getWindow().getX() + (connectButton.getScene().getWindow().getWidth()/2) - 200);
+		alert.setY(connectButton.getScene().getWindow().getY() + (connectButton.getScene().getWindow().getHeight()/2) - 80);
 		alert.setTitle("Info: Set Username !");
 		alert.setHeaderText("");
 		alert.setContentText("Before you loggin, please visit the menu and go to \n"
@@ -237,53 +255,66 @@ public class UIController
 
 	public void handleConnectButton(ActionEvent e)
 	{
+
 		/*
 		 * Wenn der Benutzername noch nicht gesetzt ist,
 		 * wird eine Warnung angezeigt
+		 * 
 		 */
 		if (user.getUsername() == null || user.getUsername().equals(""))
 		{
 			openAlert();
 			return;
 		}
+		/*
+		 * checkt inputs
+		 */
+		String serverIP = this.serverIPField.getText();
+		if (!isAIP(serverIP))
+		{
+			clientDataModel.addNotification("invalid ip");
+			return;
+		}
+
 		showChatPane();
 		disableConnectConfig();
 		this.connectButton.disableProperty().set(true);
 		this.disconnectButton.disableProperty().set(false);
+		clientDataModel.setKicked(false);
 		try
 		{
-			String serverIP = this.serverIPField.getText();
 
 			if (this.protokollToggleGroup.getSelectedToggle().equals(this.radioTCP))
 			{
-				connectionModel.openSocket(serverIP, clientDataModel);				
+				connectionModel.openSocket(serverIP, clientDataModel);
 				connectionType.set("TCP");
 				serverStatus.set("NOT_AUTHENTICATED");
 				clientStatus.set("NOT_AUTHENTICATED");
 			} else if (this.protokollToggleGroup.getSelectedToggle().equals(this.radioTLS))
 			{
-				connectionModel.openSSLSocket(serverIP, clientDataModel);				
+				connectionModel.openSSLSocket(serverIP, clientDataModel);
+				enableCertRequestField();
 				connectionType.set("TLS");
+				String s;
+				//---> ab Ändern
 				serverStatus.set("AUTHENTICATED");
-				clientStatus.set("AUTHENTICATED");			
+				clientStatus.set("AUTHENTICATED");
 			}
 			labelLoggedInUser.setText("Logged in as: " + user.getUsername());
 			labelLoggedInUser.setVisible(true);
 			clientDataModel.addNotification("Successfully logged in !");
 
-		} 
-		catch(ConnectException ce)
+		} catch (ConnectException ce)
 		{
-			clientDataModel.addNotification("SERVER NOT RESPONDING !");
+			clientDataModel.addNotification("SERVER IS NOT RESPONDING !");
 			hideChatPane();
 			enableConnectConfig();
 			this.connectButton.disableProperty().set(false);
 			this.disconnectButton.disableProperty().set(true);
 			return;
-		}
-		catch (IOException ee)
+		} catch (IOException ee)
 		{
-			clientDataModel.addNotification("SERVER NOT RESPONDING !");
+			clientDataModel.addNotification("SERVER IS NOT RESPONDING !");
 			ee.printStackTrace();
 			hideChatPane();
 			enableConnectConfig();
@@ -294,7 +325,7 @@ public class UIController
 	}
 
 	public void handleDisconnectButton(ActionEvent e)
-	{		
+	{
 		labelLoggedInUser.setVisible(false);
 		hideChatPane();
 		enableConnectConfig();
@@ -333,20 +364,20 @@ public class UIController
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setResizable(false);
 			stage.showAndWait();
-			
-			user.setUsername(UsernameController.getUsername());		
+
+			user.setUsername(UsernameController.getUsername());
 			connectionModel.setUser(user);
-			if(user.getUsername() != null)
+			if (user.getUsername() != null)
 			{
 				clientDataModel.addNotification("Username set in: " + user.getUsername());
 			}
-			
+
 		} catch (Exception ex)
 		{
 			ex.printStackTrace();
 		}
 	}
-	
+
 	/*
 	 * Öffnet eine neue Stage die die Entwickler anzeigt.
 	 */
@@ -368,7 +399,7 @@ public class UIController
 		} catch (IOException e1)
 		{
 			e1.printStackTrace();
-		}		
+		}
 	}
 
 	/*
@@ -383,15 +414,15 @@ public class UIController
 			{
 				try
 				{
-					if(Desktop.isDesktopSupported())
+					if (Desktop.isDesktopSupported())
 					{
-						InputStream resource = getClass().getResourceAsStream("/info/README.txt");					
+						InputStream resource = getClass().getResourceAsStream("/info/README.txt");
 						File file = File.createTempFile("README", ".txt");
 						System.out.println(file.getName());
 						Files.copy(resource, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-						file.deleteOnExit();		
+						file.deleteOnExit();
 						Desktop.getDesktop().open(file);
-						resource.close();						
+						resource.close();
 					}
 				} catch (IOException e)
 				{
@@ -401,7 +432,7 @@ public class UIController
 		};
 		t.start();
 	}
-	
+
 	/*
 	 * Druckt den Inhalt der Notification-TextArea
 	 */
@@ -411,32 +442,38 @@ public class UIController
 		{
 			@Override
 			public void run()
-			{				
+			{
 				TextFlow printArea = new TextFlow(new Text(notificationsTextArea.getText()));
 
-			    PrinterJob printerJob = PrinterJob.createPrinterJob();
+				PrinterJob printerJob = PrinterJob.createPrinterJob();
 
-			    if (printerJob != null && printerJob.showPrintDialog(notificationsTextArea.getScene().getWindow())) {
-			        PageLayout pageLayout = printerJob.getJobSettings().getPageLayout();
-			        printArea.setMaxWidth(pageLayout.getPrintableWidth());
+				if (printerJob != null && printerJob.showPrintDialog(notificationsTextArea.getScene().getWindow()))
+				{
+					PageLayout pageLayout = printerJob.getJobSettings().getPageLayout();
+					printArea.setMaxWidth(pageLayout.getPrintableWidth());
 
-			        if (printerJob.printPage(printArea)) {
-			            printerJob.endJob();
-			            clientDataModel.addNotification("Notifications printed !");
-			        } else {
-			            System.out.println("Failed to print");
-			        }
-			    } else {
-			        System.out.println("PrintJob Canceled");
-			    }
+					if (printerJob.printPage(printArea))
+					{
+						printerJob.endJob();
+						clientDataModel.addNotification("Notifications printed !");
+					} else
+					{
+						System.out.println("Failed to print");
+					}
+				} else
+				{
+					System.out.println("PrintJob Canceled");
+				}
 			}
 		};
 		t.start();
 	}
 
-	public void handleImportCertificate(ActionEvent e)
+	public void handleRequestCertificate(ActionEvent e)
 	{
-		// TODO
+		//TODO
+		certLabel.setTextFill(Color.RED);
+		certLabel.setText("waiting for cert ...");
 		String s;
 	}
 
@@ -495,9 +532,9 @@ public class UIController
 					notifications += (s + "\n");
 				}
 				final String n = notifications;
-				
+
 				Platform.runLater(() -> notificationsTextArea.setText(n));
-				
+
 				/* 
 				 * Dient nur dazu, um den ChangeListener der notificationsTextArea zu triggern,
 				 * damit diese immer ans Ende scrolled
@@ -532,13 +569,24 @@ public class UIController
 				info += "import cert : " + clientDataModel.getHaveAnImportedCert().get() + "\n";
 				info += "own server cert: " + clientDataModel.getHaveAnCertFromServer() + "\n";
 				final String i = info;
-				Platform.runLater(() ->  lokalInfos.setText(i));
+				Platform.runLater(() -> lokalInfos.setText(i));
 			}
 		};
 
 		this.existKeystore.addListener(lokalInfoslistener);
 		this.haveImportetCert.addListener(lokalInfoslistener);
 		this.haveOwnCert.addListener(lokalInfoslistener);
+
+		ChangeListener<Boolean> isKickedListener = new ChangeListener<Boolean>()
+		{
+			public void changed(ObservableValue<? extends Boolean> b1, Boolean b2, Boolean b3)
+			{
+				//TODO 
+				Platform.runLater(() -> handleDisconnectButton(null));
+
+			}
+		};
+		this.isKicked.addListener(isKickedListener);
 
 		/*
 		 * ChangeListener der chatTextArea -> bei neuem Eintrag wird immer ans Ende gescrolled
@@ -551,7 +599,7 @@ public class UIController
 				Platform.runLater(() -> chatTextArea.setScrollTop(Double.MAX_VALUE));
 			}
 		});
-		
+
 		/*
 		 * ChangeListener der notificationTextArea -> bei neuem Eintrag wird immer ans Ende gescrolled
 		 */
@@ -563,7 +611,7 @@ public class UIController
 				Platform.runLater(() -> notificationsTextArea.setScrollTop(Double.MAX_VALUE));
 			}
 		});
-		
+
 	}
 
 	private void setAllBorders()
@@ -630,6 +678,71 @@ public class UIController
 			RadioButton node = (RadioButton) toggle;
 			node.setDisable(false);
 		});
+	}
+	
+	private void enableCertRequestField()
+	{
+		this.certLabel.setDisable(false);
+		this.certRequestButton.setDisable(false);
+	}
+	
+	private void disableCertRequestField()
+	{
+		this.certLabel.setDisable(true);
+		this.certRequestButton.setDisable(true);
+	}
+
+	//UTILS
+
+	public boolean isAIP(String s)
+	{
+		try
+		{
+			String[] sss = new String[4];
+			char[] c = new char[3];
+			int sssCounter = 0;
+			int cCounter = 0;
+			String temp = "";
+			for (int i = 0; i < s.length(); i++)
+			{
+				char currentChar = s.charAt(i);
+				if (currentChar == '.')
+				{
+					c[cCounter++] = currentChar;
+					sss[sssCounter++] = new String(temp);
+					temp = "";
+					continue;
+				} else
+				{
+					temp += currentChar;
+				}
+			}
+			sss[sssCounter] = temp;
+			int[] i = new int[4];
+			for (int iii = 0; iii < sss.length; iii++)
+			{
+				i[iii] = Integer.parseInt(sss[iii]);
+			}
+			for (int iii = 0; iii < i.length; iii++)
+			{
+				if (i[iii] < 0 || i[iii] > 255)
+				{
+					return false;
+				}
+			}
+			for (int iii = 0; iii < c.length; iii++)
+			{
+				if (!(c[iii] == '.'))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		} catch (Exception e)
+		{
+			return false;
+		}
 	}
 
 }

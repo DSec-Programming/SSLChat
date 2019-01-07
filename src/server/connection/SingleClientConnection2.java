@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import server.model.ConnectionModel;
 import server.model.ServerDataModel;
 import streamedObjects.ClientSaysBye;
+import streamedObjects.Sendable;
 import streamedObjects.UpdateFromServer;
 
 public class SingleClientConnection2
@@ -62,6 +63,11 @@ public class SingleClientConnection2
 	public synchronized void sendUpdate(String updateType, ArrayList<String> update) throws IOException
 	{
 		this.sendList.add(new UpdateFromServer(updateType, update));
+	}
+	
+	public synchronized void send(Sendable s)
+	{
+		this.sendList.add(s);
 	}
 
 	public void stop() throws IOException

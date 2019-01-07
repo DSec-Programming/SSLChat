@@ -143,20 +143,26 @@
                         <VBox fx:id="vboxNotofications" prefHeight="133.0" prefWidth="694.0">
                            <children>
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Notifications" />
-                              <TextArea fx:id="notificationsTextArea" editable="false" prefHeight="85.0" prefWidth="520.0">
-                                 <VBox.margin>
-                                    <Insets right="18.0" />
-                                 </VBox.margin>
-                              </TextArea>
-                              <Button fx:id="printButton" mnemonicParsing="false" onAction="#handlePrintNotifications">
-                                 <graphic>
-                                    <ImageView>
-                                       <image>
-                                          <Image url="@../images/printer.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </Button>
+                              <HBox prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                    <TextArea fx:id="notificationsTextArea" editable="false" prefHeight="100.0" prefWidth="642.0">
+                                       <HBox.margin>
+                                          <Insets right="7.0" />
+                                       </HBox.margin></TextArea>
+                                    <Button fx:id="printButton" mnemonicParsing="false" onAction="#handlePrintNotifications">
+                                       <graphic>
+                                          <ImageView>
+                                             <image>
+                                                <Image url="@../images/printer.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                       <HBox.margin>
+                                          <Insets right="7.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                 </children>
+                              </HBox>
                            </children>
                            <padding>
                               <Insets bottom="10.0" left="15.0" />
@@ -170,11 +176,10 @@
          <bottom>
             <HBox fx:id="hboxbottominfos" prefHeight="20.0" prefWidth="936.0" BorderPane.alignment="CENTER">
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="send/receive" wrappingWidth="100.095703125">
+                  <Text fx:id="textIP" strokeType="OUTSIDE" strokeWidth="0.0" text="Local IP:" wrappingWidth="285.7109375">
                      <HBox.margin>
-                        <Insets left="15.0" />
+                        <Insets left="5.0" />
                      </HBox.margin></Text>
-                  <Text fx:id="textIP" strokeType="OUTSIDE" strokeWidth="0.0" text="Local IP:" wrappingWidth="285.7109375" />
                </children>
                <opaqueInsets>
                   <Insets />
@@ -236,7 +241,7 @@
                               </HBox>
                               <HBox prefHeight="24.0" prefWidth="160.0">
                                  <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="KryptoProvider">
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="KryptoProvider:  Bouncy Castle">
                                        <HBox.margin>
                                           <Insets left="2.0" right="10.0" top="4.0" />
                                        </HBox.margin>
@@ -290,76 +295,16 @@
                               <Insets left="10.0" top="15.0" />
                            </VBox.margin>
                               </Text>
-                              <HBox prefHeight="17.0" prefWidth="190.0">
-                                 <children>
-                                    <RadioButton mnemonicParsing="false" prefHeight="17.0" prefWidth="82.0" text="vom Server">
-                                       <HBox.margin>
-                                          <Insets />
-                                       </HBox.margin>
-                                    </RadioButton>
-                                    <RadioButton mnemonicParsing="false" prefHeight="17.0" prefWidth="104.0" text="import cert">
-                                       <HBox.margin>
-                                          <Insets left="15.0" />
-                                       </HBox.margin>
-                                    </RadioButton>
-                                 </children>
-                                 <VBox.margin>
-                                    <Insets bottom="7.0" left="15.0" top="7.0" />
-                                 </VBox.margin>
-                              </HBox>
-                              <HBox prefHeight="14.0" prefWidth="162.0">
-                                 <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="    Secret :">
-                                       <HBox.margin>
-                                          <Insets />
-                                       </HBox.margin>
-                                    </Text>
-                                    <TextField prefHeight="17.0" prefWidth="96.0">
-                                       <font>
-                                          <Font size="7.0" />
-                                       </font>
-                                       <padding>
-                                          <Insets left="10.0" />
-                                       </padding>
-                                    </TextField>
-                                    <Button alignment="TOP_CENTER" mnemonicParsing="false" prefHeight="23.0" prefWidth="33.0">
-                                       <font>
-                                          <Font size="1.0" />
-                                       </font>
-                                    </Button>
-                                 </children>
-                                 <opaqueInsets>
-                                    <Insets bottom="7.0" left="7.0" right="7.0" top="7.0" />
-                                 </opaqueInsets>
-                                 <VBox.margin>
-                                    <Insets bottom="7.0" left="15.0" top="14.0" />
-                                 </VBox.margin>
-                              </HBox>
-                              <HBox prefHeight="14.0" prefWidth="162.0">
-                                 <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="cert Path :">
-                                       <HBox.margin>
-                                          <Insets />
-                                       </HBox.margin>
-                                    </Text>
-                                    <TextField prefHeight="15.0" prefWidth="96.0">
-                                       <font>
-                                          <Font size="7.0" />
-                                       </font>
-                                       <padding>
-                                          <Insets left="10.0" />
-                                       </padding>
-                                    </TextField>
-                                    <Button alignment="TOP_CENTER" mnemonicParsing="false" prefHeight="23.0" prefWidth="33.0">
-                                       <font>
-                                          <Font size="1.0" />
-                                       </font>
-                                    </Button>
-                                 </children>
-                                 <VBox.margin>
-                                    <Insets bottom="7.0" left="15.0" top="10.0" />
-                                 </VBox.margin>
-                              </HBox>
+                        <Button fx:id="certRequestButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleRequestCertificate" prefHeight="25.0" prefWidth="178.0" text="Request certificate">
+                           <VBox.margin>
+                              <Insets left="20.0" top="32.0" />
+                           </VBox.margin>
+                        </Button>
+                        <Label fx:id="certLabel" alignment="CENTER" prefHeight="17.0" prefWidth="191.0">
+                           <VBox.margin>
+                              <Insets left="15.0" top="28.0" />
+                           </VBox.margin>
+                        </Label>
                            </children>
                            <opaqueInsets>
                               <Insets />

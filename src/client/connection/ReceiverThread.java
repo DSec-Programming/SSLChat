@@ -6,6 +6,9 @@ import java.io.ObjectInputStream;
 import java.net.SocketException;
 import java.util.ArrayList;
 import client.model.ClientDataModel;
+import javafx.application.Platform;
+import server.model.ConnectionModel;
+import streamedObjects.Kick;
 import streamedObjects.Sendable;
 import streamedObjects.UpdateFromServer;
 
@@ -66,6 +69,11 @@ public class ReceiverThread extends Thread
 							System.out.println("RUNTIMEEXECEPTION");
 							throw new RuntimeException("NICHT ERWARTETES OBJECT VOM SERVER");
 						}
+					}
+					else if(s instanceof Kick)
+					{
+						clientDataModel.addNotification("you were kicked");
+						clientDataModel.setKicked(true);
 					}
 				}
 			}

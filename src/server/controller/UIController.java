@@ -174,9 +174,13 @@ public class UIController
 			int index = activeUserListView.getSelectionModel().getSelectedIndex();
 			String user = model.getUserOnlineList().get(index);
 			// TODO Client soll Flag gesendet bekommen --> Gezwungenermaßen ausloggen
+			connectionModel.kickUser(user);
 			model.removeUserInOnlineList(user);
 			Platform.runLater(() -> activeUserListView.getSelectionModel().select(0));
 			model.addNotification(user + " successfully kicked !");
+			
+			
+			
 		}
 	}
 	

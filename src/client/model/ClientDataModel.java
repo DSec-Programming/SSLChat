@@ -50,6 +50,7 @@ public class ClientDataModel
 
 	// Sonstiges
 	private StringProperty authenticationMode;
+	private BooleanProperty isKicked;
 
 	public ClientDataModel()
 	{
@@ -63,6 +64,7 @@ public class ClientDataModel
 		this.haveAnCertFromServer = new SimpleBooleanProperty();
 
 		this.authenticationMode = new SimpleStringProperty();
+		this.isKicked = new SimpleBooleanProperty(false);
 	}
 
 	/**
@@ -109,6 +111,11 @@ public class ClientDataModel
 	{
 		return authenticationMode;
 	}
+	
+	public synchronized BooleanProperty getkickedBool()
+	{
+		return isKicked;
+	}
 
 	/**
 	 * Die Methode waitReceiveAndUpdateModel()
@@ -138,7 +145,7 @@ public class ClientDataModel
 	{
 		// Parameter ist eine neue Meldung
 		DateTime date = new DateTime();
-		this.observableNotificationList.add(date.getDateAndTime() + notification);
+		this.observableNotificationList.add(date.getTimeWithSec() + notification);
 	}
 
 	public synchronized void clearNotifications()
@@ -160,6 +167,11 @@ public class ClientDataModel
 	public synchronized void setHaveAnCertFromServer(boolean bool)
 	{
 		this.haveAnCertFromServer.set(bool);
+	}
+	
+	public synchronized void setKicked(boolean bool)
+	{
+		this.isKicked.set(bool);
 	}
 
 }

@@ -1,27 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="250.0" prefWidth="250.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.UsernameController">
+<AnchorPane prefHeight="283.0" prefWidth="312.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.UsernameController">
    <children>
-      <Pane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <Pane prefHeight="283.0" prefWidth="324.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <TextField fx:id="textField" layoutX="14.0" layoutY="62.0" prefHeight="25.0" prefWidth="160.0" promptText="Username..." />
-            <Button fx:id="applyButton" defaultButton="true" layoutX="187.0" layoutY="62.0" mnemonicParsing="false" onAction="#handleSetUsername" text="Apply" />
-            <Label layoutX="14.0" layoutY="14.0" text="Please enter your username">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
-            <Label layoutX="24.0" layoutY="109.0" prefWidth="200.0" text="Info:                                 If your wanted username already exists, a number will be added to the end of your name !" wrapText="true">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
+            <VBox prefHeight="283.0" prefWidth="312.0">
+               <children>
+                  <Label alignment="CENTER" prefHeight="27.0" prefWidth="319.0" text="please enter">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="usernameField" focusTraversable="false" prefHeight="25.0" promptText="Username...">
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </TextField>
+                  <TextField fx:id="organisation" focusTraversable="false" prefHeight="25.0" promptText="Organisation">
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </TextField>
+                  <TextField fx:id="email" focusTraversable="false" prefHeight="25.0" promptText="Email" />
+                  <Button fx:id="applyButton" defaultButton="true" mnemonicParsing="false" onAction="#handleSetUsername" prefHeight="25.0" prefWidth="331.0" text="Apply">
+                     <VBox.margin>
+                        <Insets top="20.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Label fx:id="label" alignment="TOP_CENTER" prefHeight="105.0" prefWidth="315.0" text="forbidden" wrapText="true">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="15.0" />
+                     </VBox.margin>
+                  </Label>
+                  <Label fx:id="alert" alignment="CENTER" prefHeight="17.0" prefWidth="313.0" />
+               </children>
+            </VBox>
          </children>
       </Pane>
    </children>

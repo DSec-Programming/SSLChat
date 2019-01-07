@@ -24,8 +24,10 @@ public class BasicBCTLSClient
 			Security.addProvider(new BouncyCastleJsseProvider());
 
 			SSLContext sslContext = SSLContext.getInstance("TLS", "BCJSSE");
+			
 			TrustManagerFactory trustMgrFact = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
 			trustMgrFact.init(Utils.createServerTrustStore());
+			
 			sslContext.init(null, trustMgrFact.getTrustManagers(), null);
 			SSLSocketFactory fact = sslContext.getSocketFactory();
 			SSLSocket cSock = (SSLSocket) fact.createSocket("192.168.178.57", 55555);

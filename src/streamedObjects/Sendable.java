@@ -1,8 +1,11 @@
 package streamedObjects;
 
+import java.io.Serializable;
 
-public abstract class Sendable
+public abstract class Sendable implements Serializable
 {
+	public static final long serialVersionUID = 0L;
+	
 	private long id;
 	private long timeStamp;
 	private boolean wantAnswer;

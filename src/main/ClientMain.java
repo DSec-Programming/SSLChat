@@ -15,6 +15,10 @@ public class ClientMain extends Application
 
 	public static void main(String[] args)
 	{
+		//load client Key Store
+
+		//load client truststore
+
 		ClientDataModel clientDatamodel = new ClientDataModel();
 		connectionModel = new ConnectionModel();
 
@@ -32,7 +36,7 @@ public class ClientMain extends Application
 	@Override
 	public void stop() throws Exception
 	{
-		if(connectionModel != null)
+		if (connectionModel != null)
 		{
 			connectionModel.killConnectoin();
 			System.out.println("Kill connection");

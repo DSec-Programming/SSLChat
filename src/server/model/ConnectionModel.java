@@ -11,6 +11,7 @@ import server.connection.CallableSendBroadcastUpdate;
 import server.connection.SSLServerSocketEntrace;
 import server.connection.ServerSocketEntrace;
 import server.connection.SingleClientConnection2;
+import streamedObjects.Kick;
 
 public class ConnectionModel
 {
@@ -92,5 +93,16 @@ public class ConnectionModel
 	public synchronized ArrayList<SingleClientConnection2> getAllOpenSingleClientConnections()
 	{
 		return this.openClientConnections;
+	}
+	
+	public synchronized void kickUser(String user)
+	{
+		for(SingleClientConnection2 s: this.openClientConnections)
+		{
+			if(s.getUsername().equals(user))
+			{
+				s.send(new Kick());
+			}
+		}
 	}
 }
