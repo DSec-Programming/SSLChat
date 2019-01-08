@@ -25,11 +25,8 @@ public class ReceiverThread extends Thread
 	public ReceiverThread(SingleClientConnection2 motherCon, InputStream s, ServerDataModel model,
 			ConnectionModel cmodel, ReceiveList receiveList, ArrayList<Long> idList)
 	{
-
 		this.motherConnection = motherCon;
-		System.out.println("1");
 		this.cmodel = cmodel;
-		System.out.println("2");
 		try
 		{
 			this.ois = new ObjectInputStream(s);
@@ -37,15 +34,9 @@ public class ReceiverThread extends Thread
 		{
 			e.printStackTrace();
 		}
-
-		System.out.println("3");
 		this.serverDataModel = model;
-		System.out.println("4");
 		this.receiveList = receiveList;
-		System.out.println("5");
 		this.idList = idList;
-		System.out.println("6");
-		System.out.println("KONSTRUKLOT ReceiverThread");
 	}
 
 	@Override
@@ -55,7 +46,6 @@ public class ReceiverThread extends Thread
 		{
 			while (!this.isInterrupted())
 			{
-				System.out.println("Receive Thread wartet auf object");
 				Sendable requestFromClient = (Sendable) this.ois.readObject();
 
 				if (this.idList.contains(requestFromClient.getID()))
@@ -75,7 +65,6 @@ public class ReceiverThread extends Thread
 
 					if (requestFromClient instanceof ClientHello)
 					{
-						System.out.println(((ClientHello) requestFromClient).getUsername());
 						this.motherConnection.setUserName(((ClientHello) requestFromClient).getUsername());
 						this.cmodel.addSingleClientConnection(motherConnection);
 
@@ -89,7 +78,9 @@ public class ReceiverThread extends Thread
 					{
 						cmodel.removeSingleClientConnection(this.motherConnection);
 						//HUUUIIIIIIII schwer ^^ 
-						this.motherConnection.stop();
+						String s;
+						//was passiert hier ??
+						this.motherConnection.stop(requestFromClient);
 
 					} else
 					{

@@ -1,5 +1,7 @@
 package ausprobieren;
 
+import java.io.FileInputStream;
+import java.security.KeyStore;
 import java.security.Security;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -21,8 +23,14 @@ public class BasicBCTLSServer
 
 		SSLContext sslContext = SSLContext.getInstance("TLS", "BCJSSE");
 		KeyManagerFactory kmf = KeyManagerFactory.getInstance("PKIX", "BCJSSE");
+		
+		
+		FileInputStream fis = new FileInputStream("src/server-keystore.jks");
+		KeyStore ks = KeyStore.getInstance("JKS");
+		ks.load(fis, "paswd".toCharArray());
 
-		kmf.init(Utils.createServerKeyStore(), Utils.SERVER_PASSWORD);
+
+		kmf.init(ks, Utils.SERVER_PASSWORD);
 
 		sslContext.init(kmf.getKeyManagers(), null, null);
 

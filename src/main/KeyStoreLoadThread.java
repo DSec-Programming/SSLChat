@@ -28,8 +28,13 @@ public class KeyStoreLoadThread extends Thread
 			//ist das verzeichnis wo dir jar datei gestartet wird
 			//String path = System.getProperty("usr.dir");
 
-			FileInputStream fis = new FileInputStream("src/serverKeyStore.jks");
+			FileInputStream fis = new FileInputStream("src/server-keystore.jks");
+			KeyStore ks = KeyStore.getInstance("JKS");
+			ks.load(fis, serverpswd.toCharArray());
 
+			
+			
+			
 			FileInputStream fis2 = new FileInputStream("src/ServerCert.pem");
 			CertificateFactory cf = CertificateFactory.getInstance("X.509");
 			Collection c = cf.generateCertificates(fis2);
@@ -42,8 +47,6 @@ public class KeyStoreLoadThread extends Thread
 				System.out.println(cert);
 			}
 
-			KeyStore ks = KeyStore.getInstance("JKS");
-			ks.load(fis, serverpswd.toCharArray());
 
 			Key key = ks.getKey(alias, serverpswd.toCharArray());
 

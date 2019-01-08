@@ -23,6 +23,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.print.PageLayout;
 import javafx.print.PrinterJob;
@@ -31,6 +32,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -127,7 +129,7 @@ public class UIController
 	@FXML
 	private Text textIP;
 	@FXML
-	private Label certLabel;
+	private Label certLabel,protocolLabel,serverStatusLabel,clientStatusLabel;
 	@FXML
 	private Button certRequestButton;
 
@@ -743,6 +745,93 @@ public class UIController
 		{
 			return false;
 		}
+	}
+	
+	public void openNetworkProperties()
+	{
+		Alert alert = new Alert(AlertType.NONE);
+		alert.setX(connectButton.getScene().getWindow().getX() + (connectButton.getScene().getWindow().getWidth() / 2)
+				- 200);
+		alert.setY(connectButton.getScene().getWindow().getY() + (connectButton.getScene().getWindow().getHeight() / 2)
+				- 80);
+		alert.setTitle("Network properties");
+		alert.setHeaderText("");
+		alert.getDialogPane().getButtonTypes().add(ButtonType.OK);
+		Button b = (Button)alert.getDialogPane().lookupButton(ButtonType.OK);
+		
+		Insets insets = new Insets(5, 5, 5, 5);
+
+		VBox expContent = new VBox();
+		expContent.setPadding(insets);
+		HBox box1 = new HBox();
+		box1.setPadding(insets);
+		HBox box2 = new HBox();
+		box2.setPadding(insets);
+		Label l1 = new Label("TCP port:");
+		l1.setPadding(insets);
+		Label l2 = new Label("TLS port:");
+		l2.setPadding(insets);
+		TextField txt1 = new TextField();
+		txt1.setPadding(insets);
+		TextField txt2 = new TextField();
+		txt2.setPadding(insets);
+		txt1.setText(String.valueOf(connectionModel.getTcpPort()));
+		txt2.setText(String.valueOf(connectionModel.getTlsPort()));
+		box1.getChildren().addAll(l1, txt1);
+		box2.getChildren().addAll(l2, txt2);
+		expContent.getChildren().addAll(box1, box2);
+		Label warn = new Label();
+		warn.setPadding(insets);
+		warn.setTextFill(Color.RED);
+		expContent.getChildren().add(warn);
+		
+		txt1.textProperty().addListener((observable, oldValue, newValue) ->
+		{
+			try
+			{
+				int port = Integer.parseInt(newValue);
+				if (port < 1024 || port > 65535)
+				{
+					warn.setText("port must be > 1024 and < 65535");
+					b.setDisable(true);
+				} else
+				{
+					warn.setText("");
+					b.setDisable(false);
+				}
+			} catch (Exception e)
+			{
+				warn.setText("port must be a number");
+				b.setDisable(true);
+			}
+		});
+		txt2.textProperty().addListener((observable, oldValue, newValue) ->
+		{
+			try
+			{
+				int port = Integer.parseInt(newValue);
+				if (port < 1024 || port > 65535)
+				{
+					warn.setText("port must be > 1024 and < 65535");
+					b.setDisable(true);
+				} else
+				{
+					warn.setText("");
+					b.setDisable(false);
+				}
+			} catch (Exception e)
+			{
+				warn.setText("port must be a number");
+				b.setDisable(true);
+			}
+		});
+
+		alert.getDialogPane().setContent(expContent);
+
+		alert.showAndWait();
+		connectionModel.setTcpPort(Integer.parseInt(txt1.getText()));
+		connectionModel.setTlsPort(Integer.parseInt(txt2.getText()));
+
 	}
 
 }

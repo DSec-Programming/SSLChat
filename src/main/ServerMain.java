@@ -19,8 +19,8 @@ public class ServerMain extends Application
 	public static void main(String[] args)
 	{
 		//load server Key Store
-		KeyStoreLoadThread kslt = new KeyStoreLoadThread();
-		kslt.start();
+		//KeyStoreLoadThread kslt = new KeyStoreLoadThread();
+		//kslt.start();
 		
 		//load server truststore
 		

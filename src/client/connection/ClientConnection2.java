@@ -30,9 +30,6 @@ public class ClientConnection2
 
 		this.receiver.start();
 		this.sender.start();
-		
-		
-		
 	}
 
 	public synchronized void send(Sendable s)

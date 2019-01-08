@@ -3,6 +3,8 @@ package server.model;
 import java.util.ArrayList;
 
 import client.model.DateTime;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -17,6 +19,7 @@ public class ServerDataModel
 	private ObservableList<String> observableChatMessages;
 	// Notificaions
 	private ObservableList<String> observableNotificationList;
+	
 
 	public ServerDataModel()
 	{
@@ -54,6 +57,14 @@ public class ServerDataModel
 	{
 		this.observableUserOnlineList.remove(s);
 	}
+	
+	public synchronized void removeAllUserInOnlineList()
+	{
+		for(int i = 0; i < this.observableUserOnlineList.size();i++)
+		{
+			this.observableUserOnlineList.remove(0);
+		}
+	}
 
 	public synchronized void addMsgAtChat(String s)
 	{
@@ -64,7 +75,7 @@ public class ServerDataModel
 	{
 		// Parameter ist eine neue Meldung
 		DateTime date = new DateTime();
-		this.observableNotificationList.add(date.getDateAndTime() + notification);
+		this.observableNotificationList.add(date.getTimeWithSec() + notification);
 	}
 
 	public synchronized void clearNotifications()
@@ -142,4 +153,5 @@ public class ServerDataModel
 	{
 		return this.observableChatMessages;
 	}
+	
 }

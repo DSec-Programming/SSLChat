@@ -1,8 +1,10 @@
 package client.model;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.security.KeyStore;
 import java.security.Security;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -38,6 +40,9 @@ public class ConnectionModel
 	// ClientStatus e {"authorized","unauthorized"}
 	private StringProperty clientStatus;
 
+	private int tcpPort;
+	private int tlsPort;
+
 	public ConnectionModel()
 	{
 		this.user = null;
@@ -51,12 +56,15 @@ public class ConnectionModel
 		this.connectionType = new SimpleStringProperty();
 		this.serverStatus = new SimpleStringProperty();
 		this.clientStatus = new SimpleStringProperty();
+
+		this.tcpPort = 55555;
+		this.tlsPort = 44444;
 	}
 
 	public synchronized void openSocket(String ip, ClientDataModel clientDataModel) throws IOException
 	{
 		String str;//änder den port !?! so dass nict statisch 
-		Socket s = new Socket(ip, 55555);
+		Socket s = new Socket(ip, this.tcpPort);
 		ClientConnection2 connection = new ClientConnection2(s, clientDataModel);
 		this.connection = connection;
 		//Hallo sagen
@@ -64,12 +72,10 @@ public class ConnectionModel
 
 	}
 
-	public synchronized void openSSLSocket(String ip, ClientDataModel clientDataModel) throws IOException, ConnectException
+	public synchronized void openSSLSocket(String ip, ClientDataModel clientDataModel)
+			throws IOException, ConnectException
 	{
-		String str;//änder den port !?! so dass nict statisch
-
 		Security.addProvider(new BouncyCastleProvider());
-
 		try
 		{
 			Security.addProvider(new BouncyCastleJsseProvider());
@@ -77,12 +83,20 @@ public class ConnectionModel
 			SSLContext sslContext = SSLContext.getInstance("TLS", "BCJSSE");
 
 			TrustManagerFactory trustMgrFact = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
-			trustMgrFact.init(Utils.createServerTrustStore());
+			
+			String ss;
+			//trustMgrFact.init(Utils.createServerTrustStore());
+			
+			FileInputStream fis = new FileInputStream("src/client-truststore.jks");
+			KeyStore ks = KeyStore.getInstance("JKS");
+			ks.load(fis, "client1234".toCharArray());
+			
+			trustMgrFact.init(ks);
 
 			sslContext.init(null, trustMgrFact.getTrustManagers(), null);
 
 			SSLSocketFactory fact = sslContext.getSocketFactory();
-			SSLSocket s = (SSLSocket) fact.createSocket(ip, 44444); //port änderungen !! 
+			SSLSocket s = (SSLSocket) fact.createSocket(ip, this.tlsPort); //port änderungen !! 
 
 			ClientConnection2 connection = new ClientConnection2(s, clientDataModel);
 			this.connection = connection;
@@ -93,7 +107,7 @@ public class ConnectionModel
 			/*
 			 * Um anzudeuten, dass der Server nicht online ist
 			 */
-			if(e instanceof ConnectException)
+			if (e instanceof ConnectException)
 			{
 				throw new ConnectException();
 			}
@@ -131,6 +145,16 @@ public class ConnectionModel
 		return clientStatus;
 	}
 
+	public int getTcpPort()
+	{
+		return tcpPort;
+	}
+
+	public int getTlsPort()
+	{
+		return tlsPort;
+	}
+
 	// SETTER
 
 	public synchronized void setUser(User user)
@@ -160,7 +184,7 @@ public class ConnectionModel
 
 	public synchronized void killConnectoin() throws IOException
 	{
-		if(this.connection != null)
+		if (this.connection != null)
 		{
 			this.connection.stop();
 		}
@@ -170,6 +194,16 @@ public class ConnectionModel
 	public synchronized void shutdownThreadPool()
 	{
 		this.pool.shutdown();
+	}
+
+	public void setTcpPort(int tcpPort)
+	{
+		this.tcpPort = tcpPort;
+	}
+
+	public void setTlsPort(int tlsPort)
+	{
+		this.tlsPort = tlsPort;
 	}
 
 }

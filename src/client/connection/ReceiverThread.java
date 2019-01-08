@@ -10,6 +10,7 @@ import javafx.application.Platform;
 import server.model.ConnectionModel;
 import streamedObjects.Kick;
 import streamedObjects.Sendable;
+import streamedObjects.ServerShutDown;
 import streamedObjects.UpdateFromServer;
 
 public class ReceiverThread extends Thread
@@ -73,6 +74,11 @@ public class ReceiverThread extends Thread
 					else if(s instanceof Kick)
 					{
 						clientDataModel.addNotification("you were kicked");
+						clientDataModel.setKicked(true);
+					}
+					else if(s instanceof ServerShutDown)
+					{
+						clientDataModel.addNotification("server shut down");
 						clientDataModel.setKicked(true);
 					}
 				}

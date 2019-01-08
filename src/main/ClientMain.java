@@ -39,9 +39,7 @@ public class ClientMain extends Application
 		if (connectionModel != null)
 		{
 			connectionModel.killConnectoin();
-			System.out.println("Kill connection");
 			connectionModel.shutdownThreadPool();
-			System.out.println("Shutdown pool");
 		}
 
 	}
@@ -56,7 +54,6 @@ public class ClientMain extends Application
 		primaryStage.setScene(scene);
 		primaryStage.setResizable(false);
 
-		System.out.println("show");
 		primaryStage.show();
 	}
 }

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="427.0" prefWidth="683.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="server.controller.UIController">
+<AnchorPane prefHeight="446.0" prefWidth="683.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="server.controller.UIController">
    <children>
       <TextArea fx:id="chatTextArea" editable="false" layoutX="177.0" layoutY="59.0" prefHeight="230.0" prefWidth="400.0" />
       <Label layoutX="178.0" layoutY="38.0" text="Chat" />
@@ -15,7 +16,10 @@
       <MenuBar fx:id="menuBar" layoutY="-2.0" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
           <Menu mnemonicParsing="false" text="File" />
-          <Menu mnemonicParsing="false" text="Properties" />
+          <Menu mnemonicParsing="false" text="Properties">
+               <items>
+                  <MenuItem fx:id="menuNetwork" mnemonicParsing="false" onAction="#openNetworkProperties" text="Network" />
+               </items></Menu>
           <Menu mnemonicParsing="false" text="View">
                <items>
                   <RadioMenuItem fx:id="menuItemStandard" mnemonicParsing="false" onAction="#changeView" text="Standard" />
@@ -59,5 +63,6 @@
             </ImageView>
          </graphic>
       </Button>
+      <Label fx:id="localip" layoutX="14.0" layoutY="414.0" prefHeight="17.0" prefWidth="125.0" text="ip" />
    </children>
 </AnchorPane>

@@ -18,6 +18,7 @@
                       <Menu fx:id="menuProperties" mnemonicParsing="false" text="Properties">
                         <items>
                           <MenuItem fx:id="itemUsername" mnemonicParsing="false" onAction="#handleSetUsername" text="Username" />
+                              <MenuItem mnemonicParsing="false" onAction="#openNetworkProperties" text="Network" />
                         </items>
                       </Menu>
                       <Menu fx:id="menuInfo" mnemonicParsing="false" text="Info">
@@ -132,6 +133,39 @@
                                                       <Font size="11.0" />
                                                    </font>
                                                 </TextArea>
+                                                <HBox prefHeight="7.0" prefWidth="163.0">
+                                                   <children>
+                                                      <Label text="Protocol : ">
+                                                         <HBox.margin>
+                                                            <Insets left="10.0" />
+                                                         </HBox.margin>
+                                                      </Label>
+                                                      <Label fx:id="protocolLabel" text="Label" />
+                                                   </children>
+                                                   <opaqueInsets>
+                                                      <Insets />
+                                                   </opaqueInsets>
+                                                </HBox>
+                                                <HBox prefHeight="17.0" prefWidth="163.0">
+                                                   <children>
+                                                      <Label text="Server : ">
+                                                         <HBox.margin>
+                                                            <Insets left="10.0" />
+                                                         </HBox.margin>
+                                                      </Label>
+                                                      <Label fx:id="serverStatusLabel" text="Label" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox prefHeight="18.0" prefWidth="163.0">
+                                                   <children>
+                                                      <Label text="Client : ">
+                                                         <HBox.margin>
+                                                            <Insets left="10.0" />
+                                                         </HBox.margin>
+                                                      </Label>
+                                                      <Label fx:id="clientStatusLabel" text="Label" />
+                                                   </children>
+                                                </HBox>
                                              </children>
                                           </VBox>
                                        </children>

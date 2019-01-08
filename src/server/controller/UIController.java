@@ -3,7 +3,9 @@ package server.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -12,21 +14,29 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.print.PageLayout;
 import javafx.print.PrinterJob;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import network.NetworkInfo;
-import server.connection.SSLServerSocketEntrace;
-import server.connection.ServerSocketEntrace;
 import server.connection.SingleClientConnection;
 import server.connection.SingleClientConnection2;
 import server.model.ConnectionModel;
@@ -50,15 +60,18 @@ public class UIController
 	private RadioMenuItem menuItemStandard, menuItemCertificate;
 
 	@FXML
+	private MenuItem menuNetwork;
+	@FXML
 	private Button shutDownButton, clearChatButton, kickUserButton, printButton;
+
+	@FXML
+	private Label localip;
 
 	private ObservableList<String> observableUserOnlineList;
 
 	private ObservableList<String> observableChatMessages;
 
 	private ObservableList<String> observableNotificationList;
-
-	private static boolean loaded = false;
 
 	@FXML
 	private void initialize()
@@ -71,28 +84,9 @@ public class UIController
 
 		setAllListener();
 		initTextAreas();
+		hideChats();
+		this.localip.setText("  IP : " + NetworkInfo.getCurrentNetworkIp());
 
-		// nur für test
-		// später in buttonHandler
-		try
-		{
-			//INS MODEL AUSLAGERN !!! 
-			if (!loaded)
-			{
-				loaded = true;
-				ServerSocketEntrace sse = new ServerSocketEntrace(55555, connectionModel);
-				SSLServerSocketEntrace SSLsse = new SSLServerSocketEntrace(44444, connectionModel);
-				connectionModel.setServerSocketEntrace(sse);
-				connectionModel.setSSLServerSocketEntrace(SSLsse);
-				sse.start();
-				SSLsse.start();
-				model.addNotification("Server successfully started !");
-				model.addNotification("Local IP: " + NetworkInfo.getCurrentNetworkIp());
-			}
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
 	}
 
 	/*
@@ -116,6 +110,30 @@ public class UIController
 		}
 		final String i = info;
 		Platform.runLater(() -> infoTextArea.setText(i));
+	}
+
+	private void hideChats()
+	{
+		this.chatTextArea.setDisable(true);
+		this.activeUserListView.setDisable(true);
+	}
+
+	private void showChats()
+	{
+		this.chatTextArea.setDisable(false);
+		this.activeUserListView.setDisable(false);
+	}
+
+	public void startServer()
+	{
+		connectionModel.startServer();
+		showChats();
+	}
+
+	public void stopServer()
+	{
+		connectionModel.stopServer();
+		hideChats();
 	}
 
 	public void changeView(ActionEvent e)
@@ -158,7 +176,15 @@ public class UIController
 
 	public void shutDown(ActionEvent e)
 	{
-		System.exit(0);
+		if (connectionModel.getLoaded())
+		{
+			stopServer();
+			connectionModel.setLoaded(false);
+		} else
+		{
+			startServer();
+			connectionModel.setLoaded(true);
+		}
 	}
 
 	public void clearChat(ActionEvent e)
@@ -178,12 +204,10 @@ public class UIController
 			model.removeUserInOnlineList(user);
 			Platform.runLater(() -> activeUserListView.getSelectionModel().select(0));
 			model.addNotification(user + " successfully kicked !");
-			
-			
-			
+
 		}
 	}
-	
+
 	/*
 	 * Druckt den Inhalt der Notification-TextArea
 	 */
@@ -193,24 +217,28 @@ public class UIController
 		{
 			@Override
 			public void run()
-			{				
+			{
 				TextFlow printArea = new TextFlow(new Text(infoTextArea.getText()));
 
-			    PrinterJob printerJob = PrinterJob.createPrinterJob();
+				PrinterJob printerJob = PrinterJob.createPrinterJob();
 
-			    if (printerJob != null && printerJob.showPrintDialog(infoTextArea.getScene().getWindow())) {
-			        PageLayout pageLayout = printerJob.getJobSettings().getPageLayout();
-			        printArea.setMaxWidth(pageLayout.getPrintableWidth());
+				if (printerJob != null && printerJob.showPrintDialog(infoTextArea.getScene().getWindow()))
+				{
+					PageLayout pageLayout = printerJob.getJobSettings().getPageLayout();
+					printArea.setMaxWidth(pageLayout.getPrintableWidth());
 
-			        if (printerJob.printPage(printArea)) {
-			            printerJob.endJob();
-			            model.addNotification("Notifications printed !");
-			        } else {
-			            System.out.println("Failed to print");
-			        }
-			    } else {
-			        System.out.println("PrintJob Canceled");
-			    }
+					if (printerJob.printPage(printArea))
+					{
+						printerJob.endJob();
+						model.addNotification("Notifications printed !");
+					} else
+					{
+						System.out.println("Failed to print");
+					}
+				} else
+				{
+					System.out.println("PrintJob Canceled");
+				}
 			}
 		};
 		t.start();
@@ -272,7 +300,7 @@ public class UIController
 				 * damit diese immer ans Ende scrolled
 				 */
 				Platform.runLater(() -> chatTextArea.appendText(""));
-				
+
 				// trigger die Änderungen bei den Clients
 				// ! Model muss synchronisiert werden damit niemand anderes
 				// dazwischenspucken
@@ -314,7 +342,7 @@ public class UIController
 				Platform.runLater(() -> infoTextArea.appendText(""));
 			}
 		});
-		
+
 		/*
 		 * ChangeListener der chatTextArea -> bei neuem Eintrag wird immer ans Ende gescrolled
 		 */
@@ -326,6 +354,93 @@ public class UIController
 				Platform.runLater(() -> chatTextArea.setScrollTop(Double.MAX_VALUE));
 			}
 		});
+	}
+
+	public void openNetworkProperties()
+	{
+		Alert alert = new Alert(AlertType.NONE);
+		alert.setX(chatTextArea.getScene().getWindow().getX() + (chatTextArea.getScene().getWindow().getWidth() / 2)
+				- 200);
+		alert.setY(chatTextArea.getScene().getWindow().getY() + (chatTextArea.getScene().getWindow().getHeight() / 2)
+				- 80);
+		alert.setTitle("Network properties");
+		alert.setHeaderText("");
+		alert.getDialogPane().getButtonTypes().add(ButtonType.OK);
+		Button b = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+
+		Insets insets = new Insets(5, 5, 5, 5);
+
+		VBox expContent = new VBox();
+		expContent.setPadding(insets);
+		HBox box1 = new HBox();
+		box1.setPadding(insets);
+		HBox box2 = new HBox();
+		box2.setPadding(insets);
+		Label l1 = new Label("TCP port:");
+		l1.setPadding(insets);
+		Label l2 = new Label("TLS port:");
+		l2.setPadding(insets);
+		TextField txt1 = new TextField();
+		txt1.setPadding(insets);
+		TextField txt2 = new TextField();
+		txt2.setPadding(insets);
+		txt1.setText(String.valueOf(connectionModel.getTcpPort()));
+		txt2.setText(String.valueOf(connectionModel.getTlsPort()));
+		box1.getChildren().addAll(l1, txt1);
+		box2.getChildren().addAll(l2, txt2);
+		expContent.getChildren().addAll(box1, box2);
+		Label warn = new Label();
+		warn.setPadding(insets);
+		warn.setTextFill(Color.RED);
+		expContent.getChildren().add(warn);
+
+		txt1.textProperty().addListener((observable, oldValue, newValue) ->
+		{
+			try
+			{
+				int port = Integer.parseInt(newValue);
+				if (port < 1024 || port > 65535)
+				{
+					warn.setText("port must be > 1024 and < 65535");
+					b.setDisable(true);
+				} else
+				{
+					warn.setText("");
+					b.setDisable(false);
+				}
+			} catch (Exception e)
+			{
+				warn.setText("port must be a number");
+				b.setDisable(true);
+			}
+		});
+		txt2.textProperty().addListener((observable, oldValue, newValue) ->
+		{
+			try
+			{
+				int port = Integer.parseInt(newValue);
+				if (port < 1024 || port > 65535)
+				{
+					warn.setText("port must be > 1024 and < 65535");
+					b.setDisable(true);
+				} else
+				{
+					warn.setText("");
+					b.setDisable(false);
+				}
+			} catch (Exception e)
+			{
+				warn.setText("port must be a number");
+				b.setDisable(true);
+			}
+		});
+
+		alert.getDialogPane().setContent(expContent);
+
+		alert.showAndWait();
+		connectionModel.setTcpPort(Integer.parseInt(txt1.getText()));
+		connectionModel.setTlsPort(Integer.parseInt(txt2.getText()));
+
 	}
 
 }

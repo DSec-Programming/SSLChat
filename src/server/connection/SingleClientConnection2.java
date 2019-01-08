@@ -22,20 +22,12 @@ public class SingleClientConnection2
 
 	public SingleClientConnection2(Socket s, ServerDataModel model, ConnectionModel cmodel) throws IOException
 	{
-		System.out.println("begin Konstruktor SingleCLientConnection2");
 		this.s = s;
 		this.sendList = new SendList();
 		this.receiveList = new ReceiveList();
 		this.idList = new ArrayList<>();
-
-		System.out.println("Passive klassen init ... fertig sender/reveicerList");
-		
 		this.sender = new SenderThread(s.getOutputStream(), sendList, idList);
-		System.out.println("init sender thread");
 		this.receiver = new ReceiverThread(this, s.getInputStream(), model, cmodel, receiveList, idList);
-		System.out.println("init receiver thread");
-		System.out.println("init all Threads");
-		
 		this.receiver.start();
 		this.sender.start();
 
@@ -70,9 +62,9 @@ public class SingleClientConnection2
 		this.sendList.add(s);
 	}
 
-	public void stop() throws IOException
+	public void stop(Sendable s) throws IOException
 	{
-		this.sendList.add(new ClientSaysBye());
+		this.sendList.add(s);
 		//!!!!!SCHÖNER!!!!!
 		try
 		{

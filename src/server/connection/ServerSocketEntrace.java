@@ -31,34 +31,43 @@ public class ServerSocketEntrace extends Thread
 {
 	private ServerSocket serverSocket;
 	private ConnectionModel model;
+	private ServerDataModel serverDataModel;
 
-	public ServerSocketEntrace(int port, ConnectionModel model) throws IOException
+	public ServerSocketEntrace(int port, ConnectionModel model, ServerDataModel sdmodel) throws IOException
 	{
 		setDaemon(true);
 		this.serverSocket = new ServerSocket(port);
+		serverSocket.setReuseAddress(true);
 		this.model = model;
+		this.serverDataModel = sdmodel;
 	}
 
 	@Override
 	public void run()
 	{
-		System.out.println("init ServerDataModel ...");
-
-		System.out.println("(TCPServerSocket)>>> waiting for clients ... ");
 		// so lange wie server nicht terminiert
-		while (true)
+		while (!isInterrupted())
 		{
 			try
 			{
 				Socket socketForClient = serverSocket.accept();
-				System.out.println("(TCPServerSocket)>>> NEW CLIENT : " + socketForClient.getRemoteSocketAddress());
-				
+				serverDataModel.addNotification("(TCPServerSocket)>>> NEW CLIENT : " + socketForClient.getRemoteSocketAddress());
 				SingleClientConnection2 connection = new SingleClientConnection2(socketForClient,
-						this.model.getServerDataModel(),model);
+						this.model.getServerDataModel(), model);
+				this.serverDataModel.addNotification("Create new (TCP) SingleClientConnection2");
 				
-				System.out.println("Create new (TCP) SingleClientConnection2");
 			} catch (Exception e)
 			{
+				try
+				{
+					serverSocket.close();
+					
+				}
+				catch(Exception ee)
+				{
+					ee.printStackTrace();
+				}
+				interrupt();
 				e.printStackTrace();
 			}
 		}
