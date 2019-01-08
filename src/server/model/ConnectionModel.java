@@ -46,7 +46,7 @@ public class ConnectionModel
 			if (!loaded)
 			{
 				loaded = true;
-				serverDataModel.addNotification("SERVER RUNNING... ");
+				serverDataModel.addNotification("STARTING SERVER... ");
 				ServerSocketEntrace sse = new ServerSocketEntrace(this.tcpPort, this, serverDataModel);				
 				serverDataModel.addNotification("(TCPServerSocket)>>> waiting for clients ... ");
 				SSLServerSocketEntrace SSLsse = new SSLServerSocketEntrace(this.tlsPort, this, serverDataModel);
@@ -68,9 +68,7 @@ public class ConnectionModel
 		if (loaded)
 		{
 			this.serverSocketEntrace.interrupt();
-			serverDataModel.addNotification("kill TCPServerSocket");
 			this.sslServerSocketEntrace.interrupt();
-			serverDataModel.addNotification("kill TLSServerSocket");
 			
 			for(SingleClientConnection2 c :this.openClientConnections)
 			{

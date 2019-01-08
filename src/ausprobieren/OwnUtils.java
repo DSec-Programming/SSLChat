@@ -16,6 +16,9 @@ import java.util.Date;
 import javax.security.auth.x500.X500Principal;
 import javax.security.auth.x500.X500PrivateCredential;
 
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.X500NameBuilder;
+import org.bouncycastle.asn1.x500.style.RFC4519Style;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v1CertificateBuilder;
@@ -27,7 +30,7 @@ import org.bouncycastle.util.encoders.Base64;
 public class OwnUtils
 {
 
-	private static final long VALIDITY_PERIOD = 7 * 24 * 60 * 60 * 1000L;
+	private static final long VALIDITY_PERIOD = 7 * 24 * 60 * 60;
 	private static long baseTime = 0x15c57a33402L;
 	private static final byte[] rootPrivateKey = Base64.decode("MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQD"
 			+ "DYu2zJUsZAKQ31RzVqteZQwf4lxi3T8TCP8DSQ7Ke4IQp3DDKVP"
@@ -68,7 +71,7 @@ public class OwnUtils
 			+ "l+FRTJqdUjDFO7SPPEeWwDpIicNVs//ONAX1aMD00eFrUxoKt9z"
 			+ "ifIG+hh/JNbfAnb5rhQK1eQ/ojwKYpbsFVQlSDZEjdAI18JpI7R"
 			+ "1DDgPqgu2nmZM5HuLz0kstUAASM5gFyKtc1MUuqPQ1KhB/YCxdX" + "vdbqsCo5o4/UmJ4WcR7phBMeNif1wIDAQAB");
-	public static String ROOT_ALIAS = "root";
+	public static String ROOT_ALIAS = "CA";
 
 	public static void main(String[] args)  throws Exception
 	{
@@ -80,12 +83,12 @@ public class OwnUtils
 	public static void writeKeyStore(String path,KeyStore store,String pswd) throws Exception
 	{
 		File f = new File(path);
-		if(!f.exists())
-		{
+//		if(!f.exists())
+//		{
 			FileOutputStream out = new FileOutputStream(f);
 			store.store(out, pswd.toCharArray());
 			out.close();
-		}
+//		}
 	}
 	
 	public static KeyStore createServerKeyStore() throws Exception
@@ -128,14 +131,23 @@ public class OwnUtils
 
 	public static X509CertificateHolder generateRootCert(KeyPair pair) throws Exception
 	{
+		X500NameBuilder subjectBuilder = new X500NameBuilder(RFC4519Style.INSTANCE);
+		subjectBuilder.addRDN(RFC4519Style.cn, "Root CA");
+		subjectBuilder.addRDN(RFC4519Style.c, "DE");
+		subjectBuilder.addRDN(RFC4519Style.o, "Hochschule Trier");
+		subjectBuilder.addRDN(RFC4519Style.l, "Trier");
+		subjectBuilder.addRDN(RFC4519Style.st, "Rheinland-Pfalz");
+		subjectBuilder.addRDN(RFC4519Style.description, "SSLChat Root-Zertifikat");
+		X500Name subject = subjectBuilder.build();
+		
 		JcaX509v1CertificateBuilder certBldr = new JcaX509v1CertificateBuilder(
-				new X500Principal("CN=Test CA Certificate"), BigInteger.valueOf(1), new Date(baseTime), // allow
+				subject, BigInteger.valueOf(1), new Date(baseTime), // allow
 				// 1024
 				// weeks
 				// for
 				// the
 				// root
-				new Date(baseTime + 1024 * VALIDITY_PERIOD), new X500Principal("CN=Test CA Certificate"),
+				new Date(baseTime + 1024 * VALIDITY_PERIOD), subject,
 				pair.getPublic());
 		ContentSigner signer = new JcaContentSignerBuilder("SHA256withRSA").setProvider("BC").build(pair.getPrivate());
 		return certBldr.build(signer);
