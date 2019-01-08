@@ -46,15 +46,18 @@ public class SSLServerSocketEntrace extends Thread
 			
 			kmf.init(ks, serverpswd.toCharArray());
 
-			// Für Client Auth auch noch eine TrustManagerFactroy
-			TrustManagerFactory tmf = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
-			tmf.init(Utils.createClientTrustStore());
-			
-			FileInputStream fis2 = new FileInputStream("src/server-keystore.jks");
-			KeyStore ks2 = KeyStore.getInstance("JKS");
-			ks2.load(fis2, serverpswd.toCharArray());
+//			// Für Client Auth auch noch eine TrustManagerFactroy
+//			TrustManagerFactory tmf = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
+//			//tmf.init(Utils.createClientTrustStore());
+//			
+//			FileInputStream fis2 = new FileInputStream("src/server-truststore.jks");
+//			KeyStore ks2 = KeyStore.getInstance("JKS");
+//			ks2.load(fis2, serverpswd.toCharArray());
+//			
+//			tmf.init(ks2);
 
-			sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+			//sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+			sslContext.init(kmf.getKeyManagers(), null, null);
 
 			SSLServerSocketFactory fact = sslContext.getServerSocketFactory();
 			SSLServerSocket serverSocket = (SSLServerSocket) fact.createServerSocket(port);
