@@ -248,8 +248,6 @@ public class Utils
 		keyStore.setKeyEntry(serverCred.getAlias(), serverCred.getPrivateKey(), SERVER_PASSWORD, new X509Certificate[]
 		{ serverCred.getCertificate() });
 		return keyStore;
-		
-		
 	}
 
 	/**

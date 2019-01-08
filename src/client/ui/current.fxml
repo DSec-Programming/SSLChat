@@ -112,35 +112,21 @@
                                                       <Insets bottom="4.0" left="6.0" top="5.0" />
                                                    </VBox.margin>
                                                 </Text>
-                                                <TextArea fx:id="connectionInfos" editable="false" prefHeight="75.0" prefWidth="76.0">
-                                                   <VBox.margin>
-                                                      <Insets bottom="7.0" left="7.0" top="7.0" />
-                                                   </VBox.margin>
-                                                   <font>
-                                                      <Font size="10.0" />
-                                                   </font>
-                                                </TextArea>
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Local infos">
-                                                   <VBox.margin>
-                                                      <Insets left="10.0" />
-                                                   </VBox.margin>
-                                                </Text>
-                                                <TextArea fx:id="lokalInfos" editable="false" prefHeight="75.0" prefWidth="76.0">
-                                                   <VBox.margin>
-                                                      <Insets bottom="7.0" left="7.0" top="7.0" />
-                                                   </VBox.margin>
-                                                   <font>
-                                                      <Font size="11.0" />
-                                                   </font>
-                                                </TextArea>
                                                 <HBox prefHeight="7.0" prefWidth="163.0">
                                                    <children>
                                                       <Label text="Protocol : ">
                                                          <HBox.margin>
                                                             <Insets left="10.0" />
                                                          </HBox.margin>
+                                                         <font>
+                                                            <Font size="10.0" />
+                                                         </font>
                                                       </Label>
-                                                      <Label fx:id="protocolLabel" text="Label" />
+                                                      <Label fx:id="protocolLabel" text="Label">
+                                                         <font>
+                                                            <Font size="10.0" />
+                                                         </font>
+                                                      </Label>
                                                    </children>
                                                    <opaqueInsets>
                                                       <Insets />
@@ -152,8 +138,15 @@
                                                          <HBox.margin>
                                                             <Insets left="10.0" />
                                                          </HBox.margin>
+                                                         <font>
+                                                            <Font size="10.0" />
+                                                         </font>
                                                       </Label>
-                                                      <Label fx:id="serverStatusLabel" text="Label" />
+                                                      <Label fx:id="serverStatusLabel" text="Label">
+                                                         <font>
+                                                            <Font size="10.0" />
+                                                         </font>
+                                                      </Label>
                                                    </children>
                                                 </HBox>
                                                 <HBox prefHeight="18.0" prefWidth="163.0">
@@ -162,10 +155,26 @@
                                                          <HBox.margin>
                                                             <Insets left="10.0" />
                                                          </HBox.margin>
+                                                         <font>
+                                                            <Font size="10.0" />
+                                                         </font>
                                                       </Label>
-                                                      <Label fx:id="clientStatusLabel" text="Label" />
+                                                      <Label fx:id="clientStatusLabel" text="Label">
+                                                         <font>
+                                                            <Font size="10.0" />
+                                                         </font>
+                                                      </Label>
                                                    </children>
                                                 </HBox>
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Local infos" />
+                                                <TextArea fx:id="lokalInfos" editable="false" prefHeight="75.0" prefWidth="76.0">
+                                                   <VBox.margin>
+                                                      <Insets bottom="7.0" left="7.0" top="7.0" />
+                                                   </VBox.margin>
+                                                   <font>
+                                                      <Font size="11.0" />
+                                                   </font>
+                                                </TextArea>
                                              </children>
                                           </VBox>
                                        </children>

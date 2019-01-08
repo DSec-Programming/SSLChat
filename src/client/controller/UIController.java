@@ -103,8 +103,6 @@ public class UIController
 	@FXML
 	private VBox vboxClientAuth;
 	@FXML
-	private TextArea connectionInfos;
-	@FXML
 	private TextArea lokalInfos;
 	@FXML
 	private Button connectButton, disconnectButton, printButton;
@@ -549,12 +547,9 @@ public class UIController
 		{
 			public void changed(ObservableValue<? extends String> s1, String s2, String s3)
 			{
-				String info = "";
-				info += "Protokoll: " + connectionModel.getConnectionType().get() + "\n";
-				info += "Server status: " + connectionModel.getServerStatus().get() + "\n";
-				info += "Client status : " + connectionModel.getClientStatus().get() + "\n";
-				final String i = info;
-				Platform.runLater(() -> connectionInfos.setText(i));
+				Platform.runLater(() -> protocolLabel.setText(connectionModel.getConnectionType().get()));
+				Platform.runLater(() -> serverStatusLabel.setText(connectionModel.getServerStatus().get()));
+				Platform.runLater(() -> clientStatusLabel.setText(connectionModel.getClientStatus().get()));
 			}
 		};
 

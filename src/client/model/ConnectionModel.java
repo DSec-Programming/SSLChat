@@ -63,7 +63,6 @@ public class ConnectionModel
 
 	public synchronized void openSocket(String ip, ClientDataModel clientDataModel) throws IOException
 	{
-		String str;//änder den port !?! so dass nict statisch 
 		Socket s = new Socket(ip, this.tcpPort);
 		ClientConnection2 connection = new ClientConnection2(s, clientDataModel);
 		this.connection = connection;
@@ -82,17 +81,16 @@ public class ConnectionModel
 
 			SSLContext sslContext = SSLContext.getInstance("TLS", "BCJSSE");
 
-			TrustManagerFactory trustMgrFact = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
-			
 			String ss;
 			//trustMgrFact.init(Utils.createServerTrustStore());
 			
-			FileInputStream fis = new FileInputStream("src/client-truststore.jks");
-			KeyStore ks = KeyStore.getInstance("JKS");
-			ks.load(fis, "client1234".toCharArray());
+			FileInputStream fis = new FileInputStream("src/javaCreatedServerTrustStore.jks");
+			KeyStore ts = KeyStore.getInstance("JKS");
+			ts.load(fis, "server1234".toCharArray());
 			
-			trustMgrFact.init(ks);
-
+			TrustManagerFactory trustMgrFact = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
+			trustMgrFact.init(ts);
+			
 			sslContext.init(null, trustMgrFact.getTrustManagers(), null);
 
 			SSLSocketFactory fact = sslContext.getSocketFactory();

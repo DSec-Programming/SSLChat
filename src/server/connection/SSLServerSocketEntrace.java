@@ -37,28 +37,18 @@ public class SSLServerSocketEntrace extends Thread
 		{
 
 			SSLContext sslContext = SSLContext.getInstance("TLS", "BCJSSE");
-			KeyManagerFactory kmf = KeyManagerFactory.getInstance("PKIX", "BCJSSE");
-			//kmf.init(Utils.createServerKeyStore(), Utils.SERVER_PASSWORD);
 			
-			FileInputStream fis = new FileInputStream("src/server-keystore.jks");
+			FileInputStream fis = new FileInputStream("src/javaCreatedServerKeyStore.jks");
 			KeyStore ks = KeyStore.getInstance("JKS");
 			ks.load(fis, serverpswd.toCharArray());
 			
-			kmf.init(ks, serverpswd.toCharArray());
-
-//			// Für Client Auth auch noch eine TrustManagerFactroy
-//			TrustManagerFactory tmf = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
-//			//tmf.init(Utils.createClientTrustStore());
-//			
-//			FileInputStream fis2 = new FileInputStream("src/server-truststore.jks");
-//			KeyStore ks2 = KeyStore.getInstance("JKS");
-//			ks2.load(fis2, serverpswd.toCharArray());
-//			
-//			tmf.init(ks2);
-
-			//sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+			KeyManagerFactory kmf = KeyManagerFactory.getInstance("PKIX", "BCJSSE");
+			
+			kmf.init(ks, "server1234".toCharArray());
+		
+			
 			sslContext.init(kmf.getKeyManagers(), null, null);
-
+			
 			SSLServerSocketFactory fact = sslContext.getServerSocketFactory();
 			SSLServerSocket serverSocket = (SSLServerSocket) fact.createServerSocket(port);
 			serverSocket.setReuseAddress(true);
