@@ -79,9 +79,13 @@ public class OwnUtils
 	
 	public static void writeKeyStore(String path,KeyStore store,String pswd) throws Exception
 	{
-		FileOutputStream out = new FileOutputStream(new File(path));
-	    store.store(out, pswd.toCharArray());
-	    out.close();
+		File f = new File(path);
+		if(!f.exists())
+		{
+			FileOutputStream out = new FileOutputStream(f);
+			store.store(out, pswd.toCharArray());
+			out.close();
+		}
 	}
 	
 	public static KeyStore createServerKeyStore() throws Exception

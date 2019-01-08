@@ -133,7 +133,6 @@ public class UIController
 	public void stopServer()
 	{
 		connectionModel.stopServer();
-		hideChats();
 	}
 
 	public void changeView(ActionEvent e)

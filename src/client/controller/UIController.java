@@ -7,9 +7,6 @@ import java.io.InputStream;
 import java.net.ConnectException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-
-import org.bouncycastle.asn1.ess.ContentHints;
-
 import client.model.ClientDataModel;
 import client.model.ConnectionModel;
 import client.model.User;

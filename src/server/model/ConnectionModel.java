@@ -46,7 +46,8 @@ public class ConnectionModel
 			if (!loaded)
 			{
 				loaded = true;
-				ServerSocketEntrace sse = new ServerSocketEntrace(this.tcpPort, this, serverDataModel);
+				serverDataModel.addNotification("SERVER RUNNING... ");
+				ServerSocketEntrace sse = new ServerSocketEntrace(this.tcpPort, this, serverDataModel);				
 				serverDataModel.addNotification("(TCPServerSocket)>>> waiting for clients ... ");
 				SSLServerSocketEntrace SSLsse = new SSLServerSocketEntrace(this.tlsPort, this, serverDataModel);
 				serverDataModel.addNotification("(SSLServerSocket)>>> waiting for clients ... ");
@@ -84,9 +85,7 @@ public class ConnectionModel
 			}
 			
 			serverDataModel.removeAllUserInOnlineList();
-			
-			this.openClientConnections.clear();
-			serverDataModel.addNotification("clearClientConnections");
+			System.exit(0);
 		}
 
 	}
