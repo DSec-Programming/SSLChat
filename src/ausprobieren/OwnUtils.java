@@ -66,12 +66,12 @@ public class OwnUtils
         KeyPair serverPair = generateRSAKeyPair();
         
         X509Certificate ca = generateRootCert(rootPair, now, caDate);
-        generateServerCert(serverPair.getPublic(), rootPair.getPrivate(), ca, now, serverDate);
+        generateServerCert(rootPair.getPublic(), rootPair.getPrivate(), ca, now, serverDate);
         
         for(String s : userList)
         {
             KeyPair clientPair = generateRSAKeyPair();
-            generateClientCert(s, clientPair.getPublic(), rootPair.getPrivate(), ca, now, clientDate);
+            generateClientCert(s, rootPair.getPublic(), rootPair.getPrivate(), ca, now, clientDate);
         }
         System.out.println("FINISHED");
     }
