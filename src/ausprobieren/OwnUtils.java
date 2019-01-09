@@ -2,160 +2,235 @@ package ausprobieren;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
-import java.security.KeyFactory;
 import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
 import java.util.Date;
-
-import javax.security.auth.x500.X500Principal;
 import javax.security.auth.x500.X500PrivateCredential;
-
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.RFC4519Style;
-import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.asn1.x509.BasicConstraints;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.KeyUsage;
+import org.bouncycastle.cert.X509v1CertificateBuilder;
+import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.cert.jcajce.JcaX509v1CertificateBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
-import org.bouncycastle.util.encoders.Base64;
 
 public class OwnUtils
 {
+    public static String ROOT_ALIAS = "CA";
 
-	private static final long VALIDITY_PERIOD = 7 * 24 * 60 * 60;
-	private static long baseTime = 0x15c57a33402L;
-	private static final byte[] rootPrivateKey = Base64.decode("MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQD"
-			+ "DYu2zJUsZAKQ31RzVqteZQwf4lxi3T8TCP8DSQ7Ke4IQp3DDKVP"
-			+ "9NUwVHRr/s0OZphln6JyUBkSHuQ2hTx4UQRoef2g06WLlFAHi1R"
-			+ "wr0QefkdGwhPgSuXMWh4dZ1AYGwuIK3KUIUfUU7x5aiwSO6Lyj5"
-			+ "BYTQQqeX4VFMmp1SMMU7tI88R5bAOkiJw1Wz/840BfVowPTR4Wt"
-			+ "TGgq33OJ8gb6GH8k1t8CdvmuFArV5D+iPApiluwVVCVINkSN0Aj"
-			+ "XwmkjtHUMOA+qC7aeZkzke4vPSSy1QABIzmAXIq1zUxS6o9DUqE"
-			+ "H9gLF1e91uqwKjmjj9SYnhZxHumEEx42J/XAgMBAAECggEAWdQZ"
-			+ "SYQrTx7q4RpzK87kWXumZgV9oQWlBdOOwHzMWdwKFz67FcLXL4M"
-			+ "sSZU+9s8iJ8DTjD1D98D0cxj9lYsE47Mxdm4nJ7yTzSQG2v0DDc"
-			+ "JhLTjTX8MmHs3bNO5iDSA4snlZ64Cl90qSsoWz/TbDyL0W3spJQ"
-			+ "gBrEdpO6OOq0ZZ54zekawgyG677aJbzInAG2o9b066HvGRSWNb3"
-			+ "Celw7RKvjPOohKPOWbSm2W/5gnlSnTaAUgm7W8A1AClTt7scyqg"
-			+ "PEtThxQHiBGorI6UGjVuO0xoT1MgYr2QWKaYJydo8mFaygaJxVJ"
-			+ "Hs1PeFQIhuJn7rA/F5BO8cFpuZGrYPUQKBgQDjJYQ7pDrrgRF8O"
-			+ "TDkvbR5lQdBEWHlK8MMD+1kyptwc8UpK2phZjqLOMofsLhURkgm"
-			+ "Fzc0UOEx03MdGJvHrWgGQRBc+0JHvYLzCepbOFumjkSPwbb2yQH"
-			+ "R9QfOPbDRpaqdFNTJnm4lQHZdTGTR4UvDX1X0PuCksRAVtPRA6P"
-			+ "sBsQKBgQDcNJ5H/ZwkSpT8ZA9GzdVJtxoCLjQPyi1AYYZp0xDUo"
-			+ "D0h6+JnDljFnsWnpy9OcoJAA6pCkQe+6Cm0vlLvMQ8eD9rcQ/+s"
-			+ "JFacr7lE3K9bYt56PBTLHyE+WYy90mOVu7FtLfOLz9XDjzyGMn2"
-			+ "ELuFrUjxlnI7ZCbpZh/GwXiXUBwKBgQDPTPbwg4KuWb2+dGd16t"
-			+ "ghuevD63w/bX/1qzeJrArORynh19ifiW/WjX6SC3M+nmHMOZXNL"
-			+ "h9HnOXK4SGSy2RLiOfJJBoqZP90lVEH7VhfmiliVXWIpov9tLVp"
-			+ "+Q09WAdsko1ccDWv07Pyk/zTOt0tMf29CgF07I90cBAWiUpDEQK"
-			+ "BgBycTZBm+BmTAyaDzaRSbArm2l88J5GBoD2ELlWjkcU+iJLWth"
-			+ "TTvV730RCGXVQg9qFgmIeLlmkMexa7v8TKJ/+s6a/Cuf5gvkwfX"
-			+ "MAAuFv0TZmuIrl9cvFJ60pigoPa3iOkW8dnmouNGb0J5Fr/SFSM"
-			+ "W8KMA9dZNzgYvKNAqEOTAoGBALIUD1PsOGciRA8htw3jA8hhaH8"
-			+ "rM+UeQEMC87QnsMEYTuXmkvsDHDNpkcs//X3woQBww+ll1qfByP"
-			+ "Wj4/GNn4vPjwah4M+6c2xFUez3hLpexD0qoeOS3udAXDGfvBiAT" + "zXkaQ1kp2LHPuQdBMGRM4vnbDYGjtq40khezAfHErK0");
-	private static final byte[] rootPublicKey = Base64.decode("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw2LtsyV"
+    private static ArrayList<String> userList;
 
-			+ "LGQCkN9Uc1arXmUMH+JcYt0/Ewj/A0kOynuCEKdwwylT/TVMFR0"
-			+ "a/7NDmaYZZ+iclAZEh7kNoU8eFEEaHn9oNOli5RQB4tUcK9EHn5"
-			+ "HRsIT4ErlzFoeHWdQGBsLiCtylCFH1FO8eWosEjui8o+QWE0EKn"
-			+ "l+FRTJqdUjDFO7SPPEeWwDpIicNVs//ONAX1aMD00eFrUxoKt9z"
-			+ "ifIG+hh/JNbfAnb5rhQK1eQ/ojwKYpbsFVQlSDZEjdAI18JpI7R"
-			+ "1DDgPqgu2nmZM5HuLz0kstUAASM5gFyKtc1MUuqPQ1KhB/YCxdX" + "vdbqsCo5o4/UmJ4WcR7phBMeNif1wIDAQAB");
-	public static String ROOT_ALIAS = "CA";
+    private final static String SIG_ALGO = "SHA512withRSA";
 
-	public static void main(String[] args)  throws Exception
-	{
-		Security.addProvider(new BouncyCastleProvider());
-		writeKeyStore("src/javaCreatedServerKeystore.jks",createServerKeyStore(),"server1234");
-		writeKeyStore("src/javaCreatedServerTrustStore.jks",createServerTrustStore(),"server1234");
-	}
-	
-	public static void writeKeyStore(String path,KeyStore store,String pswd) throws Exception
-	{
-		File f = new File(path);
-//		if(!f.exists())
-//		{
-			FileOutputStream out = new FileOutputStream(f);
-			store.store(out, pswd.toCharArray());
-			out.close();
-//		}
-	}
-	
-	public static KeyStore createServerKeyStore() throws Exception
-	{
-		X500PrivateCredential serverCred = createRootCredential();
-		KeyStore keyStore = KeyStore.getInstance("JKS");
-		keyStore.load(null, null);
-		keyStore.setKeyEntry(serverCred.getAlias(), serverCred.getPrivateKey(), "server1234".toCharArray(), new X509Certificate[]
-		{ serverCred.getCertificate() });
-		return keyStore;
-	}
+    private final static int KEY_LENGTH = 2048;
+    
+    private static final long SECOND = 1000;
+    private static final long MINUTE = 60 * SECOND;
+    private static final long HOUR = 60 * MINUTE;
+    private static final long DAY = 24 * HOUR;
+    private static final long YEAR = 365 * DAY;
+    
+    private static Date now, caDate, serverDate, clientDate;
+    
+    private static int number = 1234;
 
-	public static KeyStore createServerTrustStore() throws Exception
-	{
-		X500PrivateCredential serverCred = createRootCredential();
-		KeyStore keyStore = KeyStore.getInstance("JKS");
-		keyStore.load(null, null);
-		keyStore.setCertificateEntry(serverCred.getAlias(), serverCred.getCertificate());
-		return keyStore;
-	}
+    public static void main(String[] args) throws Exception
+    {
+        Security.addProvider(new BouncyCastleProvider());
+        System.out.println("STARTED");
+        init();
+              
+        KeyPair rootPair = generateRSAKeyPair();
+        KeyPair serverPair = generateRSAKeyPair();
+        
+        X509Certificate ca = generateRootCert(rootPair, now, caDate);
+        generateServerCert(serverPair.getPublic(), rootPair.getPrivate(), ca, now, serverDate);
+        
+        for(String s : userList)
+        {
+            KeyPair clientPair = generateRSAKeyPair();
+            generateClientCert(s, clientPair.getPublic(), rootPair.getPrivate(), ca, now, clientDate);
+        }
+        System.out.println("FINISHED");
+    }
 
-	public static X500PrivateCredential createRootCredential() throws Exception
-	{
-		KeyPair rootPair = generateRootKeyPair();
-		X509Certificate rootCert = convertCert(generateRootCert(rootPair));
-		return new X500PrivateCredential(rootCert, rootPair.getPrivate(), ROOT_ALIAS);
-	}
+    private static void init()
+    {
+        userList = new ArrayList<String>();
+        userList.add("Böffgen, Matthias");
+        userList.add("Bridel, Daniel");
+        userList.add("Bruxmeier, Andreas");
+        userList.add("Carpagne, Lars");
+        userList.add("Densborn, Philip");
+        userList.add("Eckstein, Jonas");
+        userList.add("Emmesberger, Fabian");
+        userList.add("Hein, Tamara");
+        userList.add("Horne, Michael");
+        userList.add("Kaypinger, Yanik");
+        userList.add("Kessenich, Arne");
+        userList.add("Krause, Jens Adrian");
+        userList.add("Kremp, Philipp");
+        userList.add("Nikolay, Laura");
+        userList.add("Ranalletta, Johannes");
+        userList.add("Reuter, Mario");
+        userList.add("Rosan, Konstantin");
+        userList.add("Schmidt, Tim");
+        userList.add("Schmidt, Tobias");
+        userList.add("Schneider, Philipp");
+        userList.add("Schramm, Peter");
+        userList.add("Wellmann, Julian");
+        userList.add("Wolters, Nicolai");
+        userList.add("Knorr, Konstantin");
+        userList.add("Test, Test");
+        
+        now = new Date();
+        caDate = new Date(now.getTime() + YEAR);
+        serverDate = new Date(now.getTime() + DAY * 120);
+        clientDate = new Date(now.getTime() + DAY * 30);
 
-	public static KeyPair generateRootKeyPair() throws Exception
-	{
-		KeyFactory kFact = KeyFactory.getInstance("RSA", "BC");
-		return new KeyPair(kFact.generatePublic(new X509EncodedKeySpec(rootPublicKey)),
-				kFact.generatePrivate(new PKCS8EncodedKeySpec(rootPrivateKey)));
-	}
+    }
+    
+    public static void writeKeyStore(String path, KeyStore store, char[] psw) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException
+    {
+        File f = new File("src/keystores/" + path);
+        FileOutputStream out = new FileOutputStream(f);
+        store.store(out, psw);
+        out.close();
+    }
+    
+    public static void writeTrustStore(String path, KeyStore store, char[] psw) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException
+    {
+        File f = new File("src/keystores/" + path);
+        FileOutputStream out = new FileOutputStream(f);
+        store.store(out, psw);
+        out.close();
+    }
 
-	private static X509Certificate convertCert(X509CertificateHolder certHolder) throws CertificateException
-	{
-		return new JcaX509CertificateConverter().setProvider("BC").getCertificate(certHolder);
-	}
+    public static X509Certificate generateRootCert(KeyPair pair, Date notBefore, Date notAfter) throws Exception
+    {
+        X500NameBuilder subjectBuilder = new X500NameBuilder(RFC4519Style.INSTANCE);
+        subjectBuilder.addRDN(RFC4519Style.cn, "Root CA");
+        subjectBuilder.addRDN(RFC4519Style.c, "DE");
+        subjectBuilder.addRDN(RFC4519Style.o, "Hochschule Trier");
+        subjectBuilder.addRDN(RFC4519Style.ou, "IT");
+        subjectBuilder.addRDN(RFC4519Style.l, "Trier");
+        subjectBuilder.addRDN(RFC4519Style.st, "Rheinland-Pfalz");
+        subjectBuilder.addRDN(RFC4519Style.description, "SSLChat Root-Zertifikat");
+        X500Name subject = subjectBuilder.build();
 
-	public static X509CertificateHolder generateRootCert(KeyPair pair) throws Exception
-	{
-		X500NameBuilder subjectBuilder = new X500NameBuilder(RFC4519Style.INSTANCE);
-		subjectBuilder.addRDN(RFC4519Style.cn, "Root CA");
-		subjectBuilder.addRDN(RFC4519Style.c, "DE");
-		subjectBuilder.addRDN(RFC4519Style.o, "Hochschule Trier");
-		subjectBuilder.addRDN(RFC4519Style.l, "Trier");
-		subjectBuilder.addRDN(RFC4519Style.st, "Rheinland-Pfalz");
-		subjectBuilder.addRDN(RFC4519Style.description, "SSLChat Root-Zertifikat");
-		X500Name subject = subjectBuilder.build();
-		
-		JcaX509v1CertificateBuilder certBldr = new JcaX509v1CertificateBuilder(
-				subject, BigInteger.valueOf(1), new Date(baseTime), // allow
-				// 1024
-				// weeks
-				// for
-				// the
-				// root
-				new Date(baseTime + 1024 * VALIDITY_PERIOD), subject,
-				pair.getPublic());
-		ContentSigner signer = new JcaContentSignerBuilder("SHA256withRSA").setProvider("BC").build(pair.getPrivate());
-		return certBldr.build(signer);
-	}
-	
-	public static KeyStore createClientTrustStore() throws Exception
-	{
-		// for brevity we use the same TA as the server.
-		return createServerTrustStore();
-	}
+        ContentSigner sigGen = new JcaContentSignerBuilder(SIG_ALGO).build(pair.getPrivate());
+        X509v1CertificateBuilder certGen = new JcaX509v1CertificateBuilder(subject, BigInteger.valueOf(System.currentTimeMillis()), notBefore, notAfter, subject, pair.getPublic());
+        X509Certificate cert = new JcaX509CertificateConverter().getCertificate(certGen.build(sigGen));
+        X500PrivateCredential credential = new X500PrivateCredential(cert, pair.getPrivate(), " Root CA");
+        
+        KeyStore store = KeyStore.getInstance("JKS");
+        store.load(null, null);
+        store.setKeyEntry(credential.getAlias(), credential.getPrivateKey(), "root1234".toCharArray(), new X509Certificate[]
+        { credential.getCertificate() });
+        
+        writeKeyStore("ca-keystore.jks", store, "root1234".toCharArray());
+        return cert;
+    }
+
+    public static X509Certificate generateServerCert(PublicKey entityKey, PrivateKey caKey, X509Certificate caCert, Date notBefore, Date notAfter) throws Exception
+    {
+        X500NameBuilder subjectBuilder = new X500NameBuilder(RFC4519Style.INSTANCE);
+        subjectBuilder.addRDN(RFC4519Style.cn, "Server");
+        subjectBuilder.addRDN(RFC4519Style.c, "DE");
+        subjectBuilder.addRDN(RFC4519Style.o, "Hochschule Trier");
+        subjectBuilder.addRDN(RFC4519Style.ou, "IT");
+        subjectBuilder.addRDN(RFC4519Style.l, "Trier");
+        subjectBuilder.addRDN(RFC4519Style.st, "Rheinland-Pfalz");
+        subjectBuilder.addRDN(RFC4519Style.description, "Server-Zertifikat");
+        X500Name subject = subjectBuilder.build();
+
+        ContentSigner sigGen = new JcaContentSignerBuilder(SIG_ALGO).build(caKey);
+        JcaX509ExtensionUtils extUtils = new JcaX509ExtensionUtils();
+        X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(caCert, BigInteger.valueOf(System.currentTimeMillis()), notBefore, notAfter, subject, entityKey).addExtension(Extension.authorityKeyIdentifier, false, extUtils.createAuthorityKeyIdentifier(caCert)).addExtension(Extension.subjectKeyIdentifier, false, extUtils.createSubjectKeyIdentifier(entityKey)).addExtension(Extension.basicConstraints, true, new BasicConstraints(0)).addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyEncipherment));
+        X509Certificate cert = new JcaX509CertificateConverter().getCertificate(certGen.build(sigGen));
+        X500PrivateCredential credential = new X500PrivateCredential(cert, caKey, "Server");
+        
+        //Keystore
+        KeyStore store = KeyStore.getInstance("JKS");
+        store.load(null, null);
+        store.setKeyEntry(credential.getAlias(), credential.getPrivateKey(), "server1234".toCharArray(), new X509Certificate[]
+        { credential.getCertificate() });
+        
+        //Truststore
+        KeyStore trustStore = KeyStore.getInstance("JKS");
+        trustStore.load(null, null);
+        trustStore.setCertificateEntry("Root CA", caCert);
+        
+        writeKeyStore("server-keystore.jks", store, "server1234".toCharArray());
+        writeTrustStore("server-truststore.jks", trustStore, "server1234".toCharArray());
+        return cert;
+    }
+
+    public static X509Certificate generateClientCert(String name, PublicKey entityKey, PrivateKey caKey, X509Certificate caCert, Date notBefore, Date notAfter) throws Exception
+    {
+        X500NameBuilder subjectBuilder = new X500NameBuilder(RFC4519Style.INSTANCE);
+        subjectBuilder.addRDN(RFC4519Style.cn, name);
+        subjectBuilder.addRDN(RFC4519Style.c, "DE");
+        subjectBuilder.addRDN(RFC4519Style.o, "Hochschule Trier");
+        subjectBuilder.addRDN(RFC4519Style.ou, "IT");
+        subjectBuilder.addRDN(RFC4519Style.l, "Trier");
+        subjectBuilder.addRDN(RFC4519Style.st, "Rheinland-Pfalz");
+        subjectBuilder.addRDN(RFC4519Style.description, "Client-Zertifikat für " + name);
+        X500Name subject = subjectBuilder.build();
+
+        ContentSigner sigGen = new JcaContentSignerBuilder(SIG_ALGO).build(caKey);
+        JcaX509ExtensionUtils extUtils = new JcaX509ExtensionUtils();
+        X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(caCert, BigInteger.valueOf(System.currentTimeMillis()), notBefore, notAfter, subject, entityKey).addExtension(Extension.authorityKeyIdentifier, false, extUtils.createAuthorityKeyIdentifier(caCert)).addExtension(Extension.subjectKeyIdentifier, false, extUtils.createSubjectKeyIdentifier(entityKey)).addExtension(Extension.basicConstraints, true, new BasicConstraints(0)).addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyEncipherment));
+        X509Certificate cert = new JcaX509CertificateConverter().getCertificate(certGen.build(sigGen));
+        X500PrivateCredential credential = new X500PrivateCredential(cert, caKey, buildSubString(name));
+        
+        //Keystore
+        KeyStore store = KeyStore.getInstance("JKS");
+        store.load(null, null);
+        store.setKeyEntry(credential.getAlias(), credential.getPrivateKey(), (buildSubString(name) + number).toLowerCase().toCharArray(), new X509Certificate[]
+        { credential.getCertificate() });
+        
+        //Truststore
+        KeyStore trustStore = KeyStore.getInstance("JKS");
+        trustStore.load(null, null);
+        trustStore.setCertificateEntry("Root CA", caCert);
+        
+        writeKeyStore("client-keystore-" + buildSubString(name) + ".jks", store, (buildSubString(name) + number).toLowerCase().toCharArray());
+        writeTrustStore("client-truststore-" + buildSubString(name) + ".jks", trustStore, (buildSubString(name) + number).toLowerCase().toCharArray());
+        return cert;
+    }
+    
+    public static String buildSubString(String s)
+    {
+        int index = s.indexOf(",");
+        String tmp = s.substring(0, index);
+        return tmp;
+    }
+
+    public static KeyPair generateRSAKeyPair() throws Exception
+    {
+        KeyPairGenerator kpGen = KeyPairGenerator.getInstance("RSA");
+        kpGen.initialize(KEY_LENGTH, new SecureRandom());
+        return kpGen.generateKeyPair();
+    }
 }

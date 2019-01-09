@@ -9,6 +9,9 @@ import java.security.Security;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -84,14 +87,20 @@ public class ConnectionModel
 			String ss;
 			//trustMgrFact.init(Utils.createServerTrustStore());
 			
-			FileInputStream fis = new FileInputStream("src/javaCreatedServerTrustStore.jks");
-			KeyStore ts = KeyStore.getInstance("JKS");
-			ts.load(fis, "server1234".toCharArray());
+			FileInputStream fis = new FileInputStream("src/keystores/client-keystore.jks");
+			KeyStore ks = KeyStore.getInstance("JKS");
+			ks.load(fis, "Test1234".toCharArray());
 			
+			FileInputStream fis2 = new FileInputStream("src/keystores/client-truststore.jks");
+			KeyStore ts = KeyStore.getInstance("JKS");
+			ts.load(fis2, "Test1234".toCharArray());
+			
+			KeyManagerFactory keyManagerFact = KeyManagerFactory.getInstance("PKIX", "BCJSSE");
 			TrustManagerFactory trustMgrFact = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
 			trustMgrFact.init(ts);
+			keyManagerFact.init(ks, "Test1234".toCharArray());
 			
-			sslContext.init(null, trustMgrFact.getTrustManagers(), null);
+			sslContext.init(keyManagerFact.getKeyManagers(), trustMgrFact.getTrustManagers(), null);
 
 			SSLSocketFactory fact = sslContext.getSocketFactory();
 			SSLSocket s = (SSLSocket) fact.createSocket(ip, this.tlsPort); //port änderungen !! 
@@ -101,13 +110,17 @@ public class ConnectionModel
 			this.pool.submit(new RunnableSendObject(this.connection, new ClientHello(user.getUsername())));
 
 		} catch (Exception e)
-		{
+		{		
 			/*
 			 * Um anzudeuten, dass der Server nicht online ist
 			 */
 			if (e instanceof ConnectException)
 			{
 				throw new ConnectException();
+			}
+			else
+			{
+				e.printStackTrace();
 			}
 		}
 	}

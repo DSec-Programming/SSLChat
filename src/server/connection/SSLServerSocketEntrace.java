@@ -38,16 +38,22 @@ public class SSLServerSocketEntrace extends Thread
 
 			SSLContext sslContext = SSLContext.getInstance("TLS", "BCJSSE");
 			
-			FileInputStream fis = new FileInputStream("src/javaCreatedServerKeyStore.jks");
+			FileInputStream fis = new FileInputStream("src/keystores/server-keystore.jks");
 			KeyStore ks = KeyStore.getInstance("JKS");
 			ks.load(fis, serverpswd.toCharArray());
 			
-			KeyManagerFactory kmf = KeyManagerFactory.getInstance("PKIX", "BCJSSE");
+			FileInputStream fis2 = new FileInputStream("src/keystores/server-truststore.jks");
+			KeyStore ts = KeyStore.getInstance("JKS");
+			ts.load(fis2, serverpswd.toCharArray());
 			
-			kmf.init(ks, "server1234".toCharArray());
+			KeyManagerFactory kmf = KeyManagerFactory.getInstance("PKIX", "BCJSSE");
+			TrustManagerFactory tmf = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
+			
+			kmf.init(ks, serverpswd.toCharArray());
+			tmf.init(ts);
 		
 			
-			sslContext.init(kmf.getKeyManagers(), null, null);
+			sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 			
 			SSLServerSocketFactory fact = sslContext.getServerSocketFactory();
 			SSLServerSocket serverSocket = (SSLServerSocket) fact.createServerSocket(port);
