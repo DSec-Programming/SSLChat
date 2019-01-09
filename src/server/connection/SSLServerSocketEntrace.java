@@ -52,7 +52,6 @@ public class SSLServerSocketEntrace extends Thread
 			kmf.init(ks, serverpswd.toCharArray());
 			tmf.init(ts);
 		
-			
 			sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 			
 			SSLServerSocketFactory fact = sslContext.getServerSocketFactory();

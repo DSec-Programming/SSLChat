@@ -31,6 +31,7 @@ import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.cert.jcajce.JcaX509v1CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
@@ -57,6 +58,7 @@ public class OwnUtils
     public static void main(String[] args) throws Exception
     {
         Security.addProvider(new BouncyCastleProvider());
+        Security.addProvider(new BouncyCastleJsseProvider());
         System.out.println("STARTED");
         init();
               
@@ -141,7 +143,7 @@ public class OwnUtils
         ContentSigner sigGen = new JcaContentSignerBuilder(SIG_ALGO).build(pair.getPrivate());
         X509v1CertificateBuilder certGen = new JcaX509v1CertificateBuilder(subject, BigInteger.valueOf(System.currentTimeMillis()), notBefore, notAfter, subject, pair.getPublic());
         X509Certificate cert = new JcaX509CertificateConverter().getCertificate(certGen.build(sigGen));
-        X500PrivateCredential credential = new X500PrivateCredential(cert, pair.getPrivate(), " Root CA");
+        X500PrivateCredential credential = new X500PrivateCredential(cert, pair.getPrivate(), "Root CA");
         
         KeyStore store = KeyStore.getInstance("JKS");
         store.load(null, null);

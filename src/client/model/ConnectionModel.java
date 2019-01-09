@@ -83,22 +83,19 @@ public class ConnectionModel
 			Security.addProvider(new BouncyCastleJsseProvider());
 
 			SSLContext sslContext = SSLContext.getInstance("TLS", "BCJSSE");
-
-			String ss;
-			//trustMgrFact.init(Utils.createServerTrustStore());
 			
 			FileInputStream fis = new FileInputStream("src/keystores/client-keystore.jks");
 			KeyStore ks = KeyStore.getInstance("JKS");
-			ks.load(fis, "Test1234".toCharArray());
+			ks.load(fis, "test1234".toCharArray());
 			
 			FileInputStream fis2 = new FileInputStream("src/keystores/client-truststore.jks");
 			KeyStore ts = KeyStore.getInstance("JKS");
-			ts.load(fis2, "Test1234".toCharArray());
+			ts.load(fis2, "test1234".toCharArray());
 			
 			KeyManagerFactory keyManagerFact = KeyManagerFactory.getInstance("PKIX", "BCJSSE");
 			TrustManagerFactory trustMgrFact = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
 			trustMgrFact.init(ts);
-			keyManagerFact.init(ks, "Test1234".toCharArray());
+			keyManagerFact.init(ks, "test1234".toCharArray());
 			
 			sslContext.init(keyManagerFact.getKeyManagers(), trustMgrFact.getTrustManagers(), null);
 
