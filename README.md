@@ -1,4 +1,4 @@
-# SSLChat
+# SSLChat (2018)
 
 University project. Basic SSL/TLS chat.
 
